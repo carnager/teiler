@@ -71,7 +71,16 @@ function notify_ul() {
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
 }
 
-
+#Some options depending which uploader is used (right now only fb and scp are supported)
+	if [ $UL == "fb" ];
+ 		then UL_IMG="fb \$f && rm -f \$f"
+             UL_VID="fb temp_cast.mkv"
+	elif [ $UL == "scp" ];
+		then UL_IMG="scp \$f $ULHOST && rm -f \$f"
+             UL_VID="scp \$f $ULHOST && rm -f \$f"
+	else
+		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
+fi
 
 ####Some Variables to clean up the code a bit
 if [ "$DZEN2_TRANS" == "1" ]; then
@@ -125,19 +134,19 @@ fi
       scrot -s "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
   ;;
     "f. Fullscreen and Upload")
-	    scrot -d 1 "$FILEMASK" -e "$UL \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+	    scrot -d 1 "$FILEMASK" -e "$UL_IMG" && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "d. Delayed Fullscreen and Upload")
-      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) "$FILEMASK" -e "$UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "e. Fullscreen and Edit and Upload")
-      scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "s. Selection and Upload")
-      scrot -s "$FILEMASK" -e "$UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -s "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "p. Selection and Edit and Upload")
-      scrot -s "$FILEMASK" -e "$EDIT \$f && $UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -s "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "x. Upload Clipboard Content")
       eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o | fb && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
@@ -146,9 +155,9 @@ fi
       ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 temp_cast.mkv && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
-      kill $(pgrep -f x11grab) && sleep 3 && $UL temp_cast.mkv && rm -f temp_cast.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+      kill $(pgrep -f x11grab) && sleep 3 && $UP_VID temp_cast.mkv && rm -f temp_cast.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
   ;;
-  "g. External screenshot (2clip)")
+    "g. External screenshot (2clip)")
         xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
   ;;
 

@@ -3,7 +3,8 @@
 
 IMG_PATH=/home/carnager/Pictures/Screenshots/
 FILEMASK=%Y-%m-%d-@%H-%M-%S-scrot.png
-UL=fb
+UL=scp          #possible choices: fb, scp
+ULHOST=SSH_HOST #host to be used with scp
 EDIT=pinta
 RES=1920x1080   #set your screen resolution
 TIME=3000          #How long will notifications be visible? (in miliseconds)
