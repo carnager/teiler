@@ -9,6 +9,7 @@
 
 
 #changelog
+#v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
 #v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
 #v0.9.6 Added dependency and config checks
 #v0.9.5 outsourced configuration to ~/.config/teiler/config, made dzen2 font be configurable individually
@@ -162,7 +163,7 @@ fi
       ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 temp_cast.mkv && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
-      kill $(pgrep -f x11grab) && sleep 3 && $UP_VID temp_cast.mkv && rm -f temp_cast.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+      kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && rm -f temp_cast.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
   ;;
     "g. External screenshot (2clip)")
         xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
