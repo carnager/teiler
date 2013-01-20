@@ -83,9 +83,11 @@ notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
 	if [ $UL == "fb" ];
  		then UL_IMG="fb \$f && rm -f \$f"
              UL_VID="fb temp_cast.mkv"
+             UL_CLIP="fb clip.txt && rm -f clip.txt"
 	elif [ $UL == "scp" ];
 		then UL_IMG="scp \$f $ULHOST && rm -f \$f && echo -n "$URL/\$f" | xclip"
-             UL_VID="scp temp_cast.mkv $ULHOST && rm -f temp_cast.mkv && echo -n "$URL/temp_cast.mkv" | xclip"
+             UL_VID="scp temp_cast.mkv $ULHOST && echo -n "$URL/temp_cast.mkv" | xclip"
+             UL_CLIP="scp clip.txt $ULHOST && echo -n "$URL/clip.txt" | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
@@ -157,7 +159,7 @@ fi
       scrot -s "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
   ;;
     "x. Upload Clipboard Content")
-      eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o | fb && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
+      eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip.txt && eval $UL_CLIP && rm -f clip.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
   ;;
     "c. Start Recording a Videocast")
       ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 temp_cast.mkv && notify ${TIME} "Screencast started"
