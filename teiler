@@ -83,8 +83,8 @@ notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
  		then UL_IMG="fb \$f && rm -f \$f"
              UL_VID="fb temp_cast.mkv"
 	elif [ $UL == "scp" ];
-		then UL_IMG="scp \$f $ULHOST && rm -f \$f && echo "$URL/\$f" | xclip"
-             UL_VID="scp temp_cast.mkv $ULHOST && rm -f temp_cast.mkv && echo "$URL/temp_cast.mkv" | xclip"
+		then UL_IMG="scp \$f $ULHOST && rm -f \$f && echo -n "$URL/\$f" | xclip"
+             UL_VID="scp temp_cast.mkv $ULHOST && rm -f temp_cast.mkv && echo -n "$URL/temp_cast.mkv" | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
