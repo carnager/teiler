@@ -87,9 +87,9 @@ NOW=`date +"%m_%d_%Y-%H_%M_%S"`
              UL_VID="fb cast-$NOW.mkv"
              UL_CLIP="fb clip-$NOW.txt && rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
-		then UL_IMG="scp \$f $ULHOST && rm -f \$f && echo -n "$URL/\$f" | xclip"
-             UL_VID="scp cast-$NOW.mkv $ULHOST && echo -n "$URL/cast-$NOW.mkv" | xclip"
-             UL_CLIP="scp clip-$NOW.txt $ULHOST && echo -n "$URL/clip-$NOW.txt" | xclip"
+		then UL_IMG="scp \$f $ULHOST_IMG && rm -f \$f && echo -n "$URL/\$f" | xclip"
+             UL_VID="scp cast-$NOW.mkv $ULHOST_IMG && echo -n "$URL/cast-$NOW.mkv" | xclip"
+             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL/clip-$NOW.txt" | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi

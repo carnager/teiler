@@ -3,26 +3,30 @@
 
 IMG_PATH=/home/carnager/Pictures/Screenshots/
 FILEMASK=%Y-%m-%d-@%H-%M-%S-scrot.png
-UL=scp          #possible choices: fb, scp
-URL=PUBLIC_URL  #set to public accessible address so others can see your files
-ULHOST=SSH_HOST #host to be used with scp
+UL=scp          						#possible choices: fb, scp
+
+URL_IMG=PUBLIC_URL  					#set to public accessible address so others can see your files
+ULHOST_IMG=SSH_HOST:FOLDER				#host to be used with scp
+URL_PASTE=PUBLIC_URL					#set this the same as above if you dont need to use different folder for pastes (x option)
+ULHOST_PASTE=SSH_HOST:/FOLDER			#set this the same as above if you dont need different folder for pastes (x option)
+
 EDIT=pinta
-RES=1920x1080   #set your screen resolution
-TIME=3000          #How long will notifications be visible? (in miliseconds)
-COUNTER1=3      #Seconds to count for delay (Use $COUNTD variable)
-COUNTER2=6      #Seconds to count for delay (Use $COUNTD2 variable)
+RES=1920x1080   						#set your screen resolution
+TIME=3000          						#How long will notifications be visible? (in miliseconds)
+COUNTER1=3      						#Seconds to count for delay (Use $COUNTD variable)
+COUNTER2=6      						#Seconds to count for delay (Use $COUNTD2 variable)
 
 #DMENU/DZEN2 CONFIGURATION
-DMENU_TRANS=1   #Choose 0 if your dmenu has no transparency support
+DMENU_TRANS=1   						#Choose 0 if your dmenu has no transparency support
 FONT="Envy Code R-9"
 NF="#7c7c72"
 NB="#000000"
 SF="#FFFFFF"
 SB="#33B5E5"
-DZEN2_TRANS=1   #Choose 0 if your dzen2 has no transparency support
+DZEN2_TRANS=1   						#Choose 0 if your dzen2 has no transparency support
 DZEN2_FONT="Envy Code R-18"
-DZEN2_W=200     #Width of dzen2
-DZEN2_X=850     #X Padding
+DZEN2_W=200     						#Width of dzen2
+DZEN2_X=850     						#X Padding
 DZEN2_Y=540
 
 ################## Configuration End ##############################
