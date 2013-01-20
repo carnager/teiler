@@ -1,0 +1,159 @@
+#!/bin/bash
+# teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
+# (c) Rasmus Steinke <rasi at xssn dot at> 
+# Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
+#
+# Requirements:
+# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, 
+# xfce4-screenshooter+a proper clipboard manager for image clipboard support
+
+
+#changelog
+#v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
+#v0.9.6 Added dependency and config checks
+#v0.9.5 outsourced configuration to ~/.config/teiler/config, made dzen2 font be configurable individually
+#v0.9.4 fixed typing bug and bump to fake activity :)
+#v0.9.3
+#Added option to copy image to clipboard. This needs xfce-screenshooter and some proper clipboard manager, like clipman
+#v0.9.2
+#Added Configuration for transparency
+#v0.9.1
+#Include Upload Link in Notification
+#v0.9
+#Massive rewrite of the case function, teiler finally supports spaces in its menu :)
+#v0.8
+#Put notify-send into its own function, Made delay being calculated from counter value.
+#v0.7
+#Massive Code Cleanup
+#v0.6
+#Countdown script stolen from Google and integrated.
+#v0.5
+#added clip uploading
+#v0.4
+#added screencast function
+#v0.3
+#added 1.notifications 2.unique names for each type (for quick launch) 3.better photo editor (pinta) 4.dmenu title
+
+if [[ -f $HOME/.config/teiler/config ]];
+  then echo "Config found"
+else
+  echo "No config found" && notify-send "teiler" "No config found"
+  echo "Please copy config.example to ~/.config/teiler/config" && notify-send "Please copy config.example to ~/.config/teiler/config"
+  echo "Terminating..."
+  echo " "
+  killall teiler
+fi
+
+command -v dmenu >/dev/null 2>&1 || { notify-send "teiler" "dmenu is  not installed. Aborting." >&2; exit 1; }
+command -v dzen2 >/dev/null 2>&1 || { notify-send "teiler" "dzen2 is not installed. Aborting" >&2; exit 1; }
+command -v fb >/dev/null 2>&1 || { notify-send "teiler" "fb-client is not installed. Upload funtionality requires it." >&2; }
+command -v ffmpeg >/dev/null 2>&1 || { notify-send "teiler" "ffmpeg is not installed. Aborting" >&2; exit 1; }
+command -v scrot >/dev/null 2>&1 || { notify-send "teiler" "scrot is not installed. Aborting" >&2; exit 1; }
+command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1; }
+
+source ~/.config/teiler/config
+# Needed for the countdown
+# Based on some script by  Marco Fontani - MFONTANI at cpan dot org
+set -bm
+COLOR='#7c7c72'
+function countdown () {
+    seq 1 ${1:-10} | tac | \
+        perl -ne'BEGIN{$|++;$msg=shift}$m=int($_/60);$s=int($_-$m*60);printf("$m:%02d -- $msg\n",$s);sleep 1;' \
+        "${2:-ready...}"
+}
+
+
+# Outsource the notfiy-send to its own function to clean up the mess below a bit ;)
+function notify() {
+notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+}
+function notify_ul() {
+notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+}
+
+
+
+####Some Variables to clean up the code a bit
+if [ "$DZEN2_TRANS" == "1" ]; then
+COUNTD="countdown $COUNTER1 GO | dzen2 -o 80 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+COUNTD2="countdown $COUNTER2 GO | dzen2 -o 80 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+else 
+COUNTD="countdown $COUNTER1 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+COUNTD2="countdown $COUNTER2 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+fi
+XCLIP="(xclip -o;echo) | xclip -selection clipboard"
+
+cd $IMG_PATH
+
+MENU="1. Quick Fullscreen
+2. Delayed Fullscreen
+3. Select Area
+4. Fullscreen Shot and Edit
+5. Selection and Edit
+f. Fullscreen and Upload
+d. Delayed Fullscreen and Upload
+e. Fullscreen and Edit and Upload
+s. Selection and Upload
+p. Selection and Edit and Upload
+x. Upload Clipboard Content
+c. Start Recording a Videocast
+k. Stop Recording a Videocast
+g. External screenshot (2clip)
+"
+
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.8 -l 20 -fn 'Envy Code R-10' -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn 'Envy Code R-10' -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+fi
+
+ 
+  case "$CHOICE" in
+    "1. Quick Fullscreen")
+	    scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+  ;;
+    "2. Delayed Fullscreen")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+  ;;
+    "3. Select Area")
+     scrot -s "$FILEMASK" && notify ${TIME} "Screenshot saved"
+  ;;
+    "4. Fullscreen Shot and Edit")
+      scrot -d 1 "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
+  ;;
+    "5. Selection and Edit")
+      scrot -s "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
+  ;;
+    "f. Fullscreen and Upload")
+	    scrot -d 1 "$FILEMASK" -e "$UL \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  ;;
+    "d. Delayed Fullscreen and Upload")
+      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) "$FILEMASK" -e "$UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  ;;
+    "e. Fullscreen and Edit and Upload")
+      scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  ;;
+    "s. Selection and Upload")
+      scrot -s "$FILEMASK" -e "$UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  ;;
+    "p. Selection and Edit and Upload")
+      scrot -s "$FILEMASK" -e "$EDIT \$f && $UL \$f && rm -f \$f" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  ;;
+    "x. Upload Clipboard Content")
+      eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o | fb && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
+  ;;
+    "c. Start Recording a Videocast")
+      ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 temp_cast.mkv && notify ${TIME} "Screencast started"
+  ;;
+    "k. Stop Recording a Videocast")
+      kill $(pgrep -f x11grab) && sleep 3 && $UL temp_cast.mkv && rm -f temp_cast.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+  ;;
+  "g. External screenshot (2clip)")
+        xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
+  ;;
+
+  *)
+    notify-send -u low "No Selection Made"
+  ;;
+
+esac
