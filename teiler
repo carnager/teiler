@@ -46,7 +46,14 @@ fi
 
 command -v dmenu >/dev/null 2>&1 || { notify-send "teiler" "dmenu is  not installed. Aborting." >&2; exit 1; }
 command -v dzen2 >/dev/null 2>&1 || { notify-send "teiler" "dzen2 is not installed. Aborting" >&2; exit 1; }
-command -v fb >/dev/null 2>&1 || { notify-send "teiler" "fb-client is not installed. Upload funtionality requires it." >&2; }
+
+UP1=`command -v scp`
+UP2=`command -v fb`
+if [[ -n "$UP1" && -n "$UP2" ]];
+then echo "found"
+else echo "not found" && notify-send "teiler" "No supported Uploader found"; exit
+fi
+
 command -v ffmpeg >/dev/null 2>&1 || { notify-send "teiler" "ffmpeg is not installed. Aborting" >&2; exit 1; }
 command -v scrot >/dev/null 2>&1 || { notify-send "teiler" "scrot is not installed. Aborting" >&2; exit 1; }
 command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1; }
