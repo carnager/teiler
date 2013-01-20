@@ -49,7 +49,7 @@ command -v dzen2 >/dev/null 2>&1 || { notify-send "teiler" "dzen2 is not install
 
 UP1=`command -v scp`
 UP2=`command -v fb`
-if [[ -n "$UP1" && -n "$UP2" ]];
+if [[ -n "$UP1" || -n "$UP2" ]];
 then echo "found"
 else echo "not found" && notify-send "teiler" "No supported Uploader found"; exit
 fi
@@ -97,7 +97,7 @@ else
 COUNTD="countdown $COUNTER1 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
 COUNTD2="countdown $COUNTER2 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
 fi
-XCLIP="(xclip -o;echo) | xclip -selection clipboard"
+XCLIP="(xclip -o) | xclip -selection clipboard"
 
 cd $IMG_PATH
 
