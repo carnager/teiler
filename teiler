@@ -84,12 +84,12 @@ NOW=`date +"%m_%d_%Y-%H_%M_%S"`
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
  		then UL_IMG="fb \$f && rm -f \$f"
-             UL_VID="fb cast-$NOW.mkv"
+             UL_VID="fb $(cat ~/.temp_cast)"
              UL_CLIP="fb clip-$NOW.txt && rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
-		then UL_IMG="scp \$f $ULHOST_IMG && rm -f \$f && echo -n "$URL/\$f" | xclip"
-             UL_VID="scp cast-$NOW.mkv $ULHOST_IMG && echo -n "$URL/cast-$NOW.mkv" | xclip"
-             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL/clip-$NOW.txt" | xclip"
+		then UL_IMG="scp \$f $ULHOST_IMG && rm -f \$f && echo -n "$URL_IMG/\$f" | xclip"
+             UL_VID="scp $(cat ~/.temp_cast) $ULHOST_IMG && echo -n "$URL_IMG/$(cat ~/.temp_cast)" | xclip"
+             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
@@ -164,7 +164,7 @@ fi
       eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
   ;;
     "c. Start Recording a Videocast")
-      ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 cast-$NOW.mkv && notify ${TIME} "Screencast started"
+      rm -f ~/.temp_cast && echo "cast-$NOW.mkv" > ~/.temp_cast && ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 cast-$NOW.mkv && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
       kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
