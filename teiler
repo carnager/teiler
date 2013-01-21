@@ -167,7 +167,7 @@ fi
       ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 cast-$NOW.mkv && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
-      kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && rm -f cast-$NOW.mkv && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+      kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
   ;;
     "g. External screenshot (2clip)")
         xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
