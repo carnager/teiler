@@ -1,7 +1,7 @@
 ############### Configuration options ##############################
 
 
-IMG_PATH=/home/carnager/Pictures/Screenshots/
+IMG_PATH=$HOME/Pictures/Screenshots/
 FILEMASK=%Y-%m-%d-@%H-%M-%S-scrot.png
 UL=scp          						#possible choices: fb, scp
 
