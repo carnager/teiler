@@ -60,6 +60,7 @@ command -v scrot >/dev/null 2>&1 || { notify-send "teiler" "scrot is not install
 command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1; }
 
 source ~/.config/teiler/config
+echo $FONT
 # Needed for the countdown
 # Based on some script by  Marco Fontani - MFONTANI at cpan dot org
 set -bm
@@ -79,7 +80,7 @@ function notify_ul() {
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
 }
 
-NOW=`date +"%m_%d_%Y-%H_%M_%S"`
+NOW=`date +"%Y%m%d%H%M%S"`
 
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
@@ -88,7 +89,7 @@ NOW=`date +"%m_%d_%Y-%H_%M_%S"`
              UL_CLIP="fb clip-$NOW.txt && rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
 		then UL_IMG="scp \$f $ULHOST_IMG && rm -f \$f && echo -n "$URL_IMG/\$f" | xclip"
-             UL_VID="scp $(cat ~/.temp_cast) $ULHOST_IMG && echo -n "$URL_IMG/$(cat ~/.temp_cast)" | xclip"
+             UL_VID="scp $(cat ~/.temp_cast) $ULHOST_VID && echo -n "$URL_VID/$(cat ~/.temp_cast)" | xclip"
              UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
@@ -123,9 +124,9 @@ g. External screenshot (2clip)
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.8 -l 20 -fn 'Envy Code R-10' -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn 'Envy Code R-10' -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
 fi
 
  
@@ -164,7 +165,8 @@ fi
       eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
   ;;
     "c. Start Recording a Videocast")
-      rm -f ~/.temp_cast && echo "cast-$NOW.mkv" > ~/.temp_cast && ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -vcodec libx264 cast-$NOW.mkv && notify ${TIME} "Screencast started"
+#      rm -f ~/.temp_cast && echo "cast-$NOW.mp4" > ~/.temp_cast && ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -sameq cast-$NOW.mp4 && notify ${TIME} "Screencast started"
+      rm -f ~/.temp_cast && echo "$NOW.mkv" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -b 8000000 -r 15 -c:v libx264 -preset fast -pix_fmt yuv420p -threads 0 -f flv $NOW.mkv && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
       kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
