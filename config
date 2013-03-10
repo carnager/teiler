@@ -1,16 +1,16 @@
 ############### Configuration options ##############################
 
 
-IMG_PATH=/path/to/store/images
+IMG_PATH=$HOME/Pictures/Screenshots/
 FILEMASK=%Y%m%d%H%M%S.png
-UL=scp          									#possible choices: fb, scp
+UL=scp          						#possible choices: fb, scp
 
-URL_IMG=http://foobar/ss          					#set to public accessible address so others can see your files
-ULHOST_IMG=foobar:~/path/to/destination				#host to be used with scp
-ULHOST_VID=foobar:~/path/2
-URL_VID=http://foobar/foo
-URL_PASTE=http://foobar/bar							#set this the same as above if you dont need to use different folder for pastes (x optio
-ULHOST_PASTE=foobar:~/path/3						#set this the same as above if you dont need different folder for pastes (x option)
+URL_IMG=          					#set to public accessible address so others can see your files
+ULHOST_IMG=							#host to be used with scp
+ULHOST_VID=
+URL_VID=
+URL_PASTE=							#set this the same as above if you dont need to use different folder for pastes (x option)
+ULHOST_PASTE=						#set this the same as above if you dont need different folder for pastes (x option)
 
 EDIT=pinta
 RES=1920x1080   						#set your screen resolution
@@ -20,13 +20,13 @@ COUNTER2=6      						#Seconds to count for delay (Use $COUNTD2 variable)
 
 #DMENU/DZEN2 CONFIGURATION
 DMENU_TRANS=0   						#Choose 0 if your dmenu has no transparency support
-FONT="Source\Code\Pro-11"
-NF="#7c7c72"
+FONT="Source\Code\Pro-12"
+NF="#a0a0a0"
 NB="#000000"
 SF="#FFFFFF"
-SB="#33B5E5"
+SB="#0C73C2"
 DZEN2_TRANS=0   						#Choose 0 if your dzen2 has no transparency support
-DZEN2_FONT="Source Code Pro-11"
+DZEN2_FONT="Source Code Pro-12"
 DZEN2_W=200     						#Width of dzen2
 DZEN2_X=850     						#X Padding
 DZEN2_Y=540
