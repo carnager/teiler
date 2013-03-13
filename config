@@ -12,7 +12,7 @@ URL_VID=
 URL_PASTE=							#set this the same as above if you dont need to use different folder for pastes (x option)
 ULHOST_PASTE=						#set this the same as above if you dont need different folder for pastes (x option)
 
-EDIT=pinta
+EDIT=mtpaint
 RES=1920x1080   						#set your screen resolution
 TIME=3000          						#How long will notifications be visible? (in miliseconds)
 COUNTER1=3      						#Seconds to count for delay (Use $COUNTD variable)
