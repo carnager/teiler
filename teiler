@@ -1,10 +1,10 @@
 #!/bin/bash
 # teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
-# (c) Rasmus Steinke <rasi at xssn dot at> 
+# (c) Rasmus Steinke <rasi at xssn dot at>
 # Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
-# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, 
+# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon,
 # xfce4-screenshooter+a proper clipboard manager for image clipboard support
 
 
@@ -119,6 +119,7 @@ s. Selection and Upload
 p. Selection and Edit and Upload
 x. Upload Clipboard Content
 c. Start Recording a Videocast
+n. Start Recording a Videocast (No Sound)
 k. Stop Recording a Videocast
 g. External screenshot (2clip)
 "
@@ -166,6 +167,8 @@ fi
   ;;
     "c. Start Recording a Videocast")
 #      rm -f ~/.temp_cast && echo "cast-$NOW.mp4" > ~/.temp_cast && ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -sameq cast-$NOW.mp4 && notify ${TIME} "Screencast started"
+      rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+    "n. Start Recording a Videocast (No Sound)")
       rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
   ;;
     "k. Stop Recording a Videocast")
