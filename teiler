@@ -4,11 +4,14 @@
 # Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
-# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon,
-# xfce4-screenshooter+a proper clipboard manager for image clipboard support
+# xclip, fb-client, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, some image editing tool.
+#
+# Optional Dependencies:
+# xfce4-screenshooter+a proper clipboard manager for image clipboard support, byzanz for gif support
 
 
 #changelog
+#v0.9.9 Added gif support, which adds byzanz as an optional dependency
 #v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
 #v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
 #v0.9.6 Added dependency and config checks
