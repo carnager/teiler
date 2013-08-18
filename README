@@ -3,6 +3,8 @@ teiler - A script to share (german word: teilen) screenshots/casts for tiling WM
 Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
 
 Requirements:
-xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, 
+xclip, fb-client, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, some image editing program
+
+Optional:
 xfce4-screenshooter+a proper clipboard manager for image clipboard support
 
