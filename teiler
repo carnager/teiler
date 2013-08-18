@@ -82,6 +82,16 @@ notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
 
 NOW=`date +"%Y%m%d%H%M%S"`
 
+#Get Dimensions of active Window
+function dimensions() {
+  unset x y w h
+  eval $(xwininfo -id $(xdotool getactivewindow) |
+    sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
+           -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
+           -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
+           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
+}
+
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
  		then UL_IMG="fb \$f && rm -f \$f"
@@ -120,8 +130,10 @@ p. Selection and Edit and Upload
 x. Upload Clipboard Content
 c. Start Recording a Videocast
 n. Start Recording a Videocast (No Sound)
-k. Stop Recording a Videocast
+k. Stop Recording a Videocast/gif
 g. External screenshot (2clip)
+a. Record an animated gif (Fullscreen)
+b. Record an animated gif (Window)
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
@@ -133,7 +145,7 @@ fi
  
   case "$CHOICE" in
     "1. Quick Fullscreen")
-	    scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+     scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
   ;;
     "2. Delayed Fullscreen")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
@@ -172,11 +184,24 @@ fi
     "n. Start Recording a Videocast (No Sound)")
       rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
   ;;
-    "k. Stop Recording a Videocast")
-      kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+    "k. Stop Recording a Videocast/gif")
+	    if [ $(pgrep -f x11grab) ]
+	  then
+      	    kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+    elif [ $(pgrep -f byzanz-record) ]
+	  then killall byzanz-record && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+      else
+	  echo "foo"
+      fi
   ;;
     "g. External screenshot (2clip)")
-        xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
+      xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
+  ;;
+    "a. Record an animated gif (Fullscreen)")
+      rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && byzanz-record -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
+  ;;
+    "b. Record an animated gif (Window)")
+      rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
   ;;
 
   *)
