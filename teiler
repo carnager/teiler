@@ -4,14 +4,11 @@
 # Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
-# xclip, fb-client, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, some image editing tool.
-#
-# Optional Dependencies:
-# xfce4-screenshooter+a proper clipboard manager for image clipboard support, byzanz for gif support
+# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon,
+# xfce4-screenshooter+a proper clipboard manager for image clipboard support
 
 
 #changelog
-#v0.9.9 Added gif support, which adds byzanz as an optional dependency
 #v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
 #v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
 #v0.9.6 Added dependency and config checks
@@ -120,23 +117,13 @@ XCLIP="(xclip -o) | xclip -selection clipboard"
 
 cd $IMG_PATH
 
-MENU="1. Quick Fullscreen
-2. Delayed Fullscreen
-3. Select Area
-4. Fullscreen Shot and Edit
-5. Selection and Edit
-f. Fullscreen and Upload
-d. Delayed Fullscreen and Upload
-e. Fullscreen and Edit and Upload
-s. Selection and Upload
-p. Selection and Edit and Upload
-x. Upload Clipboard Content
-c. Start Recording a Videocast
-n. Start Recording a Videocast (No Sound)
-k. Stop Recording a Videocast/gif
-g. External screenshot (2clip)
-a. Record an animated gif (Fullscreen)
-b. Record an animated gif (Window)
+MENU="1. Screenshots
+2. Screenshots (Delayed)
+3. Screencasts
+---------------------------------
+s. Quick Screenshot
+f. Quick Screencast
+k. Stop Recording of any Screencast
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
@@ -145,70 +132,124 @@ else
 CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
 fi
 
- 
   case "$CHOICE" in
-    "1. Quick Fullscreen")
+    "1. Screenshots")
+MENU="1. Fullscreen
+2. Fullscreen and Upload
+3. Fullscreen and Edit and Upload
+4. Area
+5. Area and Upload
+6. Area and Edit and Upload
+"
+
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+fi
+
+  case "$CHOICE" in
+    "1. Fullscreen")
      scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
-  ;;
-    "2. Delayed Fullscreen")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
-  ;;
-    "3. Select Area")
-     scrot -s "$FILEMASK" && notify ${TIME} "Screenshot saved"
-  ;;
-    "4. Fullscreen Shot and Edit")
-      scrot -d 1 "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
-  ;;
-    "5. Selection and Edit")
-      scrot -s "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
-  ;;
-    "f. Fullscreen and Upload")
-	    scrot -d 1 "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-  ;;
-    "d. Delayed Fullscreen and Upload")
-      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-  ;;
-    "e. Fullscreen and Edit and Upload")
-      scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-  ;;
-    "s. Selection and Upload")
-      scrot -s "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-  ;;
-    "p. Selection and Edit and Upload")
-      scrot -s "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-  ;;
-    "x. Upload Clipboard Content")
-      eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
-  ;;
-    "c. Start Recording a Videocast")
-#      rm -f ~/.temp_cast && echo "cast-$NOW.mp4" > ~/.temp_cast && ffmpeg -r 25 -f x11grab -s $RES -i $DISPLAY+0,0 -sameq cast-$NOW.mp4 && notify ${TIME} "Screencast started"
-      rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+   ;;
+    "2. Fullscreen and Upload")
+     scrot -d 1 "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+    "3. Fullscreen and Edit and Upload")
+    scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+    "4. Area")
+    scrot -s "$FILEMASK" && notify ${TIME} "Screenshot saved"
+   ;;
+    "5. Area and Upload")
+   scrot -s "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+    "6. Area and Edit and Upload")
+    scrot -s "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+*)
+teiler
+esac
 ;;
-    "n. Start Recording a Videocast (No Sound)")
-      rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
-  ;;
-    "k. Stop Recording a Videocast/gif")
-	    if [ $(pgrep -f x11grab) ]
-	  then
-      	    kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+"2. Screenshots (Delayed)")
+MENU="1. Fullscreen
+2. Fullscreen and Upload
+3. Fullscreen and Edit and Upload
+"
+
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+fi
+
+  case "$CHOICE" in
+    "1. Fullscreen")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+   ;;
+    "2. Fullscreen and Upload")
+    eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) "$FILEMASK" -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+    "3. Fullscreen and Edit and Upload")
+    eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+   ;;
+*)
+teiler
+esac
+;;
+"3. Screencasts")
+MENU="1. Fullscreen
+2. Fullscreen (No Sound)
+3. Window
+4. Window (No Sound)
+5. GIF (Fullscreen)
+6. GIF (Window)
+"
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+fi
+
+  case "$CHOICE" in
+    "1. Fullscreen")
+    rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+   ;;
+    "2. Fullscreen (No Sound)")
+     rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+   ;;
+    "3. Window")
+    rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+   ;;
+    "4. Window (No Sound)")
+    rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+   ;;
+    "5. GIF (Fullscreen)")
+   rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && byzanz-record -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
+   ;;
+    "6. GIF (Window)")
+   rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
+   ;;
+*)
+teiler
+esac
+;;
+"s. Quick Screenshot")
+scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+;;
+"f. Quick Screencast")
+rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+;;
+"k. Stop Recording of any Screencast")
+if [ $(pgrep -f x11grab) ]
+      then
+            kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
     elif [ $(pgrep -f byzanz-record) ]
-	  then killall byzanz-record && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
+      then killall byzanz-record && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded"
       else
-	  echo "foo"
+      echo "foo"
       fi
-  ;;
-    "g. External screenshot (2clip)")
-      xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
-  ;;
-    "a. Record an animated gif (Fullscreen)")
-      rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && byzanz-record -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
-  ;;
-    "b. Record an animated gif (Window)")
-      rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
-  ;;
-
-  *)
-    notify-send -u low "No Selection Made"
-  ;;
-
+   ;;
+*)
+echo "foo"
 esac
