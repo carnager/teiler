@@ -122,8 +122,8 @@ MENU="1. Screenshots
 2. Screenshots (Delayed)
 3. Screencasts
 ---------------------------------
-s. Quick Screenshot 
-c. Quick Screencast
+f. Quick Screenshot (Fullscreen)
+s. Quick Screencast (Area)
 x. Upload Clipboard content (Delayed)
 k. Stop Recording of any Screencast
 "
