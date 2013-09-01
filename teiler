@@ -9,6 +9,7 @@
 
 
 #changelog
+#v0.9.9 Restructured Menu. Added Screencasts of single windows.
 #v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
 #v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
 #v0.9.6 Added dependency and config checks
@@ -123,6 +124,7 @@ MENU="1. Screenshots
 ---------------------------------
 s. Quick Screenshot
 c. Quick Screencast
+x. Upload Clipboard content (Delayed)
 k. Stop Recording of any Screencast
 "
 
@@ -239,6 +241,9 @@ scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
 ;;
 "c. Quick Screencast")
 rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
+;;
+"x. Upload Clipboard content (Delayed)"
+eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
 ;;
 "k. Stop Recording of any Screencast")
 if [ $(pgrep -f x11grab) ]
