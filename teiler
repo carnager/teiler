@@ -170,7 +170,7 @@ fi
     scrot -s "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
    ;;
 *)
-teiler
+$0
 esac
 ;;
 "2. Screenshots (Delayed)")
@@ -196,7 +196,7 @@ fi
     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
    ;;
 *)
-teiler
+$0
 esac
 ;;
 "3. Screencasts")
@@ -233,7 +233,7 @@ fi
    rm -f ~/.temp_cast && echo "$NOW.gif" > ~/.temp_cast && eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif && notify ${TIME} "Screencast started"
    ;;
 *)
-teiler
+$0
 esac
 ;;
 "s. Quick Screenshot")
