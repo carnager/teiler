@@ -122,7 +122,7 @@ MENU="1. Screenshots
 3. Screencasts
 ---------------------------------
 s. Quick Screenshot
-f. Quick Screencast
+c. Quick Screencast
 k. Stop Recording of any Screencast
 "
 
@@ -237,7 +237,7 @@ esac
 "s. Quick Screenshot")
 scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
 ;;
-"f. Quick Screencast")
+"c. Quick Screencast")
 rm -f ~/.temp_cast && echo "$NOW.webm" > ~/.temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started"
 ;;
 "k. Stop Recording of any Screencast")
