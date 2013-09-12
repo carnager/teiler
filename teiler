@@ -133,7 +133,7 @@ function dimensions() {
 
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
- 		then UL_IMG="fb -n "$FILEMASK" lastimg.png"
+ 		then UL_IMG="fb -n $(FILEMASK) lastimg.png"
              UL_VID="fb $(cat ~/.local/share/teiler/temp_cast)"
              UL_CLIP="fb clip-$NOW.txt #&& rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
@@ -181,9 +181,11 @@ fi
 MENU="1. Fullscreen
 2. Fullscreen and Upload
 3. Fullscreen and Edit and Upload
-4. Area
-5. Area and Upload
-6. Area and Edit and Upload
+4. Fullscreen to Clipboard
+5. Area
+6. Area and Upload
+7. Area and Edit and Upload
+8. Area to Clipboard
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
@@ -205,18 +207,32 @@ fi
     scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     archive_img
    ;;
-    "4. Area")
+    "4. Fullscreen to Clipboard")
+    scrot -d 1 lastimg.png
+    archive_img
+    imgclip.py "$IMG_PATH"/lastimg.png &
+    eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+    kill $(pgrep -f imgclip.py)
+;;
+    "5. Area")
     scrot -s lastimg.png && notify ${TIME} "Screenshot saved"
     archive_img
    ;;
-    "5. Area and Upload")
+    "6. Area and Upload")
    scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
    archive_img
    ;;
-    "6. Area and Edit and Upload")
+    "7. Area and Edit and Upload")
     scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     archive_img
    ;;
+    "8. Area to Clipboard")
+    scrot -s lastimg.png
+    archive_img
+    imgclip.py "$IMG_PATH"/lastimg.png &
+    eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+    kill $(pgrep -f imgclip.py)
+;;
 *)
 $0
 esac
@@ -317,7 +333,7 @@ if [ $(pgrep -f x11grab) ]
 "i. Copy last image to clipboard")
 imgclip.py "$IMG_PATH"/lastimg.png &
 eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
-killall imgclip.py
+kill $(pgrep -f imgclip.py)
 ;;
 *)
 echo "foo"
