@@ -4,6 +4,7 @@
 IMG_PATH=$HOME/Pictures/Screenshots/
 FILEMASK=%Y%m%d%H%M%S.png
 UL=scp          						#possible choices: fb, scp
+ARCHIVE=1                               #Archive uploaded images
 
 URL_IMG=          					#set to public accessible address so others can see your files
 ULHOST_IMG=							#host to be used with scp
@@ -17,6 +18,7 @@ RES=1920x1080   						#set your screen resolution
 TIME=3000          						#How long will notifications be visible? (in miliseconds)
 COUNTER1=3      						#Seconds to count for delay (Use $COUNTD variable)
 COUNTER2=6      						#Seconds to count for delay (Use $COUNTD2 variable)
+COUNTER3=8                              #Seconds to count for delay (Use $COUNTD3 variable)
 
 #DMENU/DZEN2 CONFIGURATION
 DMENU_TRANS=0   						#Choose 0 if your dmenu has no transparency support
