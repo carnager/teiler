@@ -133,7 +133,7 @@ function dimensions() {
 
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
- 		then UL_IMG="fb -n $(FILEMASK) lastimg.png"
+ 		then UL_IMG="fb -n "$FILEMASK" lastimg.png"
              UL_VID="fb $(cat ~/.local/share/teiler/temp_cast)"
              UL_CLIP="fb clip-$NOW.txt #&& rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
