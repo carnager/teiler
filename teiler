@@ -96,7 +96,11 @@ function notify() {
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
 }
 function notify_ul() {
+if [ $UL == "imgur" ]; 
+  then notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)\nWARNING: imgur does not support videos"
+else
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+fi
 }
 
 function record() {
@@ -131,6 +135,7 @@ function dimensions() {
            -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
 }
 
+
 #Some options depending which uploader is used (right now only fb and scp are supported)
 	if [ $UL == "fb" ];
  		then UL_IMG="fb -n $(FILEMASK) lastimg.png"
@@ -140,6 +145,8 @@ function dimensions() {
         then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp lastimg.png $ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png && echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
              UL_VID="scp $(cat ~/.local/share/teiler/temp_cast) $ULHOST_VID && echo -n "$URL_VID/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
              UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
+    elif [ $UL == "imgur" ];
+        then UL_IMG="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml && xmllint ~/.local/share/teiler/imgur.xml --xpath '//original_image/text\()' | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
