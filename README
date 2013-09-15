@@ -6,5 +6,5 @@ Requirements:
 xclip, fb-client, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon, some image editing program
 
 Optional:
-xfce4-screenshooter+a proper clipboard manager for image clipboard support
+byzany (for gif recording)
 
