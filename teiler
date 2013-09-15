@@ -328,6 +328,10 @@ rm -f ~/.local/share/teiler/temp_cast && echo "$NOW.webm" > ~/.local/share/teile
 eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
 ;;
 "k. Stop Recording of any Screencast")
+if [ $UL == "imgur" ];
+  then notify-send "imgur" "imgur does not support videos"
+  kill $(pgrep -f x11grab) && kill $(cat ~/.local/share/teiler/temppid)
+else 
 if [ $(pgrep -f x11grab) ]
       then
             kill $(pgrep -f x11grab) && sleep 3 && eval $UL_VID && eval $XCLIP && notify_ul ${TIME} "Screencast uploaded" && kill $(cat ~/.local/share/teiler/temppid)
@@ -336,6 +340,7 @@ if [ $(pgrep -f x11grab) ]
       else
       echo "foo"
       fi
+fi
    ;;
 "i. Copy last image to clipboard")
 imgclip.py "$IMG_PATH"/lastimg.png &
