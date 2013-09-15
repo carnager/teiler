@@ -314,7 +314,11 @@ $0
 esac
 ;;
 "f. Quick Screenshot (Fullscreen)")
+if [ "$QUICKUL" == "1" ]; then 
 scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+elif [ "$QUICKUL" == "0" ]; then
+scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+fi
 archive_img
 ;;
 "a. Quick Screenshot (Area)")
