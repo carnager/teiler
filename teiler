@@ -322,14 +322,22 @@ fi
 archive_img
 ;;
 "a. Quick Screenshot (Area)")
+if [ "$QUICKUL" == "1" ]; then 
 scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+elif [ "$QUICKUL" == "0" ]; then
+scrot -s lastimg.png && notify_ul ${TIME} "Screenshot saved"
+fi
 archive_img
 ;;
 "c. Quick Screencast")
 rm -f ~/.local/share/teiler/temp_cast && echo "$NOW.webm" > ~/.local/share/teiler/temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started" & record &
 ;;
 "x. Upload Clipboard content (Delayed)")
+if [ $UL == "imgur" ];
+  then notify-send "imgur" "imgur does not support text"
+else 
 eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc) && xclip -o > clip-$NOW.txt && eval $UL_CLIP && rm -f clip-$NOW.txt && eval $XCLIP && notify_ul ${TIME} "Clipboard uploaded"
+fi
 ;;
 "k. Stop Recording of any Screencast")
 if [ $UL == "imgur" ];
