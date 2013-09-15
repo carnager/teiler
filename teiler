@@ -311,26 +311,35 @@ esac
 ;;
 "f. Quick Screenshot (Fullscreen)")
 if [ "$QUICKUL" == "1" ]; then 
-  scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-elif [ "$QUICKUL" == "0" ]; then
-  scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+  scrot -d 1 lastimg.png
     if [ "$QUICKEDIT" == "1" ]; then
-    $EDIT lastimg.png
+      "$EDIT" lastimg.png && "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     elif [ "$QUICKEDIT" == "0" ]; then
-      echo "done"
+      "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+elif [ "$QUICKUL" == "0" ]; then
+  scrot -d 1 lastimg.png
+    if [ "$QUICKEDIT" == "1" ]; then
+    $EDIT lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    elif [ "$QUICKEDIT" == "0" ]; then
+      notify_ul ${TIME} "Screenshot saved"
     fi
 fi
 archive_img
 ;;
 "a. Quick Screenshot (Area)")
 if [ "$QUICKUL" == "1" ]; then 
-scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-elif [ "$QUICKUL" == "0" ]; then
-  scrot -s lastimg.png && notify_ul ${TIME} "Screenshot saved"
+  scrot -s lastimg.png
     if [ "$QUICKEDIT" == "1" ]; then
-    $EDIT lastimg.png
+      "$EDIT" lastimg.png && "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     elif [ "$QUICKEDIT" == "0" ]; then
-      echo "done"
+      "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+elif [ "$QUICKUL" == "0" ]; then
+  scrot -s lastimg.png
+    if [ "$QUICKEDIT" == "1" ]; then
+    $EDIT lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    elif [ "$QUICKEDIT" == "0" ]; then
+       notify_ul ${TIME} "Screenshot saved"
     fi
 fi
 archive_img
