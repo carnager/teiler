@@ -12,7 +12,8 @@ ULHOST_VID=
 URL_VID=
 URL_PASTE=							#set this the same as above if you dont need to use different folder for pastes (x option)
 ULHOST_PASTE=						#set this the same as above if you dont need different folder for pastes (x option)
-QUICKUL=1                           #upload for quick options (if disabled, image itself will be stored to clipboard)
+QUICKUL=1                           #upload for quick options
+QUICKEDIT=0                         #edit images for quick options (cant be used with QUICKUL=1)       
 
 EDIT=mtpaint
 RES=1920x1080   						#set your screen resolution
