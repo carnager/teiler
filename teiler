@@ -315,9 +315,16 @@ esac
 ;;
 "f. Quick Screenshot (Fullscreen)")
 if [ "$QUICKUL" == "1" ]; then 
-scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+  scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
 elif [ "$QUICKUL" == "0" ]; then
-scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    if [ "QUICKEDIT" == "1" ]; then
+    scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    imgclip.py "$IMG_PATH"/lastimg.png &
+    eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+    kill $(pgrep -f imgclip.py)
+    elif [ "QUICKEDIT" == "0" ]; then
+    scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    fi
 fi
 archive_img
 ;;
@@ -325,7 +332,14 @@ archive_img
 if [ "$QUICKUL" == "1" ]; then 
 scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
 elif [ "$QUICKUL" == "0" ]; then
-scrot -s lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    if [ "QUICKEDIT" == "1" ]; then
+    scrot -s lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    imgclip.py "$IMG_PATH"/lastimg.png &
+    eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+    kill $(pgrep -f imgclip.py)
+    elif [ "QUICKEDIT" == "0" ]; then
+    scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    fi
 fi
 archive_img
 ;;
