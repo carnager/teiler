@@ -320,7 +320,7 @@ if [ "$QUICKUL" == "1" ]; then
 elif [ "$QUICKUL" == "0" ]; then
   scrot -d 1 lastimg.png
     if [ "$QUICKEDIT" == "1" ]; then
-    $EDIT lastimg.png && notify_ul ${TIME} "Screenshot saved"
+    $EDIT lastimg.png && notify ${TIME} "Screenshot saved"
     elif [ "$QUICKEDIT" == "0" ]; then
       notify_ul ${TIME} "Screenshot saved"
     fi
@@ -333,7 +333,7 @@ if [ "$QUICKUL" == "1" ]; then
     if [ "$QUICKEDIT" == "1" ]; then
       "$EDIT" lastimg.png && "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     elif [ "$QUICKEDIT" == "0" ]; then
-      "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      "$UL_IMG" && eval $XCLIP && notify ${TIME} "Screenshot uploaded"
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -s lastimg.png
