@@ -315,9 +315,7 @@ if [ "$QUICKUL" == "1" ]; then
 elif [ "$QUICKUL" == "0" ]; then
   scrot -d 1 lastimg.png && notify_ul ${TIME} "Screenshot saved"
     if [ "$QUICKEDIT" == "1" ]; then
-      imgclip.py "$IMG_PATH"/lastimg.png &
-      eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
-      kill $(pgrep -f imgclip.py)
+    $EDIT lastimg.png
     elif [ "$QUICKEDIT" == "0" ]; then
       echo "done"
     fi
@@ -330,9 +328,7 @@ scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screensho
 elif [ "$QUICKUL" == "0" ]; then
   scrot -s lastimg.png && notify_ul ${TIME} "Screenshot saved"
     if [ "$QUICKEDIT" == "1" ]; then
-      imgclip.py "$IMG_PATH"/lastimg.png &
-      eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
-      kill $(pgrep -f imgclip.py)
+    $EDIT lastimg.png
     elif [ "$QUICKEDIT" == "0" ]; then
       echo "done"
     fi
