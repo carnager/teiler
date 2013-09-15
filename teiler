@@ -96,11 +96,7 @@ function notify() {
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
 }
 function notify_ul() {
-if [ $UL == "imgur" ]; 
-  then notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)\nWARNING: imgur does not support videos"
-else
 notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
-fi
 }
 
 function record() {
