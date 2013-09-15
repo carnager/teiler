@@ -138,7 +138,7 @@ function dimensions() {
              UL_VID="fb $(cat ~/.local/share/teiler/temp_cast)"
              UL_CLIP="fb clip-$NOW.txt #&& rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
-        then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp lastimg.png $ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png && echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
+        then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp "$IMG_PATH"/lastimg.png "$ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png" && echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
              UL_VID="scp $(cat ~/.local/share/teiler/temp_cast) $ULHOST_VID && echo -n "$URL_VID/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
              UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
     elif [ $UL == "imgur" ];
@@ -311,39 +311,39 @@ esac
 ;;
 "f. Quick Screenshot (Fullscreen)")
 if [ "$QUICKUL" == "1" ]; then 
-  scrot -d 1 lastimg.png
     if [ "$QUICKEDIT" == "1" ]; then
-      "$EDIT" lastimg.png && "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     elif [ "$QUICKEDIT" == "0" ]; then
-      "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -d 1 lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -d 1 lastimg.png
+  archive_img
     if [ "$QUICKEDIT" == "1" ]; then
     $EDIT lastimg.png && notify ${TIME} "Screenshot saved"
     elif [ "$QUICKEDIT" == "0" ]; then
-      notify ${TIME} "Screenshot saved"
+      notify_ul ${TIME} "Screenshot saved"
     fi
-fi
 archive_img
+fi
 ;;
 "a. Quick Screenshot (Area)")
 if [ "$QUICKUL" == "1" ]; then 
-  scrot -s lastimg.png
     if [ "$QUICKEDIT" == "1" ]; then
-      "$EDIT" lastimg.png && "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     elif [ "$QUICKEDIT" == "0" ]; then
-      "$UL_IMG" && eval $XCLIP && notify ${TIME} "Screenshot uploaded"
+      scrot -s lastimg.png -e "$UL_IMG" && eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -s lastimg.png
+  archive_img
     if [ "$QUICKEDIT" == "1" ]; then
-    $EDIT lastimg.png && notify ${TIME} "Screenshot saved"
+    $EDIT lastimg.png && notify_ul ${TIME} "Screenshot saved"
     elif [ "$QUICKEDIT" == "0" ]; then
-       notify ${TIME} "Screenshot saved"
+       notify_ul ${TIME} "Screenshot saved"
     fi
-fi
 archive_img
+fi
 ;;
 "c. Quick Screencast")
 rm -f ~/.local/share/teiler/temp_cast && echo "$NOW.webm" > ~/.local/share/teiler/temp_cast && ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 -f alsa -ac 2 -i pulse -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 $NOW.webm && notify ${TIME} "Screencast started" & record &
