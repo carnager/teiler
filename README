@@ -9,6 +9,7 @@ Optional:
 byzany (for gif recording)
 
 #changelog
+#v0.9.9.2 Added options for Quick entries. (en/disable edit and upload)
 #v0.9.9.1 Added Screencast indicator. Addec Configuration options for Screencast indicator
 #v0.9.9 Restructured Menu. Added Screencasts of single windows.
 #v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
