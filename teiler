@@ -295,7 +295,7 @@ fi
    ;;
     "4. Fullscreen (Delayed & Edit)")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
+     scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
      archive_ul
