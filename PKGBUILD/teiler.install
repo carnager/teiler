@@ -1,0 +1,7 @@
+post_install() {
+  echo "to use teiler you need to copy /usr/share/doc/teiler/config.example to \$HOME/.config/teiler/config"
+  echo "to use editing feature, you need to have some image editing tool installed and set it in config"
+  echo "You want to install some notification daemon. dunst is recommended."
+  echo " "
+}
+

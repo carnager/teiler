@@ -1,0 +1,37 @@
+# Maintainer: Rasmus Steinke <rasi at xssn dot at>
+
+pkgname=teiler-git
+pkgver=0.57.1f1d498
+pkgrel=1
+pkgdesc="a simple screenshot/screencast tool written in bash"
+arch=('any')
+url='http://53280.de/teiler'
+license=('GPL')
+depends=('bc' 'ffmpeg' 'scrot' 'dmenu' 'xclip' 'dzen2-git' 'pygtk')
+optdepends=('fb-client' 'byzanz' 'openssh')
+options=(!strip)
+install="teiler.install"
+makedepends=('git')
+source=('git://github.com/carnager/teiler.git')
+
+pkgver() {
+  cd "$srcdir/teiler"
+
+  echo "0.$(git rev-list --count HEAD).$(git describe --always)"
+}
+
+package() {
+
+  install -D -m755 "${srcdir}/teiler/teiler" \
+    "${pkgdir}/usr/bin/teiler"
+
+  install -D -m755 "${srcdir}/teiler/imgclip.py" \
+    "${pkgdir}/usr/bin/imgclip.py"
+
+  install -D -m644 "${srcdir}/teiler/config.example" \
+    "${pkgdir}/usr/share/doc/teiler/config.example"
+
+}
+md5sums=('f2483d70a8a9ee7964fc4bbd7293ce10'
+         'SKIP')
+md5sums=('SKIP')
