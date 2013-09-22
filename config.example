@@ -35,10 +35,10 @@ COUNTER3=8                              #Seconds to count for delay (Use $COUNTD
 
 DMENU_TRANS=0                           #Choose 0 if your dmenu has no transparency support
 FONT="Source\Code\Pro-12"               #Font that is used for dmenu
-NF="#a0a0a0"                            #Foreground color for dmenu
-NB="#000000"                            #background color for dmenu
-SF="#FFFFFF"                            #foreground active color for dmenu
-SB="#0C73C2"                            #background active color for dmenu
+NF="#a0a0a0"                            #Foreground color for dmenu/dzen2
+NB="#000000"                            #background color for dmenu/dzen2
+SF="#FFFFFF"                            #foreground active color for dmenu/dzen2
+SB="#0C73C2"                            #background active color for dmenu/dzen2
 DZEN2_TRANS=0                           #Choose 0 if your dzen2 has no transparency support
 DZEN2_FONT="Source Code Pro-12"         #font that is used for dzen2
 DZEN2_W=200                             #Width of dzen2

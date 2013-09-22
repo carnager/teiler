@@ -69,16 +69,28 @@ function countdown () {
 }
 
 
-function archive_img() {
-if [ "$ARCHIVE" == "1" ]; then
+function archive_ul() {
+if [ "$ARCHIVE_UL" == "1" ]; then
 cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
 else echo ""
 fi
 }
 
-function archive_img2() {
+function archive_clip() {
+if [ "$ARCHIVE_CLIP" == "1" ]; then
 cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+else echo ""
+fi
 }
+
+function archive_img() {
+if [ "$ARCHIVE_IMG" == "1" ]; then
+cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+else echo ""
+fi
+}
+
+
 
 # Outsource the notfiy-send to its own function to clean up the mess below a bit ;)
 function notify() {
@@ -194,23 +206,23 @@ fi
   case "$CHOICE" in
     "1. Fullscreen")
      scrot lastimg.png
-     archive_img2
+     archive_img
    ;;
     "2. Fullscreen and Upload")
      scrot -d 1 lastimg.png -e "$UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
-     archive_img
+     archive_ul
    ;;
     "3. Fullscreen and Edit and Upload")
      scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
-     archive_img
+     archive_ul
    ;;
     "4. Fullscreen to Clipboard")
      scrot -d 1 lastimg.png
-     archive_img
+     archive_clip
      imgclip.py "$IMG_PATH"/lastimg.png &
      eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
      kill $(pgrep -f imgclip.py)
@@ -218,23 +230,23 @@ fi
     "5. Area")
      scrot -s lastimg.png
      notify ${TIME} "Screenshot saved"
-     archive_img2
+     archive_img
    ;;
     "6. Area and Upload")
      scrot -s lastimg.png -e "$UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
-     archive_img
+     archive_ul
    ;;
     "7. Area and Edit and Upload")
     scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
     eval $XCLIP
     notify_ul ${TIME} "Screenshot uploaded"
-    archive_img
+    archive_ul
    ;;
     "8. Area to Clipboard")
     scrot -s lastimg.png
-    archive_img
+    archive_clip
     imgclip.py "$IMG_PATH"/lastimg.png &
     eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
     kill $(pgrep -f imgclip.py)
@@ -260,19 +272,19 @@ fi
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      scrot -d 1 lastimg.png
      notify ${TIME} "Screenshot saved"
-     archive_img2
+     archive_img
    ;;
     "2. Fullscreen and Upload")
      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) lastimg.png -e "$UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
-     archive_img
+     archive_ul
    ;;
     "3. Fullscreen and Edit and Upload")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
      eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
-     archive_img
+     archive_ul
    ;;
 *)
 $0
@@ -344,16 +356,16 @@ if [ "$QUICKUL" == "1" ]; then
       scrot -d 1 lastimg.png -e "$UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
-      archive_img
+      archive_ul
     elif [ "$QUICKEDIT" == "0" ]; then
       scrot -d 1 lastimg.png -e "$UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
-      archive_img
+      archive_ul
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -d 1 lastimg.png
-  archive_img2
+  archive_img
     if [ "$QUICKEDIT" == "1" ]; then
       $EDIT lastimg.png
       notify ${TIME} "Screenshot saved"
@@ -368,16 +380,16 @@ if [ "$QUICKUL" == "1" ]; then
       scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
-      archive_img
+      archive_ul
     elif [ "$QUICKEDIT" == "0" ]; then
       scrot -s lastimg.png -e "$UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
-      archive_img
+      archive_ul
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -s lastimg.png
-  archive_img2
+  archive_img
     if [ "$QUICKEDIT" == "1" ]; then
       $EDIT lastimg.png
       notify_ul ${TIME} "Screenshot saved"
