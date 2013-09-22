@@ -1,10 +1,19 @@
-############### Configuration options ##############################
+# teiler configuration file
 
+
+# general options
 
 IMG_PATH=$HOME/Pictures/Screenshots/    #Folder where to store images and videos
 FILEMASK=$(date +"%Y%m%d%H%M%S")        #set file naming scheme
 UL=scp                                  #possible choices: fb, scp, imgur
 ARCHIVE=1                               #Archive uploaded/clipboarded images
+QUICKUL=1                               #upload for quick options
+QUICKEDIT=0                             #edit images for quick options
+EDIT=mtpaint                            #Image editor that is used for -well- editing
+RES=1920x1080                           #set your screen resolution
+
+
+# scp options
 
 URL_IMG=                                #set to public accessible address so others can see your files
 ULHOST_IMG=                             #host to be used for images (scp)
@@ -12,17 +21,18 @@ ULHOST_VID=                             #host to be used for videos (scp)
 ULHOST_PASTE=                           #host to be used for clipboard content (scp)
 URL_VID=                                #public url to uploaded videos
 URL_PASTE=                              #public url to uploaded clipboard content
-QUICKUL=1                               #upload for quick options
-QUICKEDIT=0                             #edit images for quick options
 
-EDIT=mtpaint                            #Image editor that is used for -well- editing
-RES=1920x1080                           #set your screen resolution
+
+# notification settings
+
 TIME=3000                               #How long will notifications be visible? (in miliseconds)
 COUNTER1=3                              #Seconds to count for delay (Use $COUNTD variable)
 COUNTER2=6                              #Seconds to count for delay (Use $COUNTD2 variable)
 COUNTER3=8                              #Seconds to count for delay (Use $COUNTD3 variable)
 
-#dmenu/dzen2 config
+
+# dmenu/dzen2 config
+
 DMENU_TRANS=0                           #Choose 0 if your dmenu has no transparency support
 FONT="Source\Code\Pro-12"               #Font that is used for dmenu
 NF="#a0a0a0"                            #Foreground color for dmenu
@@ -35,17 +45,16 @@ DZEN2_W=200                             #Width of dzen2
 DZEN2_X=850                             #X Padding
 DZEN2_Y=540                             #Y Padding
 
-#screencast indicator
+
+# screencast indicator
+
 REC_TEXT="..."                          #Message to be displayed while recording a screencast
 REC_W=40                                #width of dzen2 for REC_TEXT
 REC_X=940                               #X Padding for REC_TEXT
 REC_FONT="envypn-8"                     #font for REC_TEXT
 
 
-#ffmpeg settings
+# ffmpeg settings
+
 ENCOPTS="-r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
 FFAUDIO="-f alsa -ac 2 -i pulse"
-
-
-################## Configuration End ##############################
-
