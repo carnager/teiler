@@ -267,8 +267,6 @@ MENU="1. Fullscreen
 4. Fullscreen (Delayed & Edit)
 5. Area
 6. Area (Edit)
-7. Area (Delayed)
-8. Area (Delayed & Edit)
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
