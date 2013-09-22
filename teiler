@@ -139,13 +139,9 @@ function dimensions() {
              UL_VID="fb $(cat ~/.local/share/teiler/temp_cast)"
              UL_CLIP="fb clip-$NOW.txt #&& rm -f clip-$NOW.txt"
 	elif [ $UL == "scp" ];
-        then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp
-             scp "$IMG_PATH"/lastimg.png "$ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png"
-             echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
-             UL_VID="scp $(cat ~/.local/share/teiler/temp_cast) $ULHOST_VID
-             echo -n "$URL_VID/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
-             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE
-             echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
+        then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp "$IMG_PATH"/lastimg.png "$ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png" && echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
+             UL_VID="scp $(cat ~/.local/share/teiler/temp_cast) $ULHOST_VID && echo -n "$URL_VID/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
+             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
     elif [ $UL == "imgur" ];
         then UL_IMG="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml
              xmllint ~/.local/share/teiler/imgur.xml --xpath '//original_image/text\()' | xclip"
@@ -168,7 +164,7 @@ XCLIP="(xclip -o) | xclip -selection clipboard"
 cd $IMG_PATH
 
 MENU="1. Screenshots
-2. Screenshots (Delayed)
+2. Screenshots (Upload)
 3. Screencasts
 ---------------------------------
 f. Quick Screenshot (Fullscreen)
@@ -188,13 +184,14 @@ fi
   case "$CHOICE" in
     "1. Screenshots")
 MENU="1. Fullscreen
-2. Fullscreen and Upload
-3. Fullscreen and Edit and Upload
-4. Fullscreen to Clipboard
-5. Area
-6. Area and Upload
-7. Area and Edit and Upload
-8. Area to Clipboard
+2. Fullscreen (Edit)
+3. Fullscreen (Clipboard)
+4. Fullscreen (Delayed)
+5. Fullscreen (Delayed & Edit)
+6. Fullscreen (Delayed & Clipboard)
+7. Area
+8. Area (Edit)
+9. Area (Clipboard)
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
@@ -208,43 +205,51 @@ fi
      scrot lastimg.png
      archive_img
    ;;
-    "2. Fullscreen and Upload")
-     scrot -d 1 lastimg.png -e "$UL_IMG"
+    "2. Fullscreen (Edit)")
+     scrot -d 1 lastimg.png -e "$EDIT \$f"
      eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
-     archive_ul
+     notify ${TIME} "Screenshot saved"
+     archive_img
    ;;
-    "3. Fullscreen and Edit and Upload")
-     scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
-     eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
-     archive_ul
-   ;;
-    "4. Fullscreen to Clipboard")
+    "3. Fullscreen (Clipboard)")
      scrot -d 1 lastimg.png
      archive_clip
      imgclip.py "$IMG_PATH"/lastimg.png &
      eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
      kill $(pgrep -f imgclip.py)
-;;
-    "5. Area")
+   ;;
+    "4. Fullscreen (Delayed)")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     scrot -d 1 lastimg.png
+     notify ${TIME} "Screenshot saved"
+     archive_img
+   ;;
+    "5. Fullscreen (Delayed & Edit)")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     scrot -d 1 lastimg.png -e "$EDIT \$f"
+     notify ${TIME} "Screenshot saved"
+     archive_img
+   ;;
+    "6. Fullscreen (Delayed & Clipboard)")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     scrot -d 1 lastimg.png
+     archive_clip
+     imgclip.py "$IMG_PATH"/lastimg.png &
+     eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+     kill $(pgrep -f imgclip.py)
+   ;;
+    "7. Area")
      scrot -s lastimg.png
      notify ${TIME} "Screenshot saved"
      archive_img
    ;;
-    "6. Area and Upload")
-     scrot -s lastimg.png -e "$UL_IMG"
-     eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
-     archive_ul
-   ;;
-    "7. Area and Edit and Upload")
-    scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
+    "8. Area (Edit)")
+    scrot -s lastimg.png -e "$EDIT \$f"
     eval $XCLIP
-    notify_ul ${TIME} "Screenshot uploaded"
-    archive_ul
+    notify ${TIME} "Screenshot saved"
+    archive_img
    ;;
-    "8. Area to Clipboard")
+    "9. Area (Clipboard)")
     scrot -s lastimg.png
     archive_clip
     imgclip.py "$IMG_PATH"/lastimg.png &
@@ -255,10 +260,15 @@ fi
 $0
 esac
 ;;
-"2. Screenshots (Delayed)")
+"2. Screenshots (Upload)")
 MENU="1. Fullscreen
-2. Fullscreen and Upload
-3. Fullscreen and Edit and Upload
+2. Fullscreen (Edit)
+3. Fullscreen (Delayed)
+4. Fullscreen (Delayed & Edit)
+5. Area
+6. Area (Edit)
+7. Area (Delayed)
+8. Area (Delayed & Edit)
 "
 
 if [ "$DMENU_TRANS" == "1" ]; then
@@ -269,22 +279,40 @@ fi
 
   case "$CHOICE" in
     "1. Fullscreen")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     scrot -d 1 lastimg.png
-     notify ${TIME} "Screenshot saved"
-     archive_img
-   ;;
-    "2. Fullscreen and Upload")
-     eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) lastimg.png -e "$UL_IMG"
+     lastimg.png -e "$UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
      archive_ul
    ;;
-    "3. Fullscreen and Edit and Upload")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+    "2. Fullscreen (Edit)")
      scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
      eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
      archive_ul
+   ;;
+    "3. Fullscreen (Delayed)")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     scrot -d 1 lastimg.png -e "$UL_IMG"
+     eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+     archive_ul
+   ;;
+    "4. Fullscreen (Delayed & Edit)")
+     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
+     eval $XCLIP
+     notify_ul ${TIME} "Screenshot uploaded"
+     archive_ul
+   ;;
+    "5. Area")
+     scrot -s lastimg.png -e "$UL_IMG"
+     eval $XCLIP
+     notify_ul ${TIME} "Screenshot uploaded"
+     archive_ul
+   ;;
+    "6. Area (Edit)")
+    scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
+    eval $XCLIP
+    notify_ul ${TIME} "Screenshot uploaded"
+    archive_ul
    ;;
 *)
 $0
@@ -292,11 +320,9 @@ esac
 ;;
 "3. Screencasts")
 MENU="1. Fullscreen
-2. Fullscreen (No Sound)
-3. Window
-4. Window (No Sound)
-5. GIF (Fullscreen)
-6. GIF (Window)
+2. Window
+3. GIF (Fullscreen)
+4. GIF (Window)
 "
 if [ "$DMENU_TRANS" == "1" ]; then
 CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
@@ -308,42 +334,28 @@ fi
     "1. Fullscreen")
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
-     ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm
+     ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
      notify ${TIME} "Screencast started" & record &
    ;;
-    "2. Fullscreen (No Sound)")
-     rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
-     ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $ENCOPTS $NOW.webm
-     notify ${TIME} "Screencast started" & record &
-   ;;
-    "3. Window")
+    "2. Window")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
      dimensions
-     ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $FFAUDIO $ENCOPTS $NOW.webm
+     ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $FFAUDIO $ENCOPTS $NOW.webm &
      notify ${TIME} "Screencast started" & record &
    ;;
-    "4. Window (No Sound)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
-     dimensions
-     ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $ENCOPTS $NOW.webm
-     notify ${TIME} "Screencast started" & record &
-   ;;
-    "5. GIF (Fullscreen)")
+    "3. GIF (Fullscreen)")
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
-     byzanz-record -d 9999 $NOW.gif
+     byzanz-record -d 9999 $NOW.gif &
      notify ${TIME} "Screencast started" & record &
    ;;
-    "6. GIF (Window)")
+    "4. GIF (Window)")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
-     dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif
+     dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif &
      notify ${TIME} "Screencast started" & record &
    ;;
 *)
@@ -422,20 +434,52 @@ if [ $UL == "imgur" ];
   kill $(pgrep -f x11grab)
   kill $(cat ~/.local/share/teiler/temppid)
 else 
-  if [ $(pgrep -f x11grab) ]
+  if [[ $(pgrep -f x11grab) ]]
     then kill $(pgrep -f x11grab)
     sleep 3
-    eval $UL_VID
-    eval $XCLIP
-    notify_ul ${TIME} "Screencast uploaded"
-    kill $(cat ~/.local/share/teiler/temppid)
+MENU="1. Yes
+2. No
+"
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload Video?:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload VIdeo?")"
+fi
+ case "$CHOICE" in
+    "1. Yes")
+     eval $UL_VID
+     eval $XCLIP
+     notify_ul ${TIME} "Screencast uploaded"
+   ;;
+    "2. No)")
+     echo "foo"
+   ;;
+*)
+esac
+kill $(cat ~/.local/share/teiler/temppid)
   elif [ $(pgrep -f byzanz-record) ]
     then killall byzanz-record
       sleep 3
-      eval $UL_VID
-      eval $XCLIP
-      notify_ul ${TIME} "Screencast uploaded"
-      kill $(cat ~/.local/share/teiler/temppid)
+MENU="1. Yes
+2. No
+"
+if [ "$DMENU_TRANS" == "1" ]; then
+CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload Video?:")"
+else
+CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload VIdeo?")"
+fi
+ case "$CHOICE" in
+    "1. Yes")
+     eval $UL_VID
+     eval $XCLIP
+     notify_ul ${TIME} "Screencast uploaded"
+   ;;
+    "2. No)")
+     echo "foo"
+   ;;
+*)
+esac
+kill $(cat ~/.local/share/teiler/temppid)
       else
       echo "foo"
       fi
