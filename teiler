@@ -118,7 +118,7 @@ if [[ $(pgrep -f x11grab) ]]
 elif [[ $(pgrep -f byzanz-record) ]]
   then
    killall dzen2
-   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -w $REC_W -x $REC_X -p &
+   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
 else
    killall dzen2
 fi
@@ -430,7 +430,6 @@ else
     eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc)
     xclip -o > clip-$NOW.txt
     eval $UL_CLIP
-    rm -f clip-$NOW.txt
     eval $XCLIP
     notify_ul ${TIME} "Clipboard uploaded"
 fi
