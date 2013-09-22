@@ -48,6 +48,10 @@ DZEN2_X=850                             #X Padding
 DZEN2_Y=540                             #Y Padding
 
 
+# dunst settings
+DUNST_FG=                               #Custom foreground color for notifications, leave empty for defaults
+DUNST_BG=                               #Custom background color for notifications, leave empty for defaults
+
 # screencast indicator
 
 REC_TEXT="..."                          #Message to be displayed while recording a screencast

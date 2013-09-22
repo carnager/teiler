@@ -94,10 +94,19 @@ fi
 
 # Outsource the notfiy-send to its own function to clean up the mess below a bit ;)
 function notify() {
-notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+  if [[ -n "$DUNST_FG" ]]
+    then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+  else notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+  fi
 }
+
 function notify_ul() {
-notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+function notify() {
+  if [[ -n "$DUNST_FG" ]]
+    then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+  else
+  notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+ fi
 }
 
 function record() {
@@ -203,6 +212,7 @@ fi
   case "$CHOICE" in
     "1. Fullscreen")
      scrot lastimg.png
+     notify ${TIME} "Screenshot saved"
      archive_img
    ;;
     "2. Fullscreen (Edit)")
