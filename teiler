@@ -4,7 +4,11 @@
 # Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
-# xclip, fb-client, pinta, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon
+# xclip, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon
+#
+# Optional dependencies:
+# Some image editing tool, scp or fb-client
+
 
 
 if [[ -f $HOME/.config/teiler/config ]];
