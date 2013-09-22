@@ -35,5 +35,10 @@ DZEN2_W=200     						#Width of dzen2
 DZEN2_X=850     						#X Padding
 DZEN2_Y=540
 
+###ffmpeg settings###
+ENCOPTS="-r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
+FFAUDIO="-f alsa -ac 2 -i pulse"
+
+
 ################## Configuration End ##############################
 
