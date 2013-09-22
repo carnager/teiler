@@ -4,7 +4,7 @@
 IMG_PATH=$HOME/Pictures/Screenshots/
 FILEMASK=%Y%m%d%H%M%S.png
 UL=scp          						#possible choices: fb, scp, imgur
-ARCHIVE=1                               #Archive uploaded images
+ARCHIVE=1                               #Archive uploaded/clipboarded images
 
 URL_IMG=          					#set to public accessible address so others can see your files
 ULHOST_IMG=							#host to be used with scp
