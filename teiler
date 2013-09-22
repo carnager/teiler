@@ -101,7 +101,6 @@ function notify() {
 }
 
 function notify_ul() {
-function notify() {
   if [[ -n "$DUNST_FG" ]]
     then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
   else
@@ -115,7 +114,7 @@ while true; do
 if [[ $(pgrep -f x11grab) ]]
   then
    killall dzen2
-   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -w $REC_W -x $REC_X -p &
+   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
 elif [[ $(pgrep -f byzanz-record) ]]
   then
    killall dzen2

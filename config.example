@@ -57,6 +57,8 @@ DUNST_BG=                               #Custom background color for notificatio
 REC_TEXT="..."                          #Message to be displayed while recording a screencast
 REC_W=40                                #width of dzen2 for REC_TEXT
 REC_X=940                               #X Padding for REC_TEXT
+REC_NF=#334433                          #foreground color
+REC_SF=#000000                          #background color
 REC_FONT="envypn-8"                     #font for REC_TEXT
 
 
