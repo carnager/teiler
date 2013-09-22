@@ -76,6 +76,9 @@ else echo ""
 fi
 }
 
+function archive_img2() {
+cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+}
 
 # Outsource the notfiy-send to its own function to clean up the mess below a bit ;)
 function notify() {
@@ -191,7 +194,7 @@ fi
   case "$CHOICE" in
     "1. Fullscreen")
      scrot lastimg.png
-     archive_img
+     archive_img2
    ;;
     "2. Fullscreen and Upload")
      scrot -d 1 lastimg.png -e "$UL_IMG"
@@ -215,7 +218,7 @@ fi
     "5. Area")
      scrot -s lastimg.png
      notify ${TIME} "Screenshot saved"
-     archive_img
+     archive_img2
    ;;
     "6. Area and Upload")
      scrot -s lastimg.png -e "$UL_IMG"
@@ -257,7 +260,7 @@ fi
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      scrot -d 1 lastimg.png
      notify ${TIME} "Screenshot saved"
-     archive_img
+     archive_img2
    ;;
     "2. Fullscreen and Upload")
      eval $COUNTD & scrot -d $(echo $COUNTER1+1 | bc) lastimg.png -e "$UL_IMG"
@@ -341,21 +344,22 @@ if [ "$QUICKUL" == "1" ]; then
       scrot -d 1 lastimg.png -e "$UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
+      archive_img
     elif [ "$QUICKEDIT" == "0" ]; then
       scrot -d 1 lastimg.png -e "$UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
+      archive_img
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -d 1 lastimg.png
-  archive_img
+  archive_img2
     if [ "$QUICKEDIT" == "1" ]; then
       $EDIT lastimg.png
       notify ${TIME} "Screenshot saved"
     elif [ "$QUICKEDIT" == "0" ]; then
       notify_ul ${TIME} "Screenshot saved"
     fi
-archive_img
 fi
 ;;
 "a. Quick Screenshot (Area)")
@@ -364,20 +368,22 @@ if [ "$QUICKUL" == "1" ]; then
       scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
       eval $XCLIP
       notify_ul ${TIME} "Screenshot uploaded"
+      archive_img
     elif [ "$QUICKEDIT" == "0" ]; then
       scrot -s lastimg.png -e "$UL_IMG"
-      eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+      eval $XCLIP
+      notify_ul ${TIME} "Screenshot uploaded"
+      archive_img
     fi
 elif [ "$QUICKUL" == "0" ]; then
   scrot -s lastimg.png
-  archive_img
+  archive_img2
     if [ "$QUICKEDIT" == "1" ]; then
       $EDIT lastimg.png
       notify_ul ${TIME} "Screenshot saved"
     elif [ "$QUICKEDIT" == "0" ]; then
        notify_ul ${TIME} "Screenshot saved"
     fi
-archive_img
 fi
 ;;
 "c. Quick Screencast")
