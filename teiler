@@ -58,14 +58,15 @@ command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Ab
 
 source ~/.config/teiler/config
 echo $FONT
-# Needed for the countdown
-# Based on some script by  Marco Fontani - MFONTANI at cpan dot org
-set -bm
-COLOR='#7c7c72'
-function countdown () {
-    seq 1 ${1:-10} | tac | \
-        perl -ne'BEGIN{$|++;$msg=shift}$m=int($_/60);$s=int($_-$m*60);printf("$m:%02d -- $msg\n",$s);sleep 1;' \
-        "${2:-ready...}"
+
+function countdown1 () {
+  for i in `seq $COUNTER1 -1 0`; do echo "$i ... GO!"; sleep 1; done
+}
+function countdown2 () {
+  for i in `seq $COUNTER2 -1 0`; do echo "$i ... GO!"; sleep 1; done
+}
+function countdown3 () {
+  for i in `seq $COUNTER3 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 
 
@@ -108,25 +109,25 @@ function notify_ul() {
  fi
 }
 
-function record() {
-coproc rec { 
-while true; do
-if [[ $(pgrep -f x11grab) ]]
-  then
-   killall dzen2
-   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
-elif [[ $(pgrep -f byzanz-record) ]]
-  then
-   killall dzen2
-   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
-else
-   killall dzen2
-fi
-sleep 1
-done;
-}
-echo "$rec_PID" > ~/.local/share/teiler/temppid
-}
+#function record() {
+#coproc rec { 
+#while true; do
+#if [[ $(pgrep -f x11grab) ]]
+#  then
+#   killall dzen2
+#   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
+#elif [[ $(pgrep -f byzanz-record) ]]
+#  then
+#   killall dzen2
+#   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
+#else
+#   killall dzen2
+#fi
+#sleep 1
+#done;
+#}
+#echo "$rec_PID" > ~/.local/share/teiler/temppid
+#}
 
 NOW=$(date +"%Y%m%d%H%M%S")
 
@@ -159,13 +160,13 @@ fi
 
 ####Some Variables to clean up the code a bit
 if [ "$DZEN2_TRANS" == "1" ]; then
-  COUNTD="countdown $COUNTER1 GO | dzen2 -o 80 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
-  COUNTD2="countdown $COUNTER2 GO | dzen2 -o 80 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
-  COUNTD3="countdown $COUNTER3 GO | dzen2 -o 80 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+  COUNTD="countdown1 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+  COUNTD2="countdown2 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+  COUNTD3="countdown3 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
 else 
-  COUNTD="countdown $COUNTER1 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
-  COUNTD2="countdown $COUNTER2 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
-  COUNTD3="countdown $COUNTER3 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+  COUNTD="countdown1 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+  COUNTD2="countdown2 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+  COUNTD3="countdown3 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
 fi
 XCLIP="(xclip -o) | xclip -selection clipboard"
 
