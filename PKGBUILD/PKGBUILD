@@ -1,7 +1,7 @@
 # Maintainer: Rasmus Steinke <rasi at xssn dot at>
 
 pkgname=teiler-git
-pkgver=0.57.1f1d498
+pkgver=0
 pkgrel=1
 pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
@@ -15,9 +15,8 @@ makedepends=('git')
 source=('git://github.com/carnager/teiler.git')
 
 pkgver() {
-  cd "$srcdir/teiler"
-
-  echo "0.$(git rev-list --count HEAD).$(git describe --always)"
+	cd local_repo
+	printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 package() {
