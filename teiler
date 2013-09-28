@@ -342,7 +342,7 @@ fi
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
      ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started" & record &
+     notify ${TIME} "Screencast started"
    ;;
     "2. Window")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
@@ -350,20 +350,20 @@ fi
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
      dimensions
      ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started" & record &
+     notify ${TIME} "Screencast started"
    ;;
     "3. GIF (Fullscreen)")
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
      byzanz-record -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started" & record &
+     notify ${TIME} "Screencast started"
    ;;
     "4. GIF (Window)")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
      dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started" & record &
+     notify ${TIME} "Screencast started"
    ;;
 *)
 $0
@@ -421,7 +421,7 @@ fi
  rm -f ~/.local/share/teiler/temp_cast
  echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
  ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
- notify ${TIME} "Screencast started" & record &
+ notify ${TIME} "Screencast started"
 ;;
 "x. Upload Clipboard content (Delayed)")
 if [ $UL == "imgur" ];
