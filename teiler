@@ -43,7 +43,7 @@ UP1=`command -v scp`
 UP2=`command -v fb`
 if [[ -n "$UP1" || -n "$UP2" ]];
 then echo "fb or scp found - great!"
-else echo "neither fb or scp found" && notify-send "teiler" "no fb or scp found - please make sure to use imgur in config"; exit
+else echo "neither fb or scp found" && notify-send "teiler" "no fb or scp found - please make sure to use imgur in config"
 fi
 
 command -v ffmpeg >/dev/null 2>&1 || {
