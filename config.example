@@ -52,15 +52,6 @@ DZEN2_Y=540                             #Y Padding
 DUNST_FG=                               #Custom foreground color for notifications, leave empty for defaults
 DUNST_BG=                               #Custom background color for notifications, leave empty for defaults
 
-# screencast indicator
-
-REC_TEXT="..."                          #Message to be displayed while recording a screencast
-REC_W=40                                #width of dzen2 for REC_TEXT
-REC_X=940                               #X Padding for REC_TEXT
-REC_NF=#334433                          #foreground color
-REC_SF=#000000                          #background color
-REC_FONT="envypn-8"                     #font for REC_TEXT
-
 
 # ffmpeg settings
 
