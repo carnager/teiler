@@ -210,7 +210,7 @@ fi
 
   case "$CHOICE" in
     "1. Fullscreen")
-     scrot lastimg.png
+     scrot -d 1 lastimg.png
      notify ${TIME} "Screenshot saved"
      archive_img
    ;;
@@ -286,7 +286,7 @@ fi
 
   case "$CHOICE" in
     "1. Fullscreen")
-     lastimg.png -e "$UL_IMG"
+     scrot -d 1 -e "$UL_IMG"
      eval $XCLIP
      notify_ul ${TIME} "Screenshot uploaded"
      archive_ul
