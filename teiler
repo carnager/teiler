@@ -42,8 +42,8 @@ command -v dzen2 >/dev/null 2>&1 || {
 UP1=`command -v scp`
 UP2=`command -v fb`
 if [[ -n "$UP1" || -n "$UP2" ]];
-then echo "found"
-else echo "not found" && notify-send "teiler" "No supported Uploader found"; exit
+then echo "fb or scp found - great!"
+else echo "neither fb or scp found" && notify-send "teiler" "no fb or scp found - please make sure to use imgur in config"; exit
 fi
 
 command -v ffmpeg >/dev/null 2>&1 || {
