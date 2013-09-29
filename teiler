@@ -99,6 +99,24 @@ function notify() {
   fi
 }
 
+function rec_indicator() {
+while true; do
+source ~/.config/teiler/config
+echo $REC_SF
+if pgrep -f x11grab
+  then
+   echo "$REC_TEXT"
+elif [[ $(pgrep -f byzanz-record) ]]
+  then
+   echo "$REC_TEXT"
+else
+echo "foo"
+fi
+sleep 1
+done | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w "$REC_W" -x "$REC_X" -p &
+}
+
+
 function notify_ul() {
   if [[ -n "$DUNST_FG" ]]
     then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
