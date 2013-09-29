@@ -109,7 +109,7 @@ elif pgrep -f byzanz-record
   then
    echo "$REC_TEXT"
 else
-;
+echo ""
 fi
 sleep 1
 done | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w "$REC_W" -x "$REC_X" -p &
