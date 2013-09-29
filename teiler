@@ -27,7 +27,6 @@ if [[ -d $HOME/.local/share/teiler ]];
 else
   mkdir $HOME/.local/share/teiler
   touch $HOME/.local/share/teiler/temp_cast
-  touch $HOME/.local/share/teiler/temppid
 fi
 
 
@@ -69,7 +68,6 @@ function countdown3 () {
   for i in `seq $COUNTER3 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 
-
 function archive_ul() {
 if [ "$ARCHIVE_UL" == "1" ]; then
 cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
@@ -108,26 +106,6 @@ function notify_ul() {
   notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
  fi
 }
-
-#function record() {
-#coproc rec { 
-#while true; do
-#if [[ $(pgrep -f x11grab) ]]
-#  then
-#   killall dzen2
-#   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
-#elif [[ $(pgrep -f byzanz-record) ]]
-#  then
-#   killall dzen2
-#   echo "$REC_TEXT" | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w $REC_W -x $REC_X -p &
-#else
-#   killall dzen2
-#fi
-#sleep 1
-#done;
-#}
-#echo "$rec_PID" > ~/.local/share/teiler/temppid
-#}
 
 NOW=$(date +"%Y%m%d%H%M%S")
 
@@ -169,6 +147,7 @@ else
   COUNTD3="countdown3 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
 fi
 XCLIP="(xclip -o) | xclip -selection clipboard"
+
 
 cd $IMG_PATH
 
@@ -343,7 +322,7 @@ fi
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
      ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started"
+     notify ${TIME} "Screencast started" & rec_indicator &
    ;;
     "2. Window")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
@@ -351,20 +330,20 @@ fi
      echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
      dimensions
      ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started"
+     notify ${TIME} "Screencast started" & rec_indicator &
    ;;
     "3. GIF (Fullscreen)")
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
      byzanz-record -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started"
+     notify ${TIME} "Screencast started" & rec_indicator &
    ;;
     "4. GIF (Window)")
      eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
      echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
      dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started"
+     notify ${TIME} "Screencast started" & rec_indicator &
    ;;
 *)
 $0
@@ -422,7 +401,7 @@ fi
  rm -f ~/.local/share/teiler/temp_cast
  echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
  ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
- notify ${TIME} "Screencast started"
+ notify ${TIME} "Screencast started" & rec_indicator &
 ;;
 "x. Upload Clipboard content (Delayed)")
 if [ $UL == "imgur" ];
@@ -439,10 +418,13 @@ fi
 if [ $UL == "imgur" ];
   then notify-send "imgur" "imgur does not support videos"
   kill $(pgrep -f x11grab)
-  kill $(cat ~/.local/share/teiler/temppid)
-else 
+    pkill -f rec_indicator
+    kill $(pgrep -n dzen2)
+else
   if [[ $(pgrep -f x11grab) ]]
     then kill $(pgrep -f x11grab)
+    pkill -f rec_indicator
+    kill $(pgrep -n dzen2)
     sleep 3
 MENU="1. Yes
 2. No
@@ -466,6 +448,8 @@ esac
 kill $(cat ~/.local/share/teiler/temppid)
   elif [ $(pgrep -f byzanz-record) ]
     then killall byzanz-record
+    pkill -f rec_indicator
+    kill $(pgrep -n dzen2)
       sleep 3
 MENU="1. Yes
 2. No
@@ -486,7 +470,8 @@ fi
    ;;
 *)
 esac
-kill $(cat ~/.local/share/teiler/temppid)
+    pkill -f rec_indicator
+    kill $(pgrep -n dzen2)
       else
       echo "foo"
       fi
