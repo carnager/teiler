@@ -53,6 +53,16 @@ DUNST_FG=                               #Custom foreground color for notificatio
 DUNST_BG=                               #Custom background color for notifications, leave empty for defaults
 
 
+# record indicator
+
+REC_TEXT="..."                          #Message to be displayed while recording a screencast
+REC_W="40"                              #width of dzen2 for REC_TEXT
+REC_X="940"                             #X Padding for REC_TEXT
+REC_FONT="envypn-8"                     #font for REC_TEXT
+REC_NF="#FFFFFF"                        #foreground color
+REC_SF="#ff0000"                        #background color
+
+
 # ffmpeg settings
 
 ENCOPTS="-r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
