@@ -492,7 +492,7 @@ esac
       else
       echo "foo"
       fi
-pkill -f teiler
+killall teiler
 fi
    ;;
 "i. Copy last image to clipboard")
