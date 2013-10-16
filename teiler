@@ -55,6 +55,8 @@ command -v scrot >/dev/null 2>&1 || {
 command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1;
 }
 
+echo "Please create a hotkey for teiler. You will know why, eventually :)"
+
 source ~/.config/teiler/config
 echo $FONT
 
