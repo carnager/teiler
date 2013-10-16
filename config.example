@@ -3,7 +3,7 @@
 
 # general options
 
-IMG_PATH=$HOME/Pictures/Screenshots/    #Folder where to store images and videos
+IMG_PATH=$HOME/Pictures/Screenshots     #Folder where to store images and videos
 FILEMASK=$(date +"%Y%m%d%H%M%S")        #set file naming scheme
 UL=scp                                  #possible choices: fb, scp, imgur
 ARCHIVE_UL=1                            #Archive uploaded images
