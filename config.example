@@ -12,7 +12,7 @@ ARCHIVE_IMG=1                           #Archive non-uploaded saved files
 QUICKUL=1                               #upload for quick options
 QUICKEDIT=0                             #edit images for quick options
 EDIT=mtpaint                            #Image editor that is used for -well- editing
-RES=1920x1080                           #set your screen resolution
+RES=1920x1080                           #set your screen resolution - do NOT set bigger than actual monitor resolution
 
 
 # scp options
@@ -36,13 +36,13 @@ COUNTER3=8                              #Seconds to count for delay (Use $COUNTD
 # dmenu/dzen2 config
 
 DMENU_TRANS=0                           #Choose 0 if your dmenu has no transparency support
-FONT="Source\Code\Pro-12"               #Font that is used for dmenu
+FONT="Dejavu\Sans\Mono-8"               #Font that is used for dmenu
 NF="#a0a0a0"                            #Foreground color for dmenu/dzen2
 NB="#000000"                            #background color for dmenu/dzen2
 SF="#FFFFFF"                            #foreground active color for dmenu/dzen2
 SB="#0C73C2"                            #background active color for dmenu/dzen2
 DZEN2_TRANS=0                           #Choose 0 if your dzen2 has no transparency support
-DZEN2_FONT="Source Code Pro-12"         #font that is used for dzen2
+DZEN2_FONT="Dejavu\Sans\Mono-8"         #font that is used for dzen2
 DZEN2_W=200                             #Width of dzen2
 DZEN2_X=850                             #X Padding
 DZEN2_Y=540                             #Y Padding
