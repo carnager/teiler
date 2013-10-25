@@ -298,7 +298,7 @@ fi
     "3. Fullscreen (Delayed)")
      eval $countd & sleep $(echo $counter1+1 | bc)
      scrot -d 1 lastimg.png -e "$ul_img"
-     eval $xclip && notify_ul ${time} "Screenshot uploaded"  
+     eval $xclip && notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
     "4. Fullscreen (Delayed & Edit)")
@@ -310,7 +310,7 @@ fi
    ;;
     "5. Area")
      scrot -s lastimg.png -e "$ul_img"
-     eval $xclip		 
+     eval $xclip
      notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
@@ -440,7 +440,7 @@ if [ $ul == "imgur" ];
     pkill -f rec_indicator
     kill $(pgrep -n dzen2)
 else
-  if [[ $(pgrep -f x11grab) ]]
+if [[ $(pgrep -f x11grab) ]]
     then kill $(pgrep -f x11grab)
     pkill -f rec_indicator
     kill $(pgrep -n dzen2)
@@ -453,7 +453,7 @@ choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf 
 else
 choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload VIdeo?")"
 fi
- case "$choice" in
+case "$choice" in
     "1. Yes")
      eval $ul_vid
      eval $xclip
@@ -476,9 +476,9 @@ menu="1. Yes
 if [ "$dmenu_trans" == "1" ]; then
 choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?:")"
 else
-choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload VIdeo?")"
 fi
- case "$CHOICE" in
+case "$choice" in
     "1. Yes")
      eval $ul_vid
      eval $xclip
@@ -489,10 +489,10 @@ fi
    ;;
 *)
 esac
-    pkill -f rec_indicator
+pkill -f rec_indicator
     kill $(pgrep -n dzen2)
       else
-      echo "foo"
+echo "foo"
       fi
 killall teiler
 fi
