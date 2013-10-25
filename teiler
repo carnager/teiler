@@ -1,7 +1,7 @@
 #!/bin/bash
 # teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
 # (c) Rasmus Steinke <rasi at xssn dot at>
-# Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
+# Additional Ideas and testing by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
 # xclip, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon
