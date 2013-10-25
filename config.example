@@ -1,70 +1,166 @@
-# teiler configuration file
+
+###### teiler configuration file ######
 
 
-# general options
+#######################
+### general options ###
+#######################
 
-IMG_PATH=$HOME/Pictures/Screenshots     #Folder where to store images and videos
-FILEMASK=$(date +"%Y%m%d%H%M%S")        #set file naming scheme
-UL=scp                                  #possible choices: fb, scp, imgur
-ARCHIVE_UL=1                            #Archive uploaded images
-ARCHIVE_CLIP=1                          #Archive clipboarded images
-ARCHIVE_IMG=1                           #Archive non-uploaded saved files
-QUICKUL=1                               #upload for quick options
-QUICKEDIT=0                             #edit images for quick options
-EDIT=mtpaint                            #Image editor that is used for -well- editing
-RES=1920x1080                           #set your screen resolution - do NOT set bigger than actual monitor resolution
+#Folder where to store images and videos
+IMG_PATH=$HOME/Pictures/Screenshots     
 
+#set file naming scheme
+FILEMASK=$(date +"%Y%m%d%H%M%S")        
 
-# scp options
+#possible choices: fb, scp, imgur
+UL=scp                                  
 
-ULHOST_IMG=                             #host to be used for images (scp)
-ULHOST_VID=                             #host to be used for videos (scp)
-ULHOST_PASTE=                           #host to be used for clipboard content (scp)
-URL_VID=                                #public url to uploaded videos
-URL_PASTE=                              #public url to uploaded clipboard content
-URL_IMG=                                #public url to uploaded images
+#Archive uploaded images
+ARCHIVE_UL=1                            
 
+#Archive clipboarded images
+ARCHIVE_CLIP=1                          
 
-# notification settings
+#Archive non-uploaded saved files
+ARCHIVE_IMG=1                           
 
-TIME=3000                               #How long will notifications be visible? (in miliseconds)
-COUNTER1=3                              #Seconds to count for delay (Use $COUNTD variable)
-COUNTER2=6                              #Seconds to count for delay (Use $COUNTD2 variable)
-COUNTER3=8                              #Seconds to count for delay (Use $COUNTD3 variable)
+#upload for quick options
+QUICKUL=1                               
 
+#edit images for quick options
+QUICKEDIT=0                             
 
-# dmenu/dzen2 config
+#Image editor that is used for -well- editing
+EDIT=mtpaint                            
 
-DMENU_TRANS=0                           #Choose 0 if your dmenu has no transparency support
-FONT="Dejavu\Sans\Mono-8"               #Font that is used for dmenu
-NF="#a0a0a0"                            #Foreground color for dmenu/dzen2
-NB="#000000"                            #background color for dmenu/dzen2
-SF="#FFFFFF"                            #foreground active color for dmenu/dzen2
-SB="#0C73C2"                            #background active color for dmenu/dzen2
-DZEN2_TRANS=0                           #Choose 0 if your dzen2 has no transparency support
-DZEN2_FONT="Dejavu\Sans\Mono-8"         #font that is used for dzen2
-DZEN2_W=200                             #Width of dzen2
-DZEN2_X=850                             #X Padding
-DZEN2_Y=540                             #Y Padding
+#set your screen resolution - do NOT set bigger than actual monitor resolution
+RES=1920x1080                           
 
 
-# dunst settings
-DUNST_FG=                               #Custom foreground color for notifications, leave empty for defaults
-DUNST_BG=                               #Custom background color for notifications, leave empty for defaults
+
+###################
+### scp options ###
+###################
+
+#host to be used for images (scp)
+ULHOST_IMG=                             
+
+#host to be used for videos (scp)
+ULHOST_VID=                             
+
+#host to be used for clipboard content (scp)
+ULHOST_PASTE=                           
+
+#public url to uploaded videos
+URL_VID=                                
+
+#public url to uploaded clipboard content
+URL_PASTE=                              
+
+#public url to uploaded images
+URL_IMG=                                
 
 
-# record indicator
 
-REC_TEXT="..."                          #Message to be displayed while recording a screencast
-REC_W="40"                              #width of dzen2 for REC_TEXT
-REC_X="940"                             #X Padding for REC_TEXT
-REC_Y="0"                               #Y Padding for REC_TEXT
-REC_FONT="envypn-8"                     #font for REC_TEXT
-REC_NF="#FFFFFF"                        #foreground color
-REC_SF="#ff0000"                        #background color
+#############################
+### notification settings ###
+#############################
+
+#How long will notifications be visible? (in miliseconds)
+TIME=3000                               
+
+#Seconds to count for delay (Use $COUNTD variable)
+COUNTER1=3                              
+
+#Seconds to count for delay (Use $COUNTD2 variable)
+COUNTER2=6                              
+
+#Seconds to count for delay (Use $COUNTD3 variable)
+COUNTER3=8                              
 
 
-# ffmpeg settings
+
+##########################
+### dmenu/dzen2 config ###
+##########################
+
+#Choose 0 if your dmenu has no transparency support
+DMENU_TRANS=0                           
+
+#Font that is used for dmenu
+FONT="Dejavu\Sans\Mono-8"               
+
+#Foreground color for dmenu/dzen2
+NF="#a0a0a0"                            
+
+#background color for dmenu/dzen2
+NB="#000000"                            
+
+#foreground active color for dmenu/dzen2
+SF="#FFFFFF"                            
+
+#background active color for dmenu/dzen2
+SB="#0C73C2"                            
+
+#Choose 0 if your dzen2 has no transparency support
+DZEN2_TRANS=0                           
+
+#font that is used for dzen2
+DZEN2_FONT="Dejavu\Sans\Mono-8"         
+
+#Width of dzen2
+DZEN2_W=200                             
+
+#X Padding
+DZEN2_X=850                             
+
+#Y Padding
+DZEN2_Y=540                             
+
+
+
+######################
+### dunst settings ###
+######################
+
+#Custom foreground color for notifications, leave empty for defaults
+DUNST_FG=                               
+
+#Custom background color for notifications, leave empty for defaults
+DUNST_BG=                               
+
+
+
+########################
+### record indicator ###
+########################
+
+#Message to be displayed while recording a screencast
+REC_TEXT="..."                          
+
+#width of dzen2 for REC_TEXT
+REC_W="40"                              
+
+#X Padding for REC_TEXT
+REC_X="940"                             
+
+#Y Padding for REC_TEXT
+REC_Y="0"                               
+
+#font for REC_TEXT
+REC_FONT="envypn-8"                     
+
+#foreground color
+REC_NF="#FFFFFF"                        
+
+#background color
+REC_SF="#ff0000"                        
+
+
+
+#######################
+### ffmpeg settings ###
+#######################
 
 ENCOPTS="-r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
 FFAUDIO="-f alsa -ac 2 -i pulse"
