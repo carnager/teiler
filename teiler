@@ -38,9 +38,9 @@ command -v dzen2 >/dev/null 2>&1 || {
   notify-send "teiler" "dzen2 is not installed. Aborting" >&2; exit 1;
 }
 
-UP1=`command -v scp`
-UP2=`command -v fb`
-if [[ -n "$UP1" || -n "$UP2" ]];
+up1=`command -v scp`
+up2=`command -v fb`
+if [[ -n "$up1" || -n "$up2" ]];
 then echo "fb or scp found - great!"
 else echo "neither fb or scp found" && notify-send "teiler" "no fb or scp found - please make sure to use imgur in config"
 fi
@@ -58,35 +58,35 @@ command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Ab
 echo "Please create a hotkey for teiler. You will know why, eventually :)"
 
 source ~/.config/teiler/config
-echo $FONT
+echo $font
 
 function countdown1 () {
-  for i in `seq $COUNTER1 -1 0`; do echo "$i ... GO!"; sleep 1; done
+  for i in `seq $counter1 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 function countdown2 () {
-  for i in `seq $COUNTER2 -1 0`; do echo "$i ... GO!"; sleep 1; done
+  for i in `seq $counter2 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 function countdown3 () {
-  for i in `seq $COUNTER3 -1 0`; do echo "$i ... GO!"; sleep 1; done
+  for i in `seq $counter3 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 
 function archive_ul() {
-if [ "$ARCHIVE_UL" == "1" ]; then
-cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+if [ "$archive_ul" == "1" ]; then
+cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
 else echo ""
 fi
 }
 
 function archive_clip() {
-if [ "$ARCHIVE_CLIP" == "1" ]; then
-cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+if [ "$archive_clip" == "1" ]; then
+cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
 else echo ""
 fi
 }
 
 function archive_img() {
-if [ "$ARCHIVE_IMG" == "1" ]; then
-cp "$IMG_PATH"/lastimg.png "$IMG_PATH"/"$FILEMASK".png
+if [ "$archive_img" == "1" ]; then
+cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
 else echo ""
 fi
 }
@@ -95,8 +95,8 @@ fi
 
 # Outsource the notfiy-send to its own function to clean up the mess below a bit ;)
 function notify() {
-  if [[ -n "$DUNST_FG" ]]
-    then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+  if [[ -n "$dunst_fg" ]]
+    then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "Scrot" "${2}"
   else notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
   fi
 }
@@ -106,27 +106,27 @@ while true; do
 source ~/.config/teiler/config
 if pgrep -f x11grab
   then
-   echo "$REC_TEXT"
+   echo "$rec_text"
 elif pgrep -f byzanz-record
   then
-   echo "$REC_TEXT"
+   echo "$rec_text"
 else
 echo ""
 fi
 sleep 1
-done | dzen2 -fn "$REC_FONT" -fg "$REC_NF" -bg "$REC_SF" -w "$REC_W" -x "$REC_X" -y "$REC_Y" -p &
+done | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
 }
 
 
 function notify_ul() {
-  if [[ -n "$DUNST_FG" ]]
-    then notify-send -u low -h string:bgcolor:$DUNST_BG -h string:fgcolor:$DUNST_FG --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+  if [[ -n "$dunst_fg" ]]
+    then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
   else
   notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
  fi
 }
 
-NOW=$(date +"%Y%m%d%H%M%S")
+now=$(date +"%Y%m%d%H%M%S")
 
 #Get Dimensions of active Window
 function dimensions() {
@@ -140,37 +140,37 @@ function dimensions() {
 
 
 #Some options depending which uploader is used (right now only fb and scp are supported)
-	if [ $UL == "fb" ];
- 		then UL_IMG="fb -n $FILEMASK lastimg.png"
-             UL_VID="fb $(cat ~/.local/share/teiler/temp_cast)"
-             UL_CLIP="fb clip-$NOW.txt #&& rm -f clip-$NOW.txt"
-	elif [ $UL == "scp" ];
-        then UL_IMG="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp "$IMG_PATH"/lastimg.png "$ULHOST_IMG/$(cat ~/.local/share/teiler/timestamp).png" && echo -n "$URL_IMG/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
-             UL_VID="scp $(cat ~/.local/share/teiler/temp_cast) $ULHOST_VID && echo -n "$URL_VID/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
-             UL_CLIP="scp clip-$NOW.txt $ULHOST_PASTE && echo -n "$URL_PASTE/clip-$NOW.txt" | xclip"
-    elif [ $UL == "imgur" ];
-        then UL_IMG="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml
+	if [ $ul == "fb" ];
+ 		then ul_img="fb -n $filemask lastimg.png"
+             ul_vid="fb $(cat ~/.local/share/teiler/temp_cast)"
+             ul_clip="fb clip-$now.txt #&& rm -f clip-$now.txt"
+	elif [ $ul == "scp" ];
+        then ul_img="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp && scp "$img_path"/lastimg.png "$ulhost_img/$(cat ~/.local/share/teiler/timestamp).png" && echo -n "$url_img/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
+             ul_vid="scp $(cat ~/.local/share/teiler/temp_cast) $ulhost_vid && echo -n "$url_vid/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
+             ul_clip="scp clip-$now.txt $ulhost_paste && echo -n "$url_paste/clip-$now.txt" | xclip"
+    elif [ $ul == "imgur" ];
+        then ul_img="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml
              xmllint ~/.local/share/teiler/imgur.xml --xpath '//original_image/text\()' | xclip"
 	else
 		echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
 
 ####Some Variables to clean up the code a bit
-if [ "$DZEN2_TRANS" == "1" ]; then
-  COUNTD="countdown1 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
-  COUNTD2="countdown2 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
-  COUNTD3="countdown3 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+if [ "$dzen2_trans" == "1" ]; then
+  countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
 else 
-  COUNTD="countdown1 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
-  COUNTD2="countdown2 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
-  COUNTD3="countdown3 | dzen2 -o 80 -fn '$DZEN2_FONT' -fg '$NF' -ta c -w '$DZEN2_W' -bg '$NB' -x '$DZEN2_X' -y '$DZEN2_Y'"
+  countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
 fi
-XCLIP="(xclip -o) | xclip -selection clipboard"
+xclip="(xclip -o) | xclip -selection clipboard"
 
 
-cd $IMG_PATH
+cd $img_path
 
-MENU="1. Screenshots
+menu="1. Screenshots
 2. Screenshots (Upload)
 3. Screencasts
 ---------------------------------
@@ -182,15 +182,15 @@ k. Stop Recording of any Screencast
 i. Copy last image to clipboard
 "
 
-if [ "$DMENU_TRANS" == "1" ]; then
-  CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+if [ "$dmenu_trans" == "1" ]; then
+  choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 else
-  CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+  choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 fi
 
-  case "$CHOICE" in
+  case "$choice" in
     "1. Screenshots")
-MENU="1. Fullscreen
+menu="1. Fullscreen
 2. Fullscreen (Edit)
 3. Fullscreen (Clipboard)
 4. Fullscreen (Delayed)
@@ -201,67 +201,67 @@ MENU="1. Fullscreen
 9. Area (Clipboard)
 "
 
-if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+if [ "$dmenu_trans" == "1" ]; then
+choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 fi
 
-  case "$CHOICE" in
+  case "$choice" in
     "1. Fullscreen")
      scrot -d 1 lastimg.png
-     notify ${TIME} "Screenshot saved"
+     notify ${time} "Screenshot saved"  
      archive_img
    ;;
     "2. Fullscreen (Edit)")
-     scrot -d 1 lastimg.png -e "$EDIT \$f"
-     eval $XCLIP
-     notify ${TIME} "Screenshot saved"
+     scrot -d 1 lastimg.png -e "$edit \$f"
+     eval $xclip
+     notify ${time} "Screenshot saved"
      archive_img
    ;;
     "3. Fullscreen (Clipboard)")
      scrot -d 1 lastimg.png
      archive_clip
-     imgclip.py "$IMG_PATH"/lastimg.png &
-     eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+     imgclip.py "$img_path"/lastimg.png &
+     eval $countd3 & sleep $(echo $counter3+1 | bc)
      kill $(pgrep -f imgclip.py)
    ;;
     "4. Fullscreen (Delayed)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     eval $countd & sleep $(echo $counter1+1 | bc)
      scrot -d 1 lastimg.png
-     notify ${TIME} "Screenshot saved"
+     notify ${time} "Screenshot saved"
      archive_img
    ;;
     "5. Fullscreen (Delayed & Edit)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     scrot -d 1 lastimg.png -e "$EDIT \$f"
-     notify ${TIME} "Screenshot saved"
+     eval $countd & sleep $(echo $counter1+1 | bc)
+     scrot -d 1 lastimg.png -e "$edit \$f"
+     notify ${time} "Screenshot saved"
      archive_img
    ;;
     "6. Fullscreen (Delayed & Clipboard)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     eval $countd & sleep $(echo $counter1+1 | bc)
      scrot -d 1 lastimg.png
      archive_clip
-     imgclip.py "$IMG_PATH"/lastimg.png &
-     eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+     imgclip.py "$img_path"/lastimg.png &
+     eval $countd3 & sleep $(echo $counter3+1 | bc)
      kill $(pgrep -f imgclip.py)
    ;;
     "7. Area")
      scrot -s lastimg.png
-     notify ${TIME} "Screenshot saved"
+     notify ${time} "Screenshot saved"
      archive_img
    ;;
     "8. Area (Edit)")
-    scrot -s lastimg.png -e "$EDIT \$f"
-    eval $XCLIP
-    notify ${TIME} "Screenshot saved"
+    scrot -s lastimg.png -e "$edit \$f"
+    eval $xclip
+    notify ${time} "Screenshot saved"
     archive_img
    ;;
     "9. Area (Clipboard)")
     scrot -s lastimg.png
     archive_clip
-    imgclip.py "$IMG_PATH"/lastimg.png &
-    eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+    imgclip.py "$img_path"/lastimg.png &
+    eval $countd3 & sleep $(echo $counter3+1 | bc)
     kill $(pgrep -f imgclip.py)
 ;;
 *)
@@ -269,7 +269,7 @@ $0
 esac
 ;;
 "2. Screenshots (Upload)")
-MENU="1. Fullscreen
+menu="1. Fullscreen
 2. Fullscreen (Edit)
 3. Fullscreen (Delayed)
 4. Fullscreen (Delayed & Edit)
@@ -277,47 +277,47 @@ MENU="1. Fullscreen
 6. Area (Edit)
 "
 
-if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+if [ "$dmenu_trans" == "1" ]; then
+choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 fi
 
-  case "$CHOICE" in
+  case "$choice" in
     "1. Fullscreen")
-     scrot -d 1 lastimg.png -e "$UL_IMG"
-     eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
+     scrot -d 1 lastimg.png -e "$ul_img"
+     eval $xclip
+     notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
     "2. Fullscreen (Edit)")
-     scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
-     eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+     scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
+     eval $xclip && notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
     "3. Fullscreen (Delayed)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     scrot -d 1 lastimg.png -e "$UL_IMG"
-     eval $XCLIP && notify_ul ${TIME} "Screenshot uploaded"
+     eval $countd & sleep $(echo $counter1+1 | bc)
+     scrot -d 1 lastimg.png -e "$ul_img"
+     eval $xclip && notify_ul ${time} "Screenshot uploaded"  
      archive_ul
    ;;
     "4. Fullscreen (Delayed & Edit)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
-     scrot -d 1 lastimg.png -e "$EDIT \$f && $UL_IMG"
-     eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
+     eval $countd & sleep $(echo $counter1+1 | bc)
+     scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
+     eval $xclip
+     notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
     "5. Area")
-     scrot -s lastimg.png -e "$UL_IMG"
-     eval $XCLIP
-     notify_ul ${TIME} "Screenshot uploaded"
+     scrot -s lastimg.png -e "$ul_img"
+     eval $xclip		 
+     notify_ul ${time} "Screenshot uploaded"
      archive_ul
    ;;
     "6. Area (Edit)")
-    scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
-    eval $XCLIP
-    notify_ul ${TIME} "Screenshot uploaded"
+    scrot -s lastimg.png -e "$edit \$f && $ul_img"
+    eval $xclip
+    notify_ul ${time} "Screenshot uploaded"
     archive_ul
    ;;
 *)
@@ -325,116 +325,116 @@ $0
 esac
 ;;
 "3. Screencasts")
-MENU="1. Fullscreen
+menu="1. Fullscreen
 2. Window
 3. GIF (Fullscreen)
 4. GIF (Window)
 "
-if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+if [ "$dmenu_trans" == "1" ]; then
+choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
 fi
 
-  case "$CHOICE" in
+  case "$choice" in
     "1. Fullscreen")
      rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
-     ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started" & rec_indicator &
+     echo "$now.webm" > ~/.local/share/teiler/temp_cast
+     ffmpeg -f x11grab -s $res -i $DISPLAY+0,0 $ffaudio $encopts $now.webm &
+     notify ${time} "Screencast started" & rec_indicator &
    ;;
     "2. Window")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     eval $countd & sleep $(echo $counter1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
+     echo "$now.webm" > ~/.local/share/teiler/temp_cast
      dimensions
-     ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $FFAUDIO $ENCOPTS $NOW.webm &
-     notify ${TIME} "Screencast started" & rec_indicator &
+     ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $ffaudio $encopts $now.webm &
+     notify ${time} "Screencast started" & rec_indicator &
    ;;
     "3. GIF (Fullscreen)")
      rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
-     byzanz-record -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started" & rec_indicator &
+     echo "$now.gif" > ~/.local/share/teiler/temp_cast
+     byzanz-record -d 9999 $now.gif &
+     notify ${time} "Screencast started" & rec_indicator &
    ;;
     "4. GIF (Window)")
-     eval $COUNTD & sleep $(echo $COUNTER1+1 | bc)
+     eval $countd & sleep $(echo $counter1+1 | bc)
      rm -f ~/.local/share/teiler/temp_cast
-     echo "$NOW.gif" > ~/.local/share/teiler/temp_cast
-     dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $NOW.gif &
-     notify ${TIME} "Screencast started" & rec_indicator &
+     echo "$now.gif" > ~/.local/share/teiler/temp_cast
+     dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $now.gif &
+     notify ${time} "Screencast started" & rec_indicator &
    ;;
 *)
 $0
 esac
 ;;
 "f. Quick Screenshot (Fullscreen)")
-if [ "$QUICKUL" == "1" ]; then 
-    if [ "$QUICKEDIT" == "1" ]; then
-      scrot -d 1 lastimg.png -e "$UL_IMG"
-      eval $XCLIP
-      notify_ul ${TIME} "Screenshot uploaded"
+if [ "$quickul" == "1" ]; then 
+    if [ "$quickedit" == "1" ]; then
+      scrot -d 1 lastimg.png -e "$ul_img"
+      eval $xclip
+      notify_ul ${time} "Screenshot uploaded"
       archive_ul
-    elif [ "$QUICKEDIT" == "0" ]; then
-      scrot -d 1 lastimg.png -e "$UL_IMG"
-      eval $XCLIP
-      notify_ul ${TIME} "Screenshot uploaded"
+    elif [ "$quickedit" == "0" ]; then
+      scrot -d 1 lastimg.png -e "$ul_img"
+      eval $xclip
+      notify_ul ${time} "Screenshot uploaded"
       archive_ul
     fi
-elif [ "$QUICKUL" == "0" ]; then
+elif [ "$quickul" == "0" ]; then
   scrot -d 1 lastimg.png
   archive_img
-    if [ "$QUICKEDIT" == "1" ]; then
-      $EDIT lastimg.png
-      notify ${TIME} "Screenshot saved"
-    elif [ "$QUICKEDIT" == "0" ]; then
-      notify_ul ${TIME} "Screenshot saved"
+    if [ "$quickedit" == "1" ]; then
+      $edit lastimg.png
+      notify ${time} "Screenshot saved"
+    elif [ "$quickedit" == "0" ]; then
+      notify_ul ${time} "Screenshot saved"
     fi
 fi
 ;;
 "a. Quick Screenshot (Area)")
-if [ "$QUICKUL" == "1" ]; then 
-    if [ "$QUICKEDIT" == "1" ]; then
-      scrot -s lastimg.png -e "$EDIT \$f && $UL_IMG"
-      eval $XCLIP
-      notify_ul ${TIME} "Screenshot uploaded"
+if [ "$quickul" == "1" ]; then 
+    if [ "$quickedit" == "1" ]; then
+      scrot -s lastimg.png -e "$edit \$f && $ul_img"
+      eval $xclip
+      notify_ul ${time} "Screenshot uploaded"
       archive_ul
-    elif [ "$QUICKEDIT" == "0" ]; then
-      scrot -s lastimg.png -e "$UL_IMG"
-      eval $XCLIP
-      notify_ul ${TIME} "Screenshot uploaded"
+    elif [ "$quickedit" == "0" ]; then
+      scrot -s lastimg.png -e "$ul_img"
+      eval $xclip
+      notify_ul ${time} "Screenshot uploaded"
       archive_ul
     fi
-elif [ "$QUICKUL" == "0" ]; then
+elif [ "$quickul" == "0" ]; then
   scrot -s lastimg.png
   archive_img
-    if [ "$QUICKEDIT" == "1" ]; then
-      $EDIT lastimg.png
-      notify_ul ${TIME} "Screenshot saved"
-    elif [ "$QUICKEDIT" == "0" ]; then
-       notify_ul ${TIME} "Screenshot saved"
+    if [ "$quickedit" == "1" ]; then
+      $edit lastimg.png
+      notify_ul ${time} "Screenshot saved"
+    elif [ "$quickedit" == "0" ]; then
+       notify_ul ${time} "Screenshot saved"
     fi
 fi
 ;;
 "c. Quick Screencast")
  rm -f ~/.local/share/teiler/temp_cast
- echo "$NOW.webm" > ~/.local/share/teiler/temp_cast
- ffmpeg -f x11grab -s $RES -i $DISPLAY+0,0 $FFAUDIO $ENCOPTS $NOW.webm &
- notify ${TIME} "Screencast started" & rec_indicator &
+ echo "$now.webm" > ~/.local/share/teiler/temp_cast
+ ffmpeg -f x11grab -s $res -i $DISPLAY+0,0 $ffaudio $encopts $now.webm &
+ notify ${time} "Screencast started" & rec_indicator &
 ;;
 "x. Upload Clipboard content (Delayed)")
-if [ $UL == "imgur" ];
+if [ $ul == "imgur" ];
   then notify-send "imgur" "imgur does not support text"
 else 
-    eval $COUNTD2 & sleep $(echo $COUNTER2+1 | bc)
-    xclip -o > clip-$NOW.txt
-    eval $UL_CLIP
-    eval $XCLIP
-    notify_ul ${TIME} "Clipboard uploaded"
+    eval $countd2 & sleep $(echo $counter2+1 | bc)
+    xclip -o > clip-$now.txt
+    eval $ul_clip
+    eval $xclip
+    notify_ul ${time} "Clipboard uploaded"
 fi
 ;;
 "k. Stop Recording of any Screencast")
-if [ $UL == "imgur" ];
+if [ $ul == "imgur" ];
   then notify-send "imgur" "imgur does not support videos"
   kill $(pgrep -f x11grab)
     pkill -f rec_indicator
@@ -445,19 +445,19 @@ else
     pkill -f rec_indicator
     kill $(pgrep -n dzen2)
     sleep 3
-MENU="1. Yes
+menu="1. Yes
 2. No
 "
-if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload Video?:")"
+if [ "$dmenu_trans" == "1" ]; then
+choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload VIdeo?")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload VIdeo?")"
 fi
- case "$CHOICE" in
+ case "$choice" in
     "1. Yes")
-     eval $UL_VID
-     eval $XCLIP
-     notify_ul ${TIME} "Screencast uploaded"
+     eval $ul_vid
+     eval $xclip
+     notify_ul ${time} "Screencast uploaded"
    ;;
     "2. No)")
      echo "foo"
@@ -470,19 +470,19 @@ kill $(cat ~/.local/share/teiler/temppid)
     pkill -f rec_indicator
     kill $(pgrep -n dzen2)
       sleep 3
-MENU="1. Yes
+menu="1. Yes
 2. No
 "
-if [ "$DMENU_TRANS" == "1" ]; then
-CHOICE="$(echo "$MENU" | dmenu -o 0.9 -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload Video?:")"
+if [ "$dmenu_trans" == "1" ]; then
+choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?:")"
 else
-CHOICE="$(echo "$MENU" | dmenu -l 20 -fn "$FONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Upload VIdeo?")"
+choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?")"
 fi
  case "$CHOICE" in
     "1. Yes")
-     eval $UL_VID
-     eval $XCLIP
-     notify_ul ${TIME} "Screencast uploaded"
+     eval $ul_vid
+     eval $xclip
+     notify_ul ${time} "Screencast uploaded"
    ;;
     "2. No)")
      echo "foo"
@@ -498,8 +498,8 @@ killall teiler
 fi
    ;;
 "i. Copy last image to clipboard")
-imgclip.py "$IMG_PATH"/lastimg.png &
-eval $COUNTD3 & sleep $(echo $COUNTER3+1 | bc)
+imgclip.py "$img_path"/lastimg.png &
+eval $countd3 & sleep $(echo $counter3+1 | bc)
 kill $(pgrep -f imgclip.py)
 ;;
 *)
