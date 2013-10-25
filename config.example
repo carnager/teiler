@@ -6,13 +6,15 @@
 ### general options ###
 #######################
 
-#Folder where to store images and videos
+#Folder where to store archive of images and videos
 IMG_PATH=$HOME/Pictures/Screenshots     
 
-#set file naming scheme
+#set file naming scheme for archive
 FILEMASK=$(date +"%Y%m%d%H%M%S")        
 
-#possible choices: fb, scp, imgur
+#Upload tool. possible choices: fb, scp, imgur 
+#use imgur, if you dont have access to a filebin or ssh server
+#imgur does not support video uploads.
 UL=scp                                  
 
 #Archive uploaded images
@@ -30,10 +32,11 @@ QUICKUL=1
 #edit images for quick options
 QUICKEDIT=0                             
 
-#Image editor that is used for -well- editing
+#Set preferred image editor
 EDIT=mtpaint                            
 
-#set your screen resolution - do NOT set bigger than actual monitor resolution
+#set your screen resolution
+#do NOT set this bigger than your actual resolution
 RES=1920x1080                           
 
 
@@ -42,13 +45,13 @@ RES=1920x1080
 ### scp options ###
 ###################
 
-#host to be used for images (scp)
+#host to be used for images
 ULHOST_IMG=                             
 
-#host to be used for videos (scp)
+#host to be used for videos
 ULHOST_VID=                             
 
-#host to be used for clipboard content (scp)
+#host to be used for clipboard content
 ULHOST_PASTE=                           
 
 #public url to uploaded videos
@@ -111,10 +114,10 @@ DZEN2_FONT="Dejavu\Sans\Mono-8"
 #Width of dzen2
 DZEN2_W=200                             
 
-#X Padding
+#X Padding of dzen2
 DZEN2_X=850                             
 
-#Y Padding
+#Y Padding of dzen2
 DZEN2_Y=540                             
 
 
@@ -136,7 +139,7 @@ DUNST_BG=
 ########################
 
 #Message to be displayed while recording a screencast
-REC_TEXT="..."                          
+REC_TEXT="capturing..."                          
 
 #width of dzen2 for REC_TEXT
 REC_W="40"                              
