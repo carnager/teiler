@@ -7,37 +7,37 @@
 #######################
 
 #Folder where to store archive of images and videos
-img_path=$HOME/Pictures/Screenshots     
+img_path=$HOME/Pictures/Screenshots
 
 #set file naming scheme for archive
-filemask=$(date +"%Y%m%d%H%M%S")        
+filemask=$(date +"%Y%m%d%H%M%S")
 
-#Upload tool. possible choices: fb, scp, imgur 
+#Upload tool. possible choices: fb, scp, imgur
 #use imgur, if you dont have access to a filebin or ssh server
 #imgur does not support video uploads.
-ul=scp                                  
+ul=imgur
 
 #Archive uploaded images
-archive_ul=1			
+archive_ul=1
 
 #Archive clipboarded images
-archive_clip=1                          
+archive_clip=1
 
 #Archive non-uploaded saved files
-archive_img=1                           
+archive_img=1
 
 #upload for quick options
-quickul=1                               
+quickul=1
 
 #edit images for quick options
-quickedit=0                             
+quickedit=0
 
 #Set preferred image editor
-edit=mtpaint                            
+edit=mtpaint
 
 #set your screen resolution
 #do NOT set this bigger than your actual resolution
-res=1920x1080                           
+res=1920x1080
 
 
 
@@ -46,22 +46,22 @@ res=1920x1080
 ###################
 
 #host to be used for images
-ulhost_img=			
+ulhost_img=
 
 #host to be used for videos
-ulhost_vid=                             
+ulhost_vid=
 
 #host to be used for clipboard content
-ulhost_paste=                           
+ulhost_paste=
 
 #public url to uploaded videos
-url_vid=                                
+url_vid=
 
 #public url to uploaded clipboard content
-url_paste=                              
+url_paste=
 
 #public url to uploaded images
-url_img=                                
+url_img=
 
 
 
@@ -70,16 +70,16 @@ url_img=
 #############################
 
 #How long will notifications be visible? (in miliseconds)
-time=3000                               
+time=3000
 
 #Seconds to count for delay (Use $COUNTD variable)
-counter1=3                              
+counter1=3
 
 #Seconds to count for delay (Use $COUNTD2 variable)
-counter2=6                              
+counter2=6
 
 #Seconds to count for delay (Use $COUNTD3 variable)
-counter3=8                              
+counter3=8
 
 
 
@@ -88,37 +88,37 @@ counter3=8
 ##########################
 
 #Choose 0 if your dmenu has no transparency support
-dmenu_trans=0                           
+dmenu_trans=0
 
 #Font that is used for dmenu
-font="Dejavu\Sans\Mono-8"               
+font="Dejavu\Sans\Mono-8"
 
 #Foreground color for dmenu/dzen2
-nf="#a0a0a0"                            
+nf="#a0a0a0"
 
 #background color for dmenu/dzen2
-nb="#000000"                            
+nb="#000000"
 
 #foreground active color for dmenu/dzen2
-sf="#FFFFFF"                            
+sf="#FFFFFF"
 
 #background active color for dmenu/dzen2
-sb="#0C73C2"                            
+sb="#0C73C2"
 
 #Choose 0 if your dzen2 has no transparency support
-dzen2_trans=0                           
+dzen2_trans=0
 
 #font that is used for dzen2
-dzen2_font="Dejavu\Sans\Mono-8"         
+dzen2_font="Dejavu\Sans\Mono-8"
 
 #Width of dzen2
-dzen2_w=200                             
+dzen2_w=200
 
 #X Padding of dzen2
-dzen2_x=850                             
+dzen2_x=850
 
 #Y Padding of dzen2
-dzen2_y=540                             
+dzen2_y=540
 
 
 
@@ -127,10 +127,10 @@ dzen2_y=540
 ######################
 
 #Custom foreground color for notifications, leave empty for defaults
-dunst_fg=                               
+dunst_fg=
 
 #Custom background color for notifications, leave empty for defaults
-dunst_bg=                               
+dunst_bg=
 
 
 
@@ -139,25 +139,25 @@ dunst_bg=
 ########################
 
 #Message to be displayed while recording a screencast
-rec_text="capturing..."                          
+rec_text="capturing..."
 
 #width of dzen2 for REC_TEXT
-rec_w="40"                              
+rec_w="40"
 
 #X Padding for REC_TEXT
-rec_x="940"                             
+rec_x="940"
 
 #Y Padding for REC_TEXT
-rec_y="0"                               
+rec_y="0"
 
 #font for REC_TEXT
-rec_font="envypn-8"                     
+rec_font="envypn-8"
 
 #foreground color
-rec_nf="#FFFFFF"                        
+rec_nf="#FFFFFF"
 
 #background color
-rec_sf="#ff0000"                        
+rec_sf="#ff0000"
 
 
 
