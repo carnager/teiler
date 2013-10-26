@@ -161,9 +161,9 @@ if [ "$dzen2_trans" == "1" ]; then
   countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
   countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
 else 
-  countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-  countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-  countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd="countdown1 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd2="countdown2 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
+  countd3="countdown3 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
 fi
 xclip="(xclip -o) | xclip -selection clipboard"
 
