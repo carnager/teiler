@@ -58,7 +58,7 @@ command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Ab
 echo "Please create a hotkey for teiler. You will know why, eventually :)"
 
 source ~/.config/teiler/config
-echo $font
+echo "Font used: $font"
 
 function countdown1 () {
   for i in `seq $counter1 -1 0`; do echo "$i ... GO!"; sleep 1; done
