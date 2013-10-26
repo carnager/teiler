@@ -471,7 +471,7 @@ case "$choice" in
      notify_ul ${time} "Screencast uploaded"
    ;;
     "2. No)")
-     echo "foo"
+     echo "shutting down..."
    ;;
 *)
 esac
@@ -489,5 +489,5 @@ eval $countd3 & sleep $(echo $counter3+1 | bc)
 kill $(pgrep -f imgclip.py)
 ;;
 *)
-echo "foo"
+echo "shutting down..."
 esac
