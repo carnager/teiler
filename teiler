@@ -435,40 +435,26 @@ fi
 ;;
 "k. Stop Recording of any Screencast")
 if [ $ul == "imgur" ];
-  then notify-send "imgur" "imgur does not support videos"
-  kill $(pgrep -f x11grab)
-    pkill -f rec_indicator
-    kill $(pgrep -n dzen2)
+  then notify-send "imgur" "info: imgur does not support upload."
+  if [[ $(pgrep -f x11grab) ]]
+     then kill $(pgrep -f x11grab)
+       pkill -f rec_indicator
+       kill $(pgrep -n dzen2)
+  elif [ $(pgrep -f byzanz-record) ]
+      then killall byzanz-record
+        pkill -f rec_indicator
+        kill $(pgrep -n dzen2)
+        sleep 3
+  fi
 else
-if [[ $(pgrep -f x11grab) ]]
+  if [[ $(pgrep -f x11grab) ]]
     then kill $(pgrep -f x11grab)
-    pkill -f rec_indicator
-    kill $(pgrep -n dzen2)
-    sleep 3
-menu="1. Yes
-2. No
-"
-if [ "$dmenu_trans" == "1" ]; then
-choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?:")"
-else
-choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload VIdeo?")"
-fi
-case "$choice" in
-    "1. Yes")
-     eval $ul_vid
-     eval $xclip
-     notify_ul ${time} "Screencast uploaded"
-   ;;
-    "2. No)")
-     echo "foo"
-   ;;
-*)
-esac
-kill $(cat ~/.local/share/teiler/temppid)
+       pkill -f rec_indicator
+       kill $(pgrep -n dzen2)
   elif [ $(pgrep -f byzanz-record) ]
     then killall byzanz-record
-    pkill -f rec_indicator
-    kill $(pgrep -n dzen2)
+      pkill -f rec_indicator
+      kill $(pgrep -n dzen2)
       sleep 3
 menu="1. Yes
 2. No
