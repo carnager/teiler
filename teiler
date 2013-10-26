@@ -86,6 +86,16 @@ fi
 }
 
 
+#set dmenu options based on transparency support in config file
+function dmenu_t () {
+    if [ "$dmenu_trans" == "1" ]; then
+        choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
+    else
+        choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
+    fi
+}
+
+
 # functions used for archiving the different file types
 function archive_clip() {
     if [ "$archive_clip" == "1" ]; then
@@ -202,11 +212,7 @@ k. Stop Recording of any Screencast
 i. Copy last image to clipboard
 "
 
-if [ "$dmenu_trans" == "1" ]; then
-    choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-else
-    choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-fi
+dmenu_t
 
 case "$choice" in
     "1. Screenshots")
@@ -222,11 +228,7 @@ menu="
 9. Area (Clipboard)
 "
 
-if [ "$dmenu_trans" == "1" ]; then
-    choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-else
-    choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-fi
+dmenu_t
 
 case "$choice" in
     "1. Fullscreen")
@@ -299,11 +301,7 @@ menu="
 6. Area (Edit)
 "
 
-if [ "$dmenu_trans" == "1" ]; then
-    choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-else
-    choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-fi
+dmenu_t
 
 case "$choice" in
     "1. Fullscreen")
@@ -353,11 +351,7 @@ menu="
 3. GIF (Fullscreen)
 4. GIF (Window)
 "
-if [ "$dmenu_trans" == "1" ]; then
-    choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-else
-    choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-fi
+dmenu_t
 
 case "$choice" in
     "1. Fullscreen")
@@ -476,11 +470,8 @@ menu="
 1. Yes
 2. No
 "
-        if [ "$dmenu_trans" == "1" ]; then
-            choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload Video?:")"
-        else
-            choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Upload VIdeo?")"
-        fi
+        dmenu_t
+        
         case "$choice" in
             "1. Yes")
                  eval $ul_vid
