@@ -68,6 +68,9 @@ echo "Font used: $font"
 
 # functions
 
+# Some Variables to clean up the code a bit
+now=$(date +"%Y%m%d%H%M%S")
+
 # function used for four countdowns
 function countdown1 () {
     for i in `seq $counter1 -1 0`; do echo "$i ... GO!"; sleep 1; done
@@ -176,9 +179,6 @@ elif [ $ul == "imgur" ]; then
 else
     echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
-
-# Some Variables to clean up the code a bit
-now=$(date +"%Y%m%d%H%M%S")
 
 if [ "$dzen2_trans" == "1" ]; then
     countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
@@ -471,7 +471,7 @@ menu="
 2. No
 "
         dmenu_t
-        
+
         case "$choice" in
             "1. Yes")
                  eval $ul_vid
