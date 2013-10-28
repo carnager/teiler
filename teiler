@@ -16,9 +16,9 @@
 if [[ -f $HOME/.config/teiler/config ]];
     then echo "Config found"
 else
-    echo "No config found" && notify-send "teiler" "No config found"
+    echo "No config found" && echo "No config found"
     echo "Please copy config.example to ~/.config/teiler/config"
-    notify-send "Please copy config.example to ~/.config/teiler/config"
+    echo "Please copy config.example to ~/.config/teiler/config"
     echo "Terminating..."
     echo " "
     killall teiler
@@ -28,16 +28,16 @@ if [[ -d $HOME/.local/share/teiler ]];
     then echo "data directory found"
 else
     mkdir $HOME/.local/share/teiler
-   touch $HOME/.local/share/teiler/temp_cast
+    touch $HOME/.local/share/teiler/temp_cast
 fi
 
 
 command -v dmenu >/dev/null 2>&1 || {
-    notify-send "teiler" "dmenu is  not installed. Aborting." >&2; exit 1;
+    echo "dmenu is  not installed. Aborting." >&2; exit 1;
 }
 
 command -v dzen2 >/dev/null 2>&1 || {
-    notify-send "teiler" "dzen2 is not installed. Aborting" >&2; exit 1;
+    echo "teiler" "dzen2 is not installed. Aborting" >&2; exit 1;
 }
 
 up1=`command -v scp`
@@ -45,18 +45,18 @@ up2=`command -v fb`
 if [[ -n "$up1" || -n "$up2" ]];
     then echo "fb or scp found - great!"
     else echo "neither fb or scp found"
-    notify-send "teiler" "no fb or scp found - please make sure to use imgur in config"
+    echo "no fb or scp found - please make sure to use imgur in config"
 fi
 
 command -v ffmpeg >/dev/null 2>&1 || {
-    notify-send "teiler" "ffmpeg is not installed. Aborting" >&2; exit 1;
+    echo "ffmpeg is not installed. Aborting" >&2; exit 1;
 }
 
 command -v scrot >/dev/null 2>&1 || {
-    notify-send "teiler" "scrot is not installed. Aborting" >&2; exit 1; }
+    echo "scrot is not installed. Aborting" >&2; exit 1; }
 
 command -v bc >/dev/null 2>&1 || { 
-    notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1;
+    echo "bc is not installed. Aborting" >&2; exit 1;
 }
 
 echo "Please create a hotkey for teiler. You will know why, eventually :)"
