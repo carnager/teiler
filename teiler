@@ -219,13 +219,10 @@ case "$choice" in
 menu="
 1. Fullscreen
 2. Fullscreen (Edit)
-3. Fullscreen (Clipboard)
-4. Fullscreen (Delayed)
-5. Fullscreen (Delayed & Edit)
-6. Fullscreen (Delayed & Clipboard)
-7. Area
-8. Area (Edit)
-9. Area (Clipboard)
+3. Fullscreen (Delayed)
+4. Fullscreen (Delayed & Edit)
+5. Area
+6. Area (Edit)
 "
 
 dmenu_t
@@ -242,50 +239,29 @@ case "$choice" in
          notify ${time} "Screenshot saved"
          archive_img
    ;;
-    "3. Fullscreen (Clipboard)")
-         scrot -d 1 lastimg.png
-         archive_clip
-         imgclip.py "$img_path"/lastimg.png &
-         eval $countd3 & sleep $(echo $counter3+1 | bc)
-         kill $(pgrep -f imgclip.py)
-   ;;
-    "4. Fullscreen (Delayed)")
+    "3. Fullscreen (Delayed)")
          eval $countd & sleep $(echo $counter1+1 | bc)
          scrot -d 1 lastimg.png
          notify ${time} "Screenshot saved"
          archive_img
    ;;
-    "5. Fullscreen (Delayed & Edit)")
+    "4. Fullscreen (Delayed & Edit)")
          eval $countd & sleep $(echo $counter1+1 | bc)
          scrot -d 1 lastimg.png -e "$edit \$f"
          notify ${time} "Screenshot saved"
          archive_img
    ;;
-    "6. Fullscreen (Delayed & Clipboard)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         scrot -d 1 lastimg.png
-         archive_clip
-         imgclip.py "$img_path"/lastimg.png &
-         eval $countd3 & sleep $(echo $counter3+1 | bc)
-         kill $(pgrep -f imgclip.py)
-   ;;
-    "7. Area")
+    "5. Area")
          scrot -s lastimg.png
          notify ${time} "Screenshot saved"
          archive_img
    ;;
-    "8. Area (Edit)")
+    "6. Area (Edit)")
         scrot -s lastimg.png -e "$edit \$f"
         eval $xclip
         notify ${time} "Screenshot saved"
         archive_img
    ;;
-    "9. Area (Clipboard)")
-        scrot -s lastimg.png
-        archive_clip
-        imgclip.py "$img_path"/lastimg.png &
-        eval $countd3 & sleep $(echo $counter3+1 | bc)
-        kill $(pgrep -f imgclip.py)
 ;;
 *)
 $0
