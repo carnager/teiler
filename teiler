@@ -425,7 +425,7 @@ esac
         notify_ul ${time} "Clipboard uploaded"
     fi
    ;;
-"k. Stop Recording of any Screencast")
+"k. Stop Recording Of Any Screencast")
     if [ $ul == "imgur" ];
     then notify-send "imgur" "info: imgur does not support upload."
         kill $(pgrep -f x11grab)
@@ -461,7 +461,7 @@ menu="
         killall teiler
     fi
     ;;
-"i. Copy last image to clipboard")
+"i. Copy Last Image To Clipboard")
     imgclip.py "$img_path"/lastimg.png &
     eval $countd3 & sleep $(echo $counter3+1 | bc)
     kill $(pgrep -f imgclip.py)
