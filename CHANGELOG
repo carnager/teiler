@@ -1,31 +1,23 @@
-#v1.0 Added ffmpeg options to config file. Added Quickoptions in config file. Added possibility to store image in clipboard.
-#Cleaned up code.
+#v1.0.1   Removed redundant clipboard options from menu, since last image can always be put into clipboard with "i"
+          Made descriptions in config file more obvious. Removed inline comments.
+#v1.0 v   Added ffmpeg options to config file. Added Quickoptions in config file. Added possibility to store image in clipboard.
+          Cleaned up code.
 
 #v0.9.9.1 Added Screencast indicator. Addec Configuration options for Screencast indicator
-#v0.9.9 Restructured Menu. Added Screencasts of single windows.
-#v0.9.8 Added scp support. New configuration options URL and ULHOST added defined.
-#v0.9.7 Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
-#v0.9.6 Added dependency and config checks
-#v0.9.5 outsourced configuration to ~/.config/teiler/config, made dzen2 font be configurable individually
-#v0.9.4 fixed typing bug and bump to fake activity :)
-#v0.9.3
-#Added option to copy image to clipboard. This needs xfce-screenshooter and some proper clipboard manager, like clipman
-#v0.9.2
-#Added Configuration for transparency
-#v0.9.1
-#Include Upload Link in Notification
-#v0.9
-#Massive rewrite of the case function, teiler finally supports spaces in its menu :)
-#v0.8
-#Put notify-send into its own function, Made delay being calculated from counter value.
-#v0.7
-#Massive Code Cleanup
-#v0.6
-#Countdown script stolen from Google and integrated.
-#v0.5
-#added clip uploading
-#v0.4
-#added screencast function
-#v0.3
-#added 1.notifications 2.unique names for each type (for quick launch) 3.better photo editor (pinta) 4.dmenu title
+#v0.9.9   Restructured Menu. Added Screencasts of single windows.
+#v0.9.8   Added scp support. New configuration options URL and ULHOST added defined.
+#v0.9.7   Added transparency option for dzen2 (set to 0 if your dzen2 cant handle transparency)
+#v0.9.6   Added dependency and config checks
+#v0.9.5   outsourced configuration to ~/.config/teiler/config, made dzen2 font be configurable individually
+#v0.9.4   fixed typing bug and bump to fake activity :)
+#v0.9.3   Added option to copy image to clipboard. This needs xfce-screenshooter and some proper clipboard manager, like clipman
+#v0.9.2   Added Configuration for transparency
+#v0.9.1   Include Upload Link in Notification
+#v0.9     Massive rewrite of the case function, teiler finally supports spaces in its menu :)
+#v0.8     Put notify-send into its own function, Made delay being calculated from counter value.
+#v0.7     Massive Code Cleanup
+#v0.6     Countdown script stolen from Google and integrated.
+#v0.5     added clip uploading
+#v0.4     added screencast function
+#v0.3     added 1.notifications 2.unique names for each type (for quick launch) 3.better photo editor (pinta) 4.dmenu title
 
