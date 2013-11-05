@@ -261,7 +261,6 @@ case "$choice" in
         eval $xclip
         notify ${time} "Screenshot saved"
         archive_img
-   ;;
 ;;
 *)
 $0
