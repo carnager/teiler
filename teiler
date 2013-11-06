@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
 # (c) Rasmus Steinke <rasi at xssn dot at>
 # Additional Ideas and testing by Zeltak <zeltak at gmail dot com>
@@ -118,16 +118,16 @@ function archive_img() {
 # notification functions
 function notify() {
     if [[ -n "$dunst_fg" ]]
-        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "Scrot" "${2}"
-    else notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}"
+        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "teiler" "${2}"
+    else notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}"
     fi
 }
 
 function notify_ul() {
     if [[ -n "$dunst_fg" ]]
-        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "teiler" "${2}\n$(xclip -o)"
     else
-        notify-send -u low --hint=int:transient:1 -t ${1} "Scrot" "${2}\n$(xclip -o)"
+        notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}\n$(xclip -o)"
     fi
 }
 
@@ -166,11 +166,11 @@ if [ $ul == "fb" ]; then
     ul_vid="fb $(cat ~/.local/share/teiler/temp_cast)"
     ul_clip="fb clip-$now.txt #&& rm -f clip-$now.txt"
 elif [ $ul == "scp" ]; then
-    ul_img="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp \
-    && scp "$img_path"/lastimg.png "$ulhost_img/$(cat ~/.local/share/teiler/timestamp).png" \
-    && echo -n "$url_img/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
-    ul_vid="scp $(cat ~/.local/share/teiler/temp_cast) $ulhost_vid \
-    && echo -n "$url_vid/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
+    ul_img="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp
+            scp "$img_path"/lastimg.png "$ulhost_img/$(cat ~/.local/share/teiler/timestamp).png" &&
+            echo -n "$url_img/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
+    ul_vid="scp $(cat ~/.local/share/teiler/temp_cast) $ulhost_vid &&
+            echo -n "$url_vid/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
     ul_clip="scp clip-$now.txt $ulhost_paste && echo -n "$url_paste/clip-$now.txt" | xclip"
 elif [ $ul == "imgur" ]; then
     ul_img="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" \
@@ -191,7 +191,7 @@ else
 fi
 
 # this copies clipboard content to both clipboard buffers
-xclip="(xclip -o) | xclip -selection clipboard"
+x_clip="(xclip -o) | xclip -selection clipboard"
 
 
 
@@ -235,7 +235,7 @@ case "$choice" in
    ;;
     "2. Fullscreen (Edit)")
          scrot -d 1 lastimg.png -e "$edit \$f"
-         eval $xclip
+         eval $x_clip
          notify ${time} "Screenshot saved"
          archive_img
    ;;
@@ -258,7 +258,7 @@ case "$choice" in
    ;;
     "6. Area (Edit)")
         scrot -s lastimg.png -e "$edit \$f"
-        eval $xclip
+        eval $x_clip
         notify ${time} "Screenshot saved"
         archive_img
 ;;
@@ -281,37 +281,37 @@ dmenu_t
 case "$choice" in
     "1. Fullscreen")
          scrot -d 1 lastimg.png -e "$ul_img"
-         eval $xclip
+         eval $x_clip
          notify_ul ${time} "Screenshot uploaded"
          archive_ul
    ;;
     "2. Fullscreen (Edit)")
          scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
-         eval $xclip && notify_ul ${time} "Screenshot uploaded"
+         eval $x_clip && notify_ul ${time} "Screenshot uploaded"
          archive_ul
    ;;
     "3. Fullscreen (Delayed)")
          eval $countd & sleep $(echo $counter1+1 | bc)
          scrot -d 1 lastimg.png -e "$ul_img"
-         eval $xclip && notify_ul ${time} "Screenshot uploaded"
+         eval $x_clip && notify_ul ${time} "Screenshot uploaded"
          archive_ul
    ;;
     "4. Fullscreen (Delayed & Edit)")
          eval $countd & sleep $(echo $counter1+1 | bc)
          scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
-         eval $xclip
+         eval $x_clip
          notify_ul ${time} "Screenshot uploaded"
          archive_ul
    ;;
     "5. Area")
          scrot -s lastimg.png -e "$ul_img"
-         eval $xclip
+         eval $x_clip
          notify_ul ${time} "Screenshot uploaded"
          archive_ul
    ;;
     "6. Area (Edit)")
         scrot -s lastimg.png -e "$edit \$f && $ul_img"
-        eval $xclip
+        eval $x_clip
         notify_ul ${time} "Screenshot uploaded"
         archive_ul
    ;;
@@ -364,12 +364,12 @@ esac
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -d 1 lastimg.png -e "$ul_img"
-            eval $xclip
+            eval $x_clip
             notify_ul ${time} "Screenshot uploaded"
             archive_ul
         elif [ "$quickedit" == "0" ]; then
             scrot -d 1 lastimg.png -e "$ul_img"
-            eval $xclip
+            eval $x_clip
             notify_ul ${time} "Screenshot uploaded"
             archive_ul
         fi
@@ -388,12 +388,12 @@ esac
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -s lastimg.png -e "$edit \$f && $ul_img"
-            eval $xclip
+            eval $x_clip
             notify_ul ${time} "Screenshot uploaded"
             archive_ul
         elif [ "$quickedit" == "0" ]; then
             scrot -s lastimg.png -e "$ul_img"
-            eval $xclip
+            eval $x_clip
             notify_ul ${time} "Screenshot uploaded"
             archive_ul
         fi
@@ -421,7 +421,7 @@ esac
         eval $countd2 & sleep $(echo $counter2+1 | bc)
         xclip -o > clip-$now.txt
         eval $ul_clip
-        eval $xclip
+        eval $x_clip
         notify_ul ${time} "Clipboard uploaded"
     fi
    ;;
@@ -450,7 +450,7 @@ menu="
         case "$choice" in
             "1. Yes")
                  eval $ul_vid
-                 eval $xclip
+                 eval $x_clip
                  notify_ul ${time} "Screencast uploaded"
             ;;
             "2. No)")
