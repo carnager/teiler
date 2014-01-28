@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
 # (c) Rasmus Steinke <rasi at xssn dot at>
 # Additional Ideas and testing by Zeltak <zeltak at gmail dot com>
