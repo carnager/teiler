@@ -332,7 +332,7 @@ case "$choice" in
     "1. Fullscreen")
          rm -f ~/.local/share/teiler/temp_cast
          echo "$now.webm" > ~/.local/share/teiler/temp_cast
-         ffmpeg -f x11grab -s $res -i $DISPLAY+0,0 $ffaudio $encopts $now.webm &
+         ffmpeg $ffaudio $encopts $now.webm &
          notify ${time} "Screencast started" & rec_indicator &
    ;;
     "2. Window")
@@ -340,7 +340,7 @@ case "$choice" in
          rm -f ~/.local/share/teiler/temp_cast
          echo "$now.webm" > ~/.local/share/teiler/temp_cast
          dimensions
-         ffmpeg -f x11grab -s "${w}x${h}" -i $DISPLAY+$x,$y $ffaudio $encopts $now.webm &
+         ffmpeg $ffaudio $encopts $now.webm &
          notify ${time} "Screencast started" & rec_indicator &
    ;;
     "3. GIF (Fullscreen)")
@@ -411,7 +411,7 @@ esac
 "c. Quick Screencast")
     rm -f ~/.local/share/teiler/temp_cast
     echo "$now.webm" > ~/.local/share/teiler/temp_cast
-    ffmpeg -f x11grab -s $res -i $DISPLAY+0,0 $ffaudio $encopts $now.webm &
+    ffmpeg $ffaudio $encopts $now.webm &
     notify ${time} "Screencast started" & rec_indicator &
     ;;
 "x. Upload Clipboard content (Delayed)")
