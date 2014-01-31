@@ -91,7 +91,7 @@ fi
 
 #set dmenu options based on transparency support in config file
 function dmenu_t () {
-choice="$(echo "$menu" | simpleswitcher -font "PragmataPro-10" -fg "#505050" -bg "#000000" -hlfg "#FFFFFF" -hlbg "#0C73C2" -o 90 -bc "#505050" -dmenu teiler)"
+choice="$(echo "$menu" | simpleswitcher -font "PragmataPro-10" -fg "#505050" -bg "#000000" -hlfg "#FFFFFF" -hlbg "#0C73C2" -o 90 -bc "#505050" -dmenu "teiler: ")"
 }
 
 
@@ -200,12 +200,12 @@ menu="
 2. Screenshots (Upload)
 3. Screencasts
 -------------------------------------
-f. Quick Screenshot (Fullscreen)
-a. Quick Screenshot (Area)
-c. Quick Screencast
-x. Upload Clipboard content (Delayed)
-k. Stop Recording Of Any Screencast
-i. Copy Last Image To Clipboard
+4. Quick Screenshot (Fullscreen)
+5. Quick Screenshot (Area)
+6. Quick Screencast
+7. Upload Clipboard content (Delayed)
+8. Stop Recording Of Any Screencast
+9. Copy Last Image To Clipboard
 "
 
 dmenu_t
@@ -370,7 +370,7 @@ case "$choice" in
 $0
 esac
 ;;
-"f. Quick Screenshot (Fullscreen)")
+"4. Quick Screenshot (Fullscreen)")
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -d 1 lastimg.png -e "$ul_img"
@@ -394,7 +394,7 @@ esac
         fi
     fi
     ;;
-"a. Quick Screenshot (Area)")
+"5. Quick Screenshot (Area)")
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -s lastimg.png -e "$edit \$f && $ul_img"
@@ -418,13 +418,13 @@ esac
         fi
     fi
     ;;
-"c. Quick Screencast")
+"6. Quick Screencast")
     rm -f ~/.local/share/teiler/temp_cast
     echo "$now.webm" > ~/.local/share/teiler/temp_cast
     ffmpeg $ffaudio $encopts $now.webm &
     notify ${time} "Screencast started" & rec_indicator &
     ;;
-"x. Upload Clipboard content (Delayed)")
+"7. Upload Clipboard content (Delayed)")
     if [ $ul == "imgur" ];
         then notify-send "imgur" "imgur does not support text"
     else 
@@ -435,7 +435,7 @@ esac
         notify_ul ${time} "Clipboard uploaded"
     fi
    ;;
-"k. Stop Recording Of Any Screencast")
+"8. Stop Recording Of Any Screencast")
     if [ $ul == "imgur" ];
     then notify-send "imgur" "info: imgur does not support upload."
         kill $(pgrep -f x11grab)
@@ -471,7 +471,7 @@ menu="
         killall teiler
     fi
     ;;
-"i. Copy Last Image To Clipboard")
+"9. Copy Last Image To Clipboard")
     imgclip.py "$img_path"/lastimg.png &
     eval $countd3 & sleep $(echo $counter3+1 | bc)
     kill $(pgrep -f imgclip.py)
