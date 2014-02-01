@@ -24,7 +24,7 @@ else
     killall teiler
 fi
 
-if [[ -f $HOME/.config/teiler/dmenurc ]];
+if [[ -f $HOME/.config/dmenurc ]];
     then echo "Config found"
 else
     echo "No dmenu config found" && echo "No dmenu config found"
