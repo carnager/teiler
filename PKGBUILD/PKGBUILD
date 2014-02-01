@@ -30,6 +30,9 @@ package() {
   install -D -m644 "${srcdir}/teiler/config.example" \
     "${pkgdir}/usr/share/doc/teiler/config.example"
 
+  install -D -m644 "${srcdir}/teiler/dmenurc" \
+    "${pkgdir}/usr/share/doc/teiler/dmenurc"
+
 }
 md5sums=('f2483d70a8a9ee7964fc4bbd7293ce10'
          'SKIP')
