@@ -24,6 +24,18 @@ else
     killall teiler
 fi
 
+if [[ -f $HOME/.config/teiler/dmenurc ]];
+    then echo "Config found"
+else
+    echo "No dmenu config found" && echo "No dmenu config found"
+    echo "Please copy dmenurc to ~/.config/dmenurc"
+    echo "Please copy dmenurc to ~/.config/dmenurc"
+    echo "Terminating..."
+    echo " "
+    killall teiler
+fi
+
+
 if [[ -d $HOME/.local/share/teiler ]];
     then echo "data directory found"
 else
