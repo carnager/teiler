@@ -3,5 +3,8 @@ post_install() {
   echo "to use editing feature, you need to have some image editing tool installed and set it in config"
   echo "You want to install some notification daemon. dunst is recommended."
   echo " "
+  echo "This Package installs both "teiler" which uses dmenu"
+  echo "and "teiler_ss" which uses simpleswitcher.
+  echp "To use the simpleswitcher Version install "simpleswitcher-dd-git" from AUR"
 }
 

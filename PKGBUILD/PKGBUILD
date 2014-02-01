@@ -1,7 +1,7 @@
 # Maintainer: Rasmus Steinke <rasi at xssn dot at>
 
 pkgname=teiler-git
-pkgver=80.04e7eed
+pkgver=121.d2b11d2
 pkgrel=1
 pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
@@ -12,7 +12,7 @@ optdepends=('fb-client' 'byzanz' 'openssh')
 options=(!strip)
 install="teiler.install"
 makedepends=('git')
-source=('git://github.com/carnager/teiler.git')
+source=('git+http://git.53280.de/carnager/teiler')
 
 pkgver() {
 	cd teiler
