@@ -89,14 +89,25 @@ fi
 }
 
 
-#set dmenu options based on transparency support in config file
-function dmenu_t () {
-    if [ "$dmenu_trans" == "1" ]; then
-        choice="$(echo "$menu" | dmenu -o 0.9 -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-    else
-        choice="$(echo "$menu" | dmenu -l 20 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "Make Your Wish:")"
-    fi
-}
+if [[ "$backend" == "simpleswitcher" ]]
+    then
+        function dmenu_t () {
+        choice="$(echo "$menu" | simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu -p "teiler: ")"
+        }
+
+elif [[ "$backend" == "dmenu" ]]
+    then 
+        if [[ "$dmenu_trans" == "1" ]]
+            then
+            function dmenu_t () {
+            choice="$(echo "$menu" | dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90 -p "teiler: ")"
+            }
+        else
+            function dmenu_t () {
+            choice="$(echo "$menu" | dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "teiler: ")"
+            }
+        fi
+fi     
 
 
 # functions used for archiving the different file types
@@ -204,12 +215,12 @@ menu="
 2. Screenshots (Upload)
 3. Screencasts
 -------------------------------------
-f. Quick Screenshot (Fullscreen)
-a. Quick Screenshot (Area)
-c. Quick Screencast
-x. Upload Clipboard content (Delayed)
-k. Stop Recording Of Any Screencast
-i. Copy Last Image To Clipboard
+4. Quick Screenshot (Fullscreen)
+5. Quick Screenshot (Area)
+6. Quick Screencast
+7. Upload Clipboard content (Delayed)
+8. Stop Recording Of Any Screencast
+9. Copy Last Image To Clipboard
 "
 
 dmenu_t
@@ -223,6 +234,10 @@ menu="
 4. Fullscreen (Delayed & Edit)
 5. Area
 6. Area (Edit)
+
+
+
+
 "
 
 dmenu_t
@@ -269,11 +284,15 @@ esac
 "2. Screenshots (Upload)")
 menu="
 1. Fullscreen
-2. Fullscreen (Edit)
-3. Fullscreen (Delayed)
-4. Fullscreen (Delayed & Edit)
+2. Fullscreen \(Edit\)
+3. Fullscreen \(Delayed\)
+4. Fullscreen \(Delayed & Edit\)
 5. Area
-6. Area (Edit)
+6. Area \(Edit\)
+
+
+
+
 "
 
 dmenu_t
@@ -325,6 +344,12 @@ menu="
 2. Window
 3. GIF (Fullscreen)
 4. GIF (Window)
+
+
+
+
+
+
 "
 dmenu_t
 
@@ -360,7 +385,7 @@ case "$choice" in
 $0
 esac
 ;;
-"f. Quick Screenshot (Fullscreen)")
+"4. Quick Screenshot (Fullscreen)")
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -d 1 lastimg.png -e "$ul_img"
@@ -384,7 +409,7 @@ esac
         fi
     fi
     ;;
-"a. Quick Screenshot (Area)")
+"5. Quick Screenshot (Area)")
     if [ "$quickul" == "1" ]; then 
         if [ "$quickedit" == "1" ]; then
             scrot -s lastimg.png -e "$edit \$f && $ul_img"
@@ -408,13 +433,13 @@ esac
         fi
     fi
     ;;
-"c. Quick Screencast")
+"6. Quick Screencast")
     rm -f ~/.local/share/teiler/temp_cast
     echo "$now.webm" > ~/.local/share/teiler/temp_cast
     ffmpeg $ffaudio $encopts $now.webm &
     notify ${time} "Screencast started" & rec_indicator &
     ;;
-"x. Upload Clipboard content (Delayed)")
+"7. Upload Clipboard content (Delayed)")
     if [ $ul == "imgur" ];
         then notify-send "imgur" "imgur does not support text"
     else 
@@ -425,7 +450,7 @@ esac
         notify_ul ${time} "Clipboard uploaded"
     fi
    ;;
-"k. Stop Recording Of Any Screencast")
+"8. Stop Recording Of Any Screencast")
     if [ $ul == "imgur" ];
     then notify-send "imgur" "info: imgur does not support upload."
         kill $(pgrep -f x11grab)
@@ -461,7 +486,7 @@ menu="
         killall teiler
     fi
     ;;
-"i. Copy Last Image To Clipboard")
+"9. Copy Last Image To Clipboard")
     imgclip.py "$img_path"/lastimg.png &
     eval $countd3 & sleep $(echo $counter3+1 | bc)
     kill $(pgrep -f imgclip.py)
