@@ -6,6 +6,9 @@
 ### general options ###
 #######################
 
+#Backend to use. dmenu or simpleswitcher
+backend=simpleswitcher
+
 #Folder where to store archive of images and videos
 img_path=$HOME/Pictures/Screenshots
 
@@ -15,7 +18,7 @@ filemask=$(date +"%Y%m%d%H%M%S")
 #Upload tool. possible choices: fb, scp, imgur
 #use imgur, if you dont have access to a filebin or ssh server
 #imgur does not support video uploads.
-ul=imgur
+ul=scp
 
 #Archive uploaded images
 archive_ul=1
@@ -33,7 +36,7 @@ quickul=1
 quickedit=0
 
 #Set preferred image editor
-edit=mtpaint
+edit=gimp
 
 #set your screen resolution
 #do NOT set this bigger than your actual resolution
@@ -83,33 +86,37 @@ counter3=8
 
 
 
-##########################
-### dmenu/dzen2 config ###
-##########################
+#########################################
+### dmenu/dzen2/simpleswitcher config ###
+#########################################
 
 #Choose 0 if your dmenu has no transparency support
-dmenu_trans=0
+#(Not needed for Simpleswitcher, since it autodetects transparency)
+dmenu_trans=1
 
-#Font that is used for dmenu
-font="Dejavu\Sans\Mono-8"
+#Font that is used for dmenu/ss
+font="PragmataPro-10"
 
-#Foreground color for dmenu/dzen2
+#Foreground color for dmenu/dzen2/ss
 nf="#a0a0a0"
 
-#background color for dmenu/dzen2
+#background color for dmenu/dzen2/ss
 nb="#000000"
 
-#foreground active color for dmenu/dzen2
+#foreground active color for dmenu/dzen2/ss
 sf="#FFFFFF"
 
-#background active color for dmenu/dzen2
+#background active color for dmenu/dzen2/ss
 sb="#0C73C2"
+
+#Border Color (Only simpleswitcher)
+bc="#505050"
 
 #Choose 0 if your dzen2 has no transparency support
 dzen2_trans=0
 
 #font that is used for dzen2
-dzen2_font="Dejavu\Sans\Mono-8"
+dzen2_font="PragmataPro-10"
 
 #Width of dzen2
 dzen2_w=200
@@ -165,5 +172,5 @@ rec_sf="#ff0000"
 ### ffmpeg settings ###
 #######################
 
-encopts="-r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
+encopts="-f x11grab -s $res -i $DISPLAY+2560,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
 ffaudio="-f alsa -ac 2 -i pulse"
