@@ -1,11 +1,12 @@
+#!/bin/bash
 post_install() {
-  echo "to use teiler you need to copy /usr/share/doc/teiler/config.example to \$HOME/.config/teiler/config"
-  echo "Also copy /usr/share/config/teiler/dmenurc to \$HOME/.config/dmenurc"
-  echo "Then define a backend (dmenu or simpleswitcher) in $HOME/.config/dmenurc"
-  echo " "
-  echo "to use editing feature, you need to have some image editing tool installed and set it in config"
-  echo "You want to install some notification daemon. dunst is recommended."
-  echo " "
-  echp "To use the simpleswitcher backend install "simpleswitcher-dd-git" from AUR"
-}
-
+	cat <<EOF
+to use teiler you need to copy /usr/share/doc/teiler/config.example to \$HOME/.config/teiler/config
+Also copy /usr/share/config/teiler/dmenurc to \$HOME/.config/dmenurc
+Then define a backend (dmenu or simpleswitcher) in \$HOME/.config/dmenurc
+to use editing feature, you need to have some image editing tool installed and set it in config
+You want to install some notification daemon. dunst is recommended.
+To use the simpleswitcher backend install "simpleswitcher-dd-git" from AUR
+EOF
+} 
+post_install
