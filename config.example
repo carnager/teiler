@@ -86,49 +86,6 @@ counter3=8
 
 
 
-#########################################
-### dmenu/dzen2/simpleswitcher config ###
-#########################################
-
-#Choose 0 if your dmenu has no transparency support
-#(Not needed for Simpleswitcher, since it autodetects transparency)
-dmenu_trans=1
-
-#Font that is used for dmenu/ss
-font="PragmataPro-10"
-
-#Foreground color for dmenu/dzen2/ss
-nf="#a0a0a0"
-
-#background color for dmenu/dzen2/ss
-nb="#000000"
-
-#foreground active color for dmenu/dzen2/ss
-sf="#FFFFFF"
-
-#background active color for dmenu/dzen2/ss
-sb="#0C73C2"
-
-#Border Color (Only simpleswitcher)
-bc="#505050"
-
-#Choose 0 if your dzen2 has no transparency support
-dzen2_trans=0
-
-#font that is used for dzen2
-dzen2_font="PragmataPro-10"
-
-#Width of dzen2
-dzen2_w=200
-
-#X Padding of dzen2
-dzen2_x=850
-
-#Y Padding of dzen2
-dzen2_y=540
-
-
-
 ######################
 ### dunst settings ###
 ######################

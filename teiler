@@ -4,7 +4,7 @@
 # Additional Ideas and testing by Zeltak <zeltak at gmail dot com>
 #
 # Requirements:
-# xclip, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon
+# xclip, dzen2, dmenu (or simpleswitcher-dd), ffmpeg, scrot, bc, some notification daemon
 #
 # Optional dependencies:
 # Some image editing tool, scp or fb-client
@@ -31,14 +31,18 @@ else
     touch $HOME/.local/share/teiler/temp_cast
 fi
 
-
-command -v dmenu >/dev/null 2>&1 || {
-    echo "dmenu is  not installed. Aborting." >&2; exit 1;
-}
-
 command -v dzen2 >/dev/null 2>&1 || {
     echo "teiler" "dzen2 is not installed. Aborting" >&2; exit 1;
 }
+
+back_end1=`command -v simpleswitcher`
+back_end2=`command -v dmenu`
+if [[ -n "$back_end1" || -n "$back_end2" ]];
+    then echo "dmenu or simpleswitcher found - great!"
+    else echo "neither dmenu or simpleswitcher found"
+    echo "no dmenu or simpleswitcher found - aborting" >&2; exit 1;
+fi
+
 
 up1=`command -v scp`
 up2=`command -v fb`
@@ -62,7 +66,9 @@ command -v bc >/dev/null 2>&1 || {
 echo "Please create a hotkey for teiler. You will know why, eventually :)"
 
 source ~/.config/teiler/config
+source ~/.config/dmenurc
 echo "Font used: $font"
+echo "Backend used: $backend"
 
 
 
