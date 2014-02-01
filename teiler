@@ -290,11 +290,11 @@ esac
 "2. Screenshots (Upload)")
 menu="
 1. Fullscreen
-2. Fullscreen \(Edit\)
-3. Fullscreen \(Delayed\)
-4. Fullscreen \(Delayed & Edit\)
+2. Fullscreen (Edit)
+3. Fullscreen (Delayed)
+4. Fullscreen (Delayed & Edit)
 5. Area
-6. Area \(Edit\)
+6. Area (Edit)
 
 
 
