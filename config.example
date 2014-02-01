@@ -6,9 +6,6 @@
 ### general options ###
 #######################
 
-#Backend to use. dmenu or simpleswitcher
-backend=dmenu
-
 #Folder where to store archive of images and videos
 img_path=$HOME/Pictures/Screenshots
 
