@@ -100,7 +100,7 @@ function countdown3 () {
     for i in `seq $counter3 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 function archive_ul() {
-    if [ "$archive_ul" == "1" ]; then
+    if [[ "$archive_ul" == "1" ]]; then
         cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
     else echo ""
 fi
@@ -130,14 +130,14 @@ fi
 
 # functions used for archiving the different file types
 function archive_clip() {
-    if [ "$archive_clip" == "1" ]; then
+    if [[ "$archive_clip" == "1" ]]; then
         cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
     else echo ""
     fi
 }
 
 function archive_img() {
-    if [ "$archive_img" == "1" ]; then
+    if [[ "$archive_img" == "1" ]]; then
         cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
     else echo ""
     fi
@@ -190,18 +190,18 @@ function dimensions() {
 
 
 # Some options depending which uploader is used (right now only fb and scp are supported)
-if [ $ul == "fb" ]; then
+if [[ $ul == "fb" ]]; then
     ul_img="fb -n $filemask lastimg.png"
     ul_vid="fb $(cat ~/.local/share/teiler/temp_cast)"
     ul_clip="fb clip-$now.txt #&& rm -f clip-$now.txt"
-elif [ $ul == "scp" ]; then
+elif [[ $ul == "scp" ]]; then
     ul_img="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp
             scp "$img_path"/lastimg.png "$ulhost_img/$(cat ~/.local/share/teiler/timestamp).png" &&
             echo -n "$url_img/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
     ul_vid="scp $(cat ~/.local/share/teiler/temp_cast) $ulhost_vid &&
             echo -n "$url_vid/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
     ul_clip="scp clip-$now.txt $ulhost_paste && echo -n "$url_paste/clip-$now.txt" | xclip"
-elif [ $ul == "imgur" ]; then
+elif [[ $ul == "imgur" ]]; then
     ul_img="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" \
     https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml
     xmllint ~/.local/share/teiler/imgur.xml --xpath '//original_image/text\()' | xclip"
@@ -209,7 +209,7 @@ else
     echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
 fi
 
-if [ "$dzen2_trans" == "1" ]; then
+if [[ "$dzen2_trans" == "1" ]]; then
     countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
     countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
     countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
