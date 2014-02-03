@@ -38,7 +38,7 @@ http_vid=
 encopts=(
     '-f'        'x11grab' 
     '-s'        "$res"
-    '-i'        "$DISPLAY+2560,0"
+    '-i'        "$DISPLAY+0,0"
     '-r'        '25'
     '-quality'  'good'
     '-cpu-used' '0'
