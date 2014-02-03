@@ -143,34 +143,36 @@ function listFiles {
 }
 
 function upLoad {
-    file=$1
-    scp_path=$2
-    http_path=$3
-    if [[ "$ul" == "scp" ]]; then
-        scp "$file" "$scp_host":/"$scp_path/"
-        notify-send "Image Uploaded" "$http_path/$(basename $file)"
-        echo -n "$http_path/$(basename $file)" | xclip
-    elif [[ "$ul" == "fb" ]]; then
-        fb "$*"
-        notify-send "Image Uploaded" "$(echo $(xclip -o))"
+    if [[ $1 == png ]] 
+        then file=$(readlink "$img_path/lastimg.png")
+        type="Image"
+    elif [[ $1 == webm ]]
+        then file=$(readlink "$img_path/lastvid.webm")
+        type="Video"
+    fi
+    if [[ "$ul" == "scp" ]]
+        then scp "$1" "$scp_host":/"$2/"
+        notify-send "$(echo "$type") Uploaded" "$3/$(basename $1)"
+        echo -n "$3/$(basename $1)" | xclip
+    elif [[ "$ul" == "fb" ]]
+        then fb "$1"
+        notify-send "$(echo "$type") Uploaded" "$(echo $(xclip -o))"
     fi
     x_clip
 }
 
 function instantUpload {
-    ext=$1
-    scp_path=$2
-    http_path=$3
-    if [[ $ext == png ]] 
+    if [[ $1 == png ]] 
         then file=$(readlink "$img_path/lastimg.png")
              type="Image"
-    elif [[ $ext == webm ]]
+    elif [[ $1 == webm ]]
         then file=$(readlink "$img_path/lastvid.webm")
+             type="Video"
     fi
         if [[ "$ul" == scp ]]
-        then scp "$file" "$scp_host":/"$scp_path/"
-        notify-send "$(echo $type) Uploaded" "$http_path/$(basename $file)"
-        echo -n "$http_path/$(basename $file)" | xclip
+        then scp "$file" "$scp_host":/"$2/"
+        notify-send "$(echo $type) Uploaded" "$3/$(basename $file)"
+        echo -n "$3/$(basename $file)" | xclip
     elif [[ "$ul" == fb ]]
         then fb "$file"
         notify-send "$(echo $type) Uploaded" "$(echo $(xclip -o))"
