@@ -86,13 +86,13 @@ function delayPrompt {
 }
 
 function delayCountdown {
-    for i in `seq $(($t - 1)) -1 0`; do echo "$i ... GO!"; sleep 1; done
+    for n in {$t..1}; do printf "\r%s " $n; sleep 1; done
 }
 
 function delayClip {
-    for i in `seq 10 -1 0`; do echo "$i ... GO!"; sleep 1; done
+    for n in {10..1}; do printf "\r%s " $n; sleep 1;done
 }
-
+ 
 function imgClip {
     imgclip.py "$img_path"/lastimg.png &
     imgPID=$!
