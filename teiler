@@ -1,514 +1,209 @@
-#!/bin/bash
-# teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
-# (c) Rasmus Steinke <rasi at xssn dot at>
-# Additional Ideas and testing by Zeltak <zeltak at gmail dot com>
-#
-# Requirements:
-# xclip, dzen2, dmenu (or simpleswitcher-dd), ffmpeg, scrot, bc, some notification daemon
-#
-# Optional dependencies:
-# Some image editing tool, scp or fb-client
+#!/bin/zsh
 
-
-
-# check dependencies
-
-if [[ -f $HOME/.config/teiler/config ]];
-    then echo "Config found"
-else
-    echo "No config found" && echo "No config found"
-    echo "Please copy config.example to ~/.config/teiler/config"
-    echo "Please copy config.example to ~/.config/teiler/config"
-    echo "Terminating..."
-    echo " "
-    killall teiler
-fi
-
-if [[ -f $HOME/.config/dmenurc ]];
-    then echo "Config found"
-else
-    echo "No dmenu config found" && echo "No dmenu config found"
-    echo "Please copy dmenurc to ~/.config/dmenurc"
-    echo "Please copy dmenurc to ~/.config/dmenurc"
-    echo "Terminating..."
-    echo " "
-    killall teiler
-fi
-
-
-if [[ -d $HOME/.local/share/teiler ]];
-    then echo "data directory found"
-else
-    mkdir $HOME/.local/share/teiler
-    touch $HOME/.local/share/teiler/temp_cast
-fi
-
-command -v dzen2 >/dev/null 2>&1 || {
-    echo "teiler" "dzen2 is not installed. Aborting" >&2; exit 1;
+function prompt {
+    PROMPT_RESULT=$(echo ${(j:\n:)@} | $BACKEND ${(P)BACKEND} -p ${prompt_txt:-Teiler})
+    [[ "$PROMPT_RESULT" =~ "[0-9]+" ]] && echo $MATCH
 }
 
-back_end1=`command -v simpleswitcher`
-back_end2=`command -v dmenu`
-if [[ -n "$back_end1" || -n "$back_end2" ]];
-    then echo "dmenu or simpleswitcher found - great!"
-    else echo "neither dmenu or simpleswitcher found"
-    echo "no dmenu or simpleswitcher found - aborting" >&2; exit 1;
-fi
-
-
-up1=`command -v scp`
-up2=`command -v fb`
-if [[ -n "$up1" || -n "$up2" ]];
-    then echo "fb or scp found - great!"
-    else echo "neither fb or scp found"
-    echo "no fb or scp found - please make sure to use imgur in config"
-fi
-
-command -v ffmpeg >/dev/null 2>&1 || {
-    echo "ffmpeg is not installed. Aborting" >&2; exit 1;
+function mainMenu {
+    prompt_txt='Teiler:'
+    isRecording && STATE_RECORDING=" 3. Stop recording screencast"
+    pmt=(" 0: Cancel"
+         " 1. Screenshot (Fullscreen)"
+         " 2. Screenshot (Area)"
+         ${STATE_RECORDING:-" 3. Record screencast"}
+         "---"
+         " 4. Upload clipboard content (Delayed)"
+         " 5. Copy last image to clipboard"
+         " 6. Upload a file"
+         ${CUSTOM_MENUS:+' 9. More menus!'})
+    case $(prompt $pmt) in
+        1) delayPrompt screenshot -d ;;
+        2) delayPrompt screenshot -s -d ;;
+        3) isRecording && stopRecording || screencast ;;
+        4) notImplemented ;;
+        5) imgClip ;;
+        6) uploadMenu ;;
+        *) exit
+    esac
 }
 
-command -v scrot >/dev/null 2>&1 || {
-    echo "scrot is not installed. Aborting" >&2; exit 1; }
-
-command -v bc >/dev/null 2>&1 || { 
-    echo "bc is not installed. Aborting" >&2; exit 1;
+function uploadMenu {
+    pmt=(" 0: << back to Main Menu"
+         " 1. Upload last Image"
+         " 2. Upload last Video"
+         " 3. Image"
+         " 4. Video")
+    case $(prompt $pmt) in
+        1) instantImg ;;
+        2) instantVid ;;
+        3) uploadImg $(listImg) ;;
+        4) uploadVid $(listVid) ;;
+        *) mainMenu
+    esac
 }
 
-echo "Please create a hotkey for teiler. You will know why, eventually :)"
-
-source ~/.config/teiler/config
-source ~/.config/dmenurc
-echo "Font used: $font"
-echo "Backend used: $backend"
-
-
-
-# functions
-
-# Some Variables to clean up the code a bit
-now=$(date +"%Y%m%d%H%M%S")
-
-# function used for four countdowns
-function countdown1 () {
-    for i in `seq $counter1 -1 0`; do echo "$i ... GO!"; sleep 1; done
-}
-function countdown2 () {
-    for i in `seq $counter2 -1 0`; do echo "$i ... GO!"; sleep 1; done
-}
-function countdown3 () {
-    for i in `seq $counter3 -1 0`; do echo "$i ... GO!"; sleep 1; done
-}
-function archive_ul() {
-    if [[ "$archive_ul" == "1" ]]; then
-        cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
-    else echo ""
-fi
+function screencast {
+    (( $+commands[ffmpeg] && $+commands[xdotool] && $+commands[xwininfo] )) \
+        || die "Missing dependencies!"
+    isRecording && {
+        notify "$time" 'Screencast already in progress'
+        die 'Already recording screeen'
+    }
+    [[ -f "${img_path}/lastvid.webm" ]] && rm "${img_path}/lastvid.webm"
+    ffmpeg $encopts "${img_path}/lastvid.webm" &
+    >$SCREENCAST_PIDFILE <<< $!
+    indicator
+    notify "$time" "Screencast started"
 }
 
-
-if [[ "$backend" == "simpleswitcher" ]]
-    then
-        function dmenu_t () {
-        choice="$(echo "$menu" | simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu -p "teiler: ")"
-        }
-
-elif [[ "$backend" == "dmenu" ]]
-    then 
-        if [[ "$dmenu_trans" == "1" ]]
-            then
-            function dmenu_t () {
-            choice="$(echo "$menu" | dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90 -p "teiler: ")"
-            }
-        else
-            function dmenu_t () {
-            choice="$(echo "$menu" | dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -p "teiler: ")"
-            }
-        fi
-fi     
-
-
-# functions used for archiving the different file types
-function archive_clip() {
-    if [[ "$archive_clip" == "1" ]]; then
-        cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
-    else echo ""
-    fi
+function indicator {
+    echo $rec_text | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
+    >$INDICATOR_PIDFILE <<< $!
 }
 
-function archive_img() {
-    if [[ "$archive_img" == "1" ]]; then
-        cp "$img_path"/lastimg.png "$img_path"/"$filemask".png
-    else echo ""
-    fi
+function stopRecording       {
+    local pid
+    [[ -f $SCREENCAST_PIDFILE ]] && {
+        pid=$(<$SCREENCAST_PIDFILE)
+        pid2=$(<$INDICATOR_PIDFILE)
+        isRecording && kill "$pid" "$pid2"
+        rm "$SCREENCAST_PIDFILE"
+        rm "$INDICATOR_PIDFILE"
+    }
+    notify "$time" "Stopped recording"
+    archiveVid
+    return 0
 }
 
-
-# notification functions
-function notify() {
-    if [[ -n "$dunst_fg" ]]
-        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "teiler" "${2}"
-    else notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}"
-    fi
+function delayPrompt {
+    prompt_txt='Delay:'
+    t=$(prompt 0 2 5 10 20 30 "Cancel")
+    [[ "$t" =~ "[0-9]+" ]] || die "Canceled"
+    delayCountdown | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p $(($t - 1)) &
+    [[ $t -gt 2 ]] && notify $time "Screenshot will be taken in $t seconds"
+    $@ $[$t+1]
 }
 
-function notify_ul() {
-    if [[ -n "$dunst_fg" ]]
-        then notify-send -u low -h string:bgcolor:$dunst_bg -h string:fgcolor:$dunst_fg --hint=int:transient:1 -t ${1} "teiler" "${2}\n$(xclip -o)"
-    else
-        notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}\n$(xclip -o)"
-    fi
+function delayCountdown {
+    for i in `seq $(($t - 1)) -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 
-
-# this shows a little dzen2 widget to indicate that a screencast is happening right now
-function rec_indicator() {
-    while true; do
-        source ~/.config/teiler/config
-            if pgrep -f x11grab; then
-                echo "$rec_text"
-            elif pgrep -f byzanz-record; then
-                echo "$rec_text"
-            else
-                echo ""
-            fi
-        sleep 1
-    done | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
+function delayClip {
+    for i in `seq 10 -1 0`; do echo "$i ... GO!"; sleep 1; done
 }
 
-
-
-# Get Dimensions of active Window
-function dimensions() {
-    unset x y w h
-    eval $(xwininfo -id $(xdotool getactivewindow) |
-    sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
-           -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
-           -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
-           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
-}
-
-
-# Some options depending which uploader is used (right now only fb and scp are supported)
-if [[ $ul == "fb" ]]; then
-    ul_img="fb -n $filemask lastimg.png"
-    ul_vid="fb $(cat ~/.local/share/teiler/temp_cast)"
-    ul_clip="fb clip-$now.txt #&& rm -f clip-$now.txt"
-elif [[ $ul == "scp" ]]; then
-    ul_img="echo $(date +"%Y%m%d%H%M%S") > ~/.local/share/teiler/timestamp
-            scp "$img_path"/lastimg.png "$ulhost_img/$(cat ~/.local/share/teiler/timestamp).png" &&
-            echo -n "$url_img/$(cat ~/.local/share/teiler/timestamp).png" | xclip"
-    ul_vid="scp $(cat ~/.local/share/teiler/temp_cast) $ulhost_vid &&
-            echo -n "$url_vid/$(cat ~/.local/share/teiler/temp_cast)" | xclip"
-    ul_clip="scp clip-$now.txt $ulhost_paste && echo -n "$url_paste/clip-$now.txt" | xclip"
-elif [[ $ul == "imgur" ]]; then
-    ul_img="curl -s -F "image=@lastimg.png" -F "key=486690f872c678126a2c09a9e196ce1b" \
-    https://imgur.com/api/upload.xml > ~/.local/share/teiler/imgur.xml
-    xmllint ~/.local/share/teiler/imgur.xml --xpath '//original_image/text\()' | xclip"
-else
-    echo "no supported uploader" && notify-send "teiler" "No supported Uploader"
-fi
-
-if [[ "$dzen2_trans" == "1" ]]; then
-    countd="countdown1 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-    countd2="countdown2 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-    countd3="countdown3 | dzen2 -o 80 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-else 
-    countd="countdown1 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-    countd2="countdown2 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-    countd3="countdown3 | dzen2 -fn '$dzen2_font' -fg '$nf' -ta c -w '$dzen2_w' -bg '$nb' -x '$dzen2_x' -y '$dzen2_y'"
-fi
-
-# this copies clipboard content to both clipboard buffers
-x_clip="(xclip -o) | xclip -selection clipboard"
-
-
-
-
-# Beginning of the actual script :)
-cd $img_path
-
-menu="
-1. Screenshots
-2. Screenshots (Upload)
-3. Screencasts
--------------------------------------
-4. Quick Screenshot (Fullscreen)
-5. Quick Screenshot (Area)
-6. Quick Screencast
-7. Upload Clipboard content (Delayed)
-8. Stop Recording Of Any Screencast
-9. Copy Last Image To Clipboard
-"
-
-dmenu_t
-
-case "$choice" in
-    "1. Screenshots")
-menu="
-1. Fullscreen
-2. Fullscreen (Edit)
-3. Fullscreen (Delayed)
-4. Fullscreen (Delayed & Edit)
-5. Area
-6. Area (Edit)
-
-
-
-
-"
-
-dmenu_t
-
-case "$choice" in
-    "1. Fullscreen")
-         scrot -d 1 lastimg.png
-         notify ${time} "Screenshot saved"  
-         archive_img
-   ;;
-    "2. Fullscreen (Edit)")
-         scrot -d 1 lastimg.png -e "$edit \$f"
-         eval $x_clip
-         notify ${time} "Screenshot saved"
-         archive_img
-   ;;
-    "3. Fullscreen (Delayed)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         scrot -d 1 lastimg.png
-         notify ${time} "Screenshot saved"
-         archive_img
-   ;;
-    "4. Fullscreen (Delayed & Edit)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         scrot -d 1 lastimg.png -e "$edit \$f"
-         notify ${time} "Screenshot saved"
-         archive_img
-   ;;
-    "5. Area")
-         scrot -s lastimg.png
-         notify ${time} "Screenshot saved"
-         archive_img
-   ;;
-    "6. Area (Edit)")
-        scrot -s lastimg.png -e "$edit \$f"
-        eval $x_clip
-        notify ${time} "Screenshot saved"
-        archive_img
-;;
-*)
-$0
-esac
-;;
-"2. Screenshots (Upload)")
-menu="
-1. Fullscreen
-2. Fullscreen (Edit)
-3. Fullscreen (Delayed)
-4. Fullscreen (Delayed & Edit)
-5. Area
-6. Area (Edit)
-
-
-
-
-"
-
-dmenu_t
-
-case "$choice" in
-    "1. Fullscreen")
-         scrot -d 1 lastimg.png -e "$ul_img"
-         eval $x_clip
-         notify_ul ${time} "Screenshot uploaded"
-         archive_ul
-   ;;
-    "2. Fullscreen (Edit)")
-         scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
-         eval $x_clip && notify_ul ${time} "Screenshot uploaded"
-         archive_ul
-   ;;
-    "3. Fullscreen (Delayed)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         scrot -d 1 lastimg.png -e "$ul_img"
-         eval $x_clip && notify_ul ${time} "Screenshot uploaded"
-         archive_ul
-   ;;
-    "4. Fullscreen (Delayed & Edit)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         scrot -d 1 lastimg.png -e "$edit \$f && $ul_img"
-         eval $x_clip
-         notify_ul ${time} "Screenshot uploaded"
-         archive_ul
-   ;;
-    "5. Area")
-         scrot -s lastimg.png -e "$ul_img"
-         eval $x_clip
-         notify_ul ${time} "Screenshot uploaded"
-         archive_ul
-   ;;
-    "6. Area (Edit)")
-        scrot -s lastimg.png -e "$edit \$f && $ul_img"
-        eval $x_clip
-        notify_ul ${time} "Screenshot uploaded"
-        archive_ul
-   ;;
-*)
-$0
-esac
-;;
-"3. Screencasts")
-menu="
-1. Fullscreen
-2. Window
-3. GIF (Fullscreen)
-4. GIF (Window)
-
-
-
-
-
-
-"
-dmenu_t
-
-case "$choice" in
-    "1. Fullscreen")
-         rm -f ~/.local/share/teiler/temp_cast
-         echo "$now.webm" > ~/.local/share/teiler/temp_cast
-         ffmpeg $ffaudio $encopts $now.webm &
-         notify ${time} "Screencast started" & rec_indicator &
-   ;;
-    "2. Window")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         rm -f ~/.local/share/teiler/temp_cast
-         echo "$now.webm" > ~/.local/share/teiler/temp_cast
-         dimensions
-         ffmpeg $ffaudio $encopts $now.webm &
-         notify ${time} "Screencast started" & rec_indicator &
-   ;;
-    "3. GIF (Fullscreen)")
-         rm -f ~/.local/share/teiler/temp_cast
-         echo "$now.gif" > ~/.local/share/teiler/temp_cast
-         byzanz-record -d 9999 $now.gif &
-         notify ${time} "Screencast started" & rec_indicator &
-   ;;
-    "4. GIF (Window)")
-         eval $countd & sleep $(echo $counter1+1 | bc)
-         rm -f ~/.local/share/teiler/temp_cast
-         echo "$now.gif" > ~/.local/share/teiler/temp_cast
-         dimensions && byzanz-record -x $x -y $y -w $w -h $h -d 9999 $now.gif &
-         notify ${time} "Screencast started" & rec_indicator &
-   ;;
-*)
-$0
-esac
-;;
-"4. Quick Screenshot (Fullscreen)")
-    if [ "$quickul" == "1" ]; then 
-        if [ "$quickedit" == "1" ]; then
-            scrot -d 1 lastimg.png -e "$ul_img"
-            eval $x_clip
-            notify_ul ${time} "Screenshot uploaded"
-            archive_ul
-        elif [ "$quickedit" == "0" ]; then
-            scrot -d 1 lastimg.png -e "$ul_img"
-            eval $x_clip
-            notify_ul ${time} "Screenshot uploaded"
-            archive_ul
-        fi
-    elif [ "$quickul" == "0" ]; then
-        scrot -d 1 lastimg.png
-        archive_img
-        if [ "$quickedit" == "1" ]; then
-            $edit lastimg.png
-            notify ${time} "Screenshot saved"
-        elif [ "$quickedit" == "0" ]; then
-            notify_ul ${time} "Screenshot saved"
-        fi
-    fi
-    ;;
-"5. Quick Screenshot (Area)")
-    if [ "$quickul" == "1" ]; then 
-        if [ "$quickedit" == "1" ]; then
-            scrot -s lastimg.png -e "$edit \$f && $ul_img"
-            eval $x_clip
-            notify_ul ${time} "Screenshot uploaded"
-            archive_ul
-        elif [ "$quickedit" == "0" ]; then
-            scrot -s lastimg.png -e "$ul_img"
-            eval $x_clip
-            notify_ul ${time} "Screenshot uploaded"
-            archive_ul
-        fi
-    elif [ "$quickul" == "0" ]; then
-        scrot -s lastimg.png
-        archive_img
-        if [ "$quickedit" == "1" ]; then
-            $edit lastimg.png
-            notify_ul ${time} "Screenshot saved"
-        elif [ "$quickedit" == "0" ]; then
-            notify_ul ${time} "Screenshot saved"
-        fi
-    fi
-    ;;
-"6. Quick Screencast")
-    rm -f ~/.local/share/teiler/temp_cast
-    echo "$now.webm" > ~/.local/share/teiler/temp_cast
-    ffmpeg $ffaudio $encopts $now.webm &
-    notify ${time} "Screencast started" & rec_indicator &
-    ;;
-"7. Upload Clipboard content (Delayed)")
-    if [ $ul == "imgur" ];
-        then notify-send "imgur" "imgur does not support text"
-    else 
-        eval $countd2 & sleep $(echo $counter2+1 | bc)
-        xclip -o > clip-$now.txt
-        eval $ul_clip
-        eval $x_clip
-        notify_ul ${time} "Clipboard uploaded"
-    fi
-   ;;
-"8. Stop Recording Of Any Screencast")
-    if [ $ul == "imgur" ];
-    then notify-send "imgur" "info: imgur does not support upload."
-        kill $(pgrep -f x11grab)
-        pkill -f rec_indicator
-        kill $(pgrep -n dzen2)
-        killall byzanz-record
-        kill $(pgrep -n dzen2)
-        sleep 3
-    else
-        kill $(pgrep -f x11grab)
-        pkill -f rec_indicator
-        kill $(pgrep -n dzen2)
-        killall byzanz-record
-        kill $(pgrep -n dzen2)
-        sleep 3
-menu="
-1. Yes
-2. No
-"
-        dmenu_t
-
-        case "$choice" in
-            "1. Yes")
-                 eval $ul_vid
-                 eval $x_clip
-                 notify_ul ${time} "Screencast uploaded"
-            ;;
-            "2. No)")
-                 echo "shutting down..."
-            ;;
-            *)
-        esac
-        killall teiler
-    fi
-    ;;
-"9. Copy Last Image To Clipboard")
+function imgClip {
     imgclip.py "$img_path"/lastimg.png &
-    eval $countd3 & sleep $(echo $counter3+1 | bc)
-    kill $(pgrep -f imgclip.py)
-    ;;
-    *)
-echo "shutting down..."
-esac
+    imgPID=$!
+    delayClip | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p 9 
+    kill $imgPID
+}
+
+function isRecording {
+    [[ -f $SCREENCAST_PIDFILE ]] && \
+        [[ "$(pgrep -l -F $SCREENCAST_PIDFILE)" =~ "[0-9]+ ffmpeg" ]]
+}
+
+function die { echo "$1"; exit ${2:-1} }
+
+function screenshot {
+    (( $+commands[scrot] )) || die "Missing scrot!"
+    # imagemagic's import?
+    [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
+    scrot $@ "${img_path}/lastimg.png"
+    notify "$time" "Screenshot saved"
+    archiveImage
+}
+
+function notify {
+    notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
+}
+
+
+function notImplemented {
+    notify "$time" "Feature not implemented yet!"
+}
+
+function archiveImage {
+    [[ "$archive_img" = '1' ]] || return
+    mv "${img_path}/lastimg.png" "${img_path}/${filemask}.png"
+    ln -s "${img_path}/${filemask}.png" "${img_path}/lastimg.png"
+}
+
+function archiveVid {
+    [[ "$archive_vid" = '1' ]] || return
+    mv "${img_path}/lastvid.webm" "${img_path}/${filemask}.webm"
+    ln -s "${img_path}/${filemask}.webm" "${img_path}/lastvid.webm"
+}
+
+function listVid {
+    prompt_txt='Upload:'
+    ls -t -1 "$img_path"/teiler-*.webm | $BACKEND ${(P)BACKEND} -p "Upload"
+}
+
+function listImg {
+    prompt_txt='Upload:'
+    ls -t -1 "$img_path"/teiler-*.png | $BACKEND ${(P)BACKEND} -p "Upload" 
+}
+
+function uploadImg {
+    if [[ "$ul" == "scp" ]]; then
+        scp "$*" "$scp_host":/"$scp_path_img/"
+        notify-send "Image Uploaded" "$http_img/$(basename $file)"
+        echo -n "$http_img/$(basename $file)" | xclip
+    elif [[ "$ul" == "fb" ]]; then
+        fb "$*"
+        notify-send "Image Uploaded" "$(echo $(xclip -o))"
+    fi
+}
+
+function uploadVid {
+    if [[ "$ul" == "scp" ]]; then
+        scp "$*" "$scp_host":/"$scp_path_vid/"
+        notify-send "Video Uploaded" "$http_vid/$(basename $file)"
+        echo -n "$http_vid/$(basename $file)" | xclip
+    elif [[ "$ul" == "fb" ]]; then
+        fb "$*"
+        notify-send "Video Uploaded" "$(echo $(xclip -o))"
+    fi
+}   
+
+
+function instantImg {
+    file=$(readlink "$img_path/lastimg.png")
+        if [[ "$ul" == scp ]]
+        then scp "$file" "$scp_host":/"$scp_path_img/"
+        notify-send "Image Uploaded" "$http_img/$(basename $file)"
+        echo -n "$http_img/$(basename $file)" | xclip
+    elif [[ "$ul" == fb ]]
+        then fb "$file"
+        notify-send "Image Uploaded" "$(echo $(xclip -o))"
+    fi
+}
+
+function instantVid {
+    file=$(readlink "$img_path/lastvid.webm")
+        if [[ "$ul" == scp ]]
+        then scp "$file" "$scp_host":/"$scp_path_vid/"
+        notify-send "Video Uploaded" "$http_vid/$(basename $file)"
+        echo -n "$http_vid/$(basename $file)" | xclip
+    elif [[ "$ul" == fb ]]
+        then fb "$file"
+        notify-send "Video Uploaded" "$(echo $(xclip -o))"
+    fi
+}
+
+
+function x_clip {
+    x_clip="(xclip -o) | xclip -selection clipboard"
+}
+
+TEILERRC="${TEILERRC:-$HOME/.config/teiler/config}"
+BACKEND="${BACKEND:-simpleswitcher}"
+[[ ! -f "$TEILERRC" ]] && die 'Please configure teiler!'  1
+(( $+commands[dmenu] || $+commands[simpleswitcher] )) \
+    || die 'Please install either dmenu or simpleswitcher!' 3
+
+source $TEILERRC
+mainMenu

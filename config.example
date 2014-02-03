@@ -1,130 +1,86 @@
-
 ###### teiler configuration file ######
 
+DMENURC="${DMENURC:-$HOME/.config/dmenurc}"
+source $DMENURC
 
-#######################
-### general options ###
-#######################
 
-#Folder where to store archive of images and videos
+#   general options
+
 img_path=$HOME/Pictures/Screenshots
+SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
+INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
+time=1000
+filemask=$(date +teiler-"%Y%m%d%H%M%S")
 
-#set file naming scheme for archive
-filemask=$(date +"%Y%m%d%H%M%S")
 
-#Upload tool. possible choices: fb, scp, imgur
-#use imgur, if you dont have access to a filebin or ssh server
-#imgur does not support video uploads.
-ul=scp
 
-#Archive uploaded images
-archive_ul=1
+#   Uploading & archiving options
 
-#Archive clipboarded images
-archive_clip=1
-
-#Archive non-uploaded saved files
+ul=fb
+archive_vid=1
 archive_img=1
-
-#upload for quick options
-quickul=1
-
-#edit images for quick options
-quickedit=0
-
-#Set preferred image editor
-edit=gimp
-
-#set your screen resolution
-#do NOT set this bigger than your actual resolution
 res=1920x1080
 
 
 
-###################
-### scp options ###
-###################
+#   Scp options
 
-#host to be used for images
-ulhost_img=
-
-#host to be used for videos
-ulhost_vid=
-
-#host to be used for clipboard content
-ulhost_paste=
-
-#public url to uploaded videos
-url_vid=
-
-#public url to uploaded clipboard content
-url_paste=
-
-#public url to uploaded images
-url_img=
+scp_host=
+scp_path_img=
+scp_path_vid=
+http_img=
+http_vid=
 
 
 
-#############################
-### notification settings ###
-#############################
+#   Ffmpeg settings
 
-#How long will notifications be visible? (in miliseconds)
-time=3000
-
-#Seconds to count for delay (Use $COUNTD variable)
-counter1=3
-
-#Seconds to count for delay (Use $COUNTD2 variable)
-counter2=6
-
-#Seconds to count for delay (Use $COUNTD3 variable)
-counter3=8
-
-
-
-######################
-### dunst settings ###
-######################
-
-#Custom foreground color for notifications, leave empty for defaults
-dunst_fg=
-
-#Custom background color for notifications, leave empty for defaults
-dunst_bg=
+encopts=(
+    '-f'        'x11grab' 
+    '-s'        "$res"
+    '-i'        "$DISPLAY+2560,0"
+    '-r'        '25'
+    '-quality'  'good'
+    '-cpu-used' '0'
+    '-b:v'      '5000k'
+    '-qmin'     '10'
+    '-qmax'     '42'
+    '-bufsize'  '1000k'
+    '-threads'  '4')
 
 
 
-########################
-### record indicator ###
-########################
+#   record indicator
 
-#Message to be displayed while recording a screencast
 rec_text="capturing..."
-
-#width of dzen2 for REC_TEXT
-rec_w="40"
-
-#X Padding for REC_TEXT
-rec_x="940"
-
-#Y Padding for REC_TEXT
+rec_w="100"
+rec_x="3400"
 rec_y="0"
-
-#font for REC_TEXT
-rec_font="envypn-8"
-
-#foreground color
+rec_font="PragmataPro-10"
 rec_nf="#FFFFFF"
-
-#background color
-rec_sf="#ff0000"
+rec_sf="#000000"
 
 
 
-#######################
-### ffmpeg settings ###
-#######################
+#   Menu Constructs
 
-encopts="-f x11grab -s $res -i $DISPLAY+2560,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
-ffaudio="-f alsa -ac 2 -i pulse"
+dmenu_defaults=(
+    '-l'   '15'
+    '-fn'  "$font"
+    '-nf'  "$nf"
+    '-nb'  "$nb"
+    '-sf'  "$sf"
+    '-sb'  "$sb"
+    '-o'   '90')
+dmenu=($dmenu_defaults)
+
+simpleswitcher_defaults=(
+    '-font' "$font"
+    '-fg'   "$nf"
+    '-bg'   "$nb"
+    '-hlfg' "$sf"
+    '-hlbg' "$sb"
+    '-bc'   "$bc"
+    '-o'    '80'
+    '-dmenu')
+simpleswitcher=($simpleswitcher_defaults)
