@@ -80,17 +80,17 @@ function delayPrompt {
     prompt_txt='Delay:'
     t=$(prompt 0 2 5 10 20 30 "Cancel")
     [[ "$t" =~ "[0-9]+" ]] || die "Canceled"
-    delayCountdown | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p $(($t - 1)) &
+    delayCountdown | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "1200" -y "$rec_y" -p $(( $t - 2 )) &
     [[ $t -gt 2 ]] && notify $time "Screenshot will be taken in $t seconds"
     $@ $[$t+1]
 }
 
 function delayCountdown {
-    for n in {$t..1}; do printf "\r%s " $n; sleep 1; done
+    for n in {$t..1}; do printf "\n%s " $n; sleep 1; done
 }
 
 function delayClip {
-    for n in {10..1}; do printf "\r%s " $n; sleep 1;done
+    for n in {10..1}; do printf "\n%s " $n; sleep 1;done
 }
  
 function imgClip {
