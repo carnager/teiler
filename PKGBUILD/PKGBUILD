@@ -3,7 +3,7 @@
 pkgname=teiler-git
 pkgver=124.a38e15c
 pkgrel=1
-pkgdesc="a simple screenshot/screencast tool written in bash"
+pkgdesc="a simple screenshot/screencast tool written in zsh"
 arch=('any')
 url='http://teiler.53280.de'
 license=('GPL')
