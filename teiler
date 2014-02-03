@@ -35,10 +35,10 @@ function uploadMenu {
          " 3. Image"
          " 4. Video")
     case $(prompt $pmt) in
-        1) instantImg ;;
-        2) instantVid ;;
-        3) uploadImg $(listImg) ;;
-        4) uploadVid $(listVid) ;;
+        1) instantUpload png $scp_path_img $http_img ;;
+        2) instantUpload webm $scp_path_vid $http_vid ;;
+        3) upLoad $(listFiles png) $scp_path_img $http_img ;;
+        4) upLoad $(listFiles webm) $scp_path_vid $http_vid ;;
         *) mainMenu
     esac
 }
@@ -137,63 +137,44 @@ function archiveVid {
     ln -s "${img_path}/${filemask}.webm" "${img_path}/lastvid.webm"
 }
 
-function listVid {
+function listFiles {
     prompt_txt='Upload:'
-    ls -t -1 "$img_path"/teiler-*.webm | $BACKEND ${(P)BACKEND} -p "Upload"
+    ls -t -1 "$img_path"/teiler-*.$1 | $BACKEND ${(P)BACKEND} -p "Upload" 
 }
 
-function listImg {
-    prompt_txt='Upload:'
-    ls -t -1 "$img_path"/teiler-*.png | $BACKEND ${(P)BACKEND} -p "Upload" 
-}
-
-function uploadImg {
+function upLoad {
+    file=$1
+    scp_path=$2
+    http_path=$3
     if [[ "$ul" == "scp" ]]; then
-        scp "$*" "$scp_host":/"$scp_path_img/"
-        notify-send "Image Uploaded" "$http_img/$(basename $file)"
-        echo -n "$http_img/$(basename $file)" | xclip
+        scp "$file" "$scp_host":/"$scp_path/"
+        notify-send "Image Uploaded" "$http_path/$(basename $file)"
+        echo -n "$http_path/$(basename $file)" | xclip
     elif [[ "$ul" == "fb" ]]; then
         fb "$*"
         notify-send "Image Uploaded" "$(echo $(xclip -o))"
     fi
 }
 
-function uploadVid {
-    if [[ "$ul" == "scp" ]]; then
-        scp "$*" "$scp_host":/"$scp_path_vid/"
-        notify-send "Video Uploaded" "$http_vid/$(basename $file)"
-        echo -n "$http_vid/$(basename $file)" | xclip
-    elif [[ "$ul" == "fb" ]]; then
-        fb "$*"
-        notify-send "Video Uploaded" "$(echo $(xclip -o))"
+function instantUpload {
+    ext=$1
+    scp_path=$2
+    http_path=$3
+    if [[ $ext == png ]] 
+        then file=$(readlink "$img_path/lastimg.png")
+             type="Image"
+    elif [[ $ext == webm ]]
+        then file=$(readlink "$img_path/lastvid.webm")
     fi
-}   
-
-
-function instantImg {
-    file=$(readlink "$img_path/lastimg.png")
         if [[ "$ul" == scp ]]
-        then scp "$file" "$scp_host":/"$scp_path_img/"
-        notify-send "Image Uploaded" "$http_img/$(basename $file)"
-        echo -n "$http_img/$(basename $file)" | xclip
+        then scp "$file" "$scp_host":/"$scp_path/"
+        notify-send "$(echo $type) Uploaded" "$http_path/$(basename $file)"
+        echo -n "$http_path/$(basename $file)" | xclip
     elif [[ "$ul" == fb ]]
         then fb "$file"
-        notify-send "Image Uploaded" "$(echo $(xclip -o))"
+        notify-send "$(echo $type) Uploaded" "$(echo $(xclip -o))"
     fi
 }
-
-function instantVid {
-    file=$(readlink "$img_path/lastvid.webm")
-        if [[ "$ul" == scp ]]
-        then scp "$file" "$scp_host":/"$scp_path_vid/"
-        notify-send "Video Uploaded" "$http_vid/$(basename $file)"
-        echo -n "$http_vid/$(basename $file)" | xclip
-    elif [[ "$ul" == fb ]]
-        then fb "$file"
-        notify-send "Video Uploaded" "$(echo $(xclip -o))"
-    fi
-}
-
 
 function x_clip {
     x_clip="(xclip -o) | xclip -selection clipboard"
