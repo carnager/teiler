@@ -154,6 +154,7 @@ function upLoad {
         fb "$*"
         notify-send "Image Uploaded" "$(echo $(xclip -o))"
     fi
+    x_clip
 }
 
 function instantUpload {
@@ -174,6 +175,7 @@ function instantUpload {
         then fb "$file"
         notify-send "$(echo $type) Uploaded" "$(echo $(xclip -o))"
     fi
+    x_clip
 }
 
 function x_clip {
