@@ -8,7 +8,13 @@ arch=('any')
 url='http://teiler.53280.de'
 license=('GPL')
 depends=('bc' 'ffmpeg' 'scrot' 'xclip' 'dzen2-git' 'pygtk')
-optdepends=('fb-client: Upload to paste.xinu.at (or selfhosted filebin)' 'openssh: Upload to SSH server' 'dmenu2: Backend for teiler' 'simpleswitcher-dd-git: Alternative backend for teiler' 'xorg-xwininfo: Screencast single windows' 'xdotool: Screencast single windows')
+optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
+            'openssh: 			Upload to SSH server'
+            'dmenu2: 			Backend for teiler'
+            'simpleswitcher-dd-git: 	Alternative backend for teiler'
+            'xorg-xwininfo: 		Screencast single windows'
+            'xdotool: 			Screencast single windows')
+
 options=(!strip)
 install="teiler.install"
 makedepends=('git')

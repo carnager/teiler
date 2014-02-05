@@ -1,11 +1,13 @@
 #!/bin/bash
 post_install() {
-echo 'to use teiler you need to copy /usr/share/doc/teiler/config.example to $HOME/.config/teiler/config
+echo '
+to use teiler you need to copy /usr/share/doc/teiler/config.example to $HOME/.config/teiler/config
 Also copy /usr/share/config/teiler/dmenurc to $HOME/.config/dmenurc
 
-Install either dmenu2 or simpleswitcher-dll-git from AUR.
+Install either dmenu2 or simpleswitcher-dd-git from AUR.
 Then define a backend (dmenu or simpleswitcher) in $HOME/.config/dmenurc
 
 You want to install some notification daemon. dunst is recommended.
+'
 } 
-post_install
+#post_install
