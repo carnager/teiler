@@ -44,6 +44,9 @@ encopts="-r 25 \
          -bufsize 1000k \
          -threads 4"
 
+ffmpeg_display=:0
+ffmpeg_x_offset=2560
+
 ffaudio="-f alsa \
          -ac 2 \
          -i pulse"

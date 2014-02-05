@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#########################################################################################################
+source $HOME/.config/teiler/config
+
+if [[ "$backend" == "simpleswitcher" ]]
+    then function dmenu_t () {
+        simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu "$@"
+        }
+
+elif [[ "$backend" == "dmenu" ]]
+            then function dmenu_t () {
+            dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90 "$@"
+            }
+fi
+########################################################################################################
+
+
 # start
 mainMenu () {
     isRecording && STATE_RECORDING="3. Stop recording screencast"
@@ -55,7 +71,7 @@ screencast () {
         echo "Already recording Screen"; exit 1;
 }
     [[ -f "${img_path}/lastvid.webm" ]] && rm "${img_path}/lastvid.webm"
-    ffmpeg -f x11grab -s $res -i $DISPLAY+0,0 $ffaudio $encopts "${img_path}/lastvid.webm" &
+    ffmpeg -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_x_offset,0 $ffaudio $encopts "${img_path}/lastvid.webm" &
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
