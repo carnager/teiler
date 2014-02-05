@@ -223,7 +223,7 @@ x_clip () {
 }
 
 # Check if dmenu or simpleswitcher are available 
-type dmenu || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
 
 # set default backend options
