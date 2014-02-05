@@ -44,7 +44,7 @@ ffaudio="-f alsa -ac 2 -i pulse"
 
 rec_text="capturing..."
 rec_w="100"
-rec_x="3400"
+rec_x="800"
 rec_y="0"
 rec_font="Inconsolata-10"
 rec_nf="#FFFFFF"
