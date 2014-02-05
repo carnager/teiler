@@ -2,11 +2,10 @@
 post_install() {
 echo 'to use teiler you need to copy /usr/share/doc/teiler/config.example to $HOME/.config/teiler/config
 Also copy /usr/share/config/teiler/dmenurc to $HOME/.config/dmenurc
+
+Install either dmenu2 or simpleswitcher-dll-git from AUR.
 Then define a backend (dmenu or simpleswitcher) in $HOME/.config/dmenurc
 
-to use editing feature, you need to have some image editing tool installed and set it in config
 You want to install some notification daemon. dunst is recommended.
-
-To use the simpleswitcher backend install "simpleswitcher-dd-git" from AUR '
 } 
 post_install

@@ -8,7 +8,7 @@ backend=simpleswitcher
 dmenu_trans=1
 
 #Font that is used for dmenu/ss
-font="PragmataPro-10"
+font="Inconsolata-10"
 
 #Foreground color for dmenu/dzen2/ss
 nf="#a0a0a0"
@@ -29,7 +29,7 @@ bc="#505050"
 dzen2_trans=0
 
 #font that is used for dzen2
-dzen2_font="PragmataPro-10"
+dzen2_font="Inconsolata-10"
 
 #Width of dzen2
 dzen2_w=200

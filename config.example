@@ -1,7 +1,6 @@
 ###### teiler configuration file ######
 
-DMENURC="${DMENURC:-$HOME/.config/dmenurc}"
-source $DMENURC
+source $HOME/.config/dmenurc
 
 
 #   general options
@@ -10,13 +9,14 @@ img_path=$HOME/Pictures/Screenshots
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
-filemask=$(date +teiler-"%Y%m%d%H%M%S")
+namekey=screen
+filemask=$(date +"$namekey"-"%Y%m%d%H%M%S")
 
 
 
 #   Uploading & archiving options
 
-ul=fb
+ul=scp
 archive_vid=1
 archive_img=1
 res=1920x1080
@@ -35,18 +35,8 @@ http_vid=
 
 #   Ffmpeg settings
 
-encopts=(
-    '-f'        'x11grab' 
-    '-s'        "$res"
-    '-i'        "$DISPLAY+0,0"
-    '-r'        '25'
-    '-quality'  'good'
-    '-cpu-used' '0'
-    '-b:v'      '5000k'
-    '-qmin'     '10'
-    '-qmax'     '42'
-    '-bufsize'  '1000k'
-    '-threads'  '4')
+encopts="-f x11grab -s $res -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
+ffaudio="-f alsa -ac 2 -i pulse"
 
 
 
@@ -56,31 +46,6 @@ rec_text="capturing..."
 rec_w="100"
 rec_x="3400"
 rec_y="0"
-rec_font="PragmataPro-10"
+rec_font="Inconsolata-10"
 rec_nf="#FFFFFF"
 rec_sf="#000000"
-
-
-
-#   Menu Constructs
-
-dmenu_defaults=(
-    '-l'   '15'
-    '-fn'  "$font"
-    '-nf'  "$nf"
-    '-nb'  "$nb"
-    '-sf'  "$sf"
-    '-sb'  "$sb"
-    '-o'   '90')
-dmenu=($dmenu_defaults)
-
-simpleswitcher_defaults=(
-    '-font' "$font"
-    '-fg'   "$nf"
-    '-bg'   "$nb"
-    '-hlfg' "$sf"
-    '-hlbg' "$sb"
-    '-bc'   "$bc"
-    '-o'    '80'
-    '-dmenu')
-simpleswitcher=($simpleswitcher_defaults)

@@ -1,72 +1,76 @@
-#!/bin/zsh
+#!/bin/bash
 
-function prompt {
-    PROMPT_RESULT=$(echo ${(j:\n:)@} | $BACKEND ${(P)BACKEND} -p ${prompt_txt:-Teiler})
-    [[ "$PROMPT_RESULT" =~ "[0-9]+" ]] && echo $MATCH
-}
+# start
+function mainMenu () {
+    isRecording && STATE_RECORDING="3. Stop recording screencast"
+    menu=("0: Cancel"
+          "1. Screenshot (Fullscreen)"
+          "2. Screenshot (Area)"
+          "${STATE_RECORDING:-"3. Record screencast"}"
+          "---"
+          "4. Copy last image to clipboard"
+          "5. Upload a File")
 
-function mainMenu {
-    prompt_txt='Teiler:'
-    isRecording && STATE_RECORDING=" 3. Stop recording screencast"
-    pmt=(" 0: Cancel"
-         " 1. Screenshot (Fullscreen)"
-         " 2. Screenshot (Area)"
-         ${STATE_RECORDING:-" 3. Record screencast"}
-         "---"
-         " 4. Upload clipboard content (Delayed)"
-         " 5. Copy last image to clipboard"
-         " 6. Upload a file"
-         ${CUSTOM_MENUS:+' 9. More menus!'})
-    case $(prompt $pmt) in
-        1) delayPrompt screenshot -d ;;
-        2) delayPrompt screenshot -s -d ;;
-        3) isRecording && stopRecording || screencast ;;
-        4) notImplemented ;;
-        5) imgClip ;;
-        6) uploadMenu ;;
-        *) exit
+    prompt() {
+        printf "%s\n" "$@" | dmenu_t -p "Teiler:"
+    }
+
+    case "$(prompt "${menu[@]}")" in 
+        0:*) exit ;;
+        1.*) delayPrompt screenshot -d ;;
+        2.*) delayPrompt screenshot -s -d ;;
+        3.*) isRecording && stopRecording || screencast ;;
+        4.*) imgClip ;;
+        5.*) uploadMenu ;;
+          *) exit
     esac
 }
 
-function uploadMenu {
-    pmt=(" 0: << back to Main Menu"
-         " 1. Upload last Image"
-         " 2. Upload last Video"
-         " 3. Image"
-         " 4. Video")
-    case $(prompt $pmt) in
-        1) instantUpload png $scp_path_img $http_img ;;
-        2) instantUpload webm $scp_path_vid $http_vid ;;
-        3) upLoad $(listFiles png) $scp_path_img $http_img ;;
-        4) upLoad $(listFiles webm) $scp_path_vid $http_vid ;;
-        *) mainMenu
-    esac
+function uploadMenu () {
+    menu=("0: << back to Main Menu"
+          "1. Upload last Image"
+          "2. Upload last Video"
+          "3. Image"
+          "4. Video")
+
+    prompt() {
+        printf "%s\n" "$@" | dmenu_t -p "Teiler:"
+    }
+
+       case "$(prompt "${menu[@]}")" in
+       0:*) mainMenu ;;
+       1.*) instantUpload png "$scp_path_img" "$http_img" ;;
+       2.*) instantUpload webm "$scp_path_vid" "$http_vid" ;;
+       3.*) upLoad "$(listFiles png)" "$scp_path_img" "$http_img" ;;
+       4.*) upLoad "$(listFiles webm)" "$scp_path_vid" "$http_vid" ;;
+         *) mainMenu
+   esac
 }
 
-function screencast {
-    (( $+commands[ffmpeg] && $+commands[xdotool] && $+commands[xwininfo] )) \
-        || die "Missing dependencies!"
+
+function screencast () {
+    type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
     isRecording && {
         notify "$time" 'Screencast already in progress'
-        die 'Already recording screeen'
-    }
+        echo "Already recording Screen"; exit 1;
+}
     [[ -f "${img_path}/lastvid.webm" ]] && rm "${img_path}/lastvid.webm"
-    ffmpeg $encopts "${img_path}/lastvid.webm" &
-    >$SCREENCAST_PIDFILE <<< $!
+    ffmpeg -f x11grab -s $res -i $DISPLAY+2560,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4 "${img_path}/lastvid.webm" &
+    echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
 }
 
-function indicator {
-    echo $rec_text | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
-    >$INDICATOR_PIDFILE <<< $!
+function indicator () {
+    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
+    echo "$!" > "$INDICATOR_PIDFILE"
 }
 
-function stopRecording       {
+function stopRecording () {
     local pid
     [[ -f $SCREENCAST_PIDFILE ]] && {
-        pid=$(<$SCREENCAST_PIDFILE)
-        pid2=$(<$INDICATOR_PIDFILE)
+        pid=$(cat "$SCREENCAST_PIDFILE")
+        pid2=$(cat "$INDICATOR_PIDFILE")
         isRecording && kill "$pid" "$pid2"
         rm "$SCREENCAST_PIDFILE"
         rm "$INDICATOR_PIDFILE"
@@ -76,74 +80,77 @@ function stopRecording       {
     return 0
 }
 
-function delayPrompt {
-    prompt_txt='Delay:'
+function delayPrompt () {
     t=$(prompt 0 2 5 10 20 30 "Cancel")
-    [[ "$t" =~ "[0-9]+" ]] || die "Canceled"
-    delayCountdown | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "1200" -y "$rec_y" -p $(( $t - 2 )) &
-    [[ $t -gt 2 ]] && notify $time "Screenshot will be taken in $t seconds"
-    $@ $[$t+1]
+    if [[ "$t" = *[[:digit:]]* ]]
+        then delayCountdown | dzen2 -fn "$font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -p 1 &
+    else echo "Canceled" && exit 1
+    fi
+    [[ "$t" -gt 2 ]] && notify "$time" "Screenshot will be taken in $t seconds"
+    "$@" $((t+1))
 }
 
-function delayCountdown {
-    for n in {$t..1}; do printf "\n%s " $n; sleep 1; done
+function delayCountdown () {
+for ((n=${1:-t}; n>=0; --n)); do
+printf "\n%s " $n
+sleep 1
+done
+printf "\r \r"  # clean up
 }
 
-function delayClip {
-    for n in {10..1}; do printf "\n%s " $n; sleep 1;done
+function delayClip () {
+for ((n=${1:-10}; n>=0; --n)); do  
+  printf "\n%s " $n
+  sleep 1
+done
+printf "\r \r"  # clean up
 }
- 
-function imgClip {
+
+function imgClip () {
     imgclip.py "$img_path"/lastimg.png &
     imgPID=$!
-    delayClip | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p 9 
-    kill $imgPID
+    delayClip | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p 1
+    kill "$imgPID"
 }
 
-function isRecording {
-    [[ -f $SCREENCAST_PIDFILE ]] && \
-        [[ "$(pgrep -l -F $SCREENCAST_PIDFILE)" =~ "[0-9]+ ffmpeg" ]]
+function isRecording () {
+    [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
 }
 
-function die { echo "$1"; exit ${2:-1} }
-
-function screenshot {
-    (( $+commands[scrot] )) || die "Missing scrot!"
-    # imagemagic's import?
+function screenshot () {
+     type scrot &>/dev/null || { echo "Missing scrot!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    scrot $@ "${img_path}/lastimg.png"
+    scrot "$@" "${img_path}/lastimg.png"
     notify "$time" "Screenshot saved"
     archiveImage
 }
 
-function notify {
+function notify () {
     notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
 }
 
-
-function notImplemented {
+function notImplemented () {
     notify "$time" "Feature not implemented yet!"
 }
 
-function archiveImage {
+function archiveImage () {
     [[ "$archive_img" = '1' ]] || return
     mv "${img_path}/lastimg.png" "${img_path}/${filemask}.png"
     ln -s "${img_path}/${filemask}.png" "${img_path}/lastimg.png"
 }
 
-function archiveVid {
+function archiveVid () {
     [[ "$archive_vid" = '1' ]] || return
     mv "${img_path}/lastvid.webm" "${img_path}/${filemask}.webm"
     ln -s "${img_path}/${filemask}.webm" "${img_path}/lastvid.webm"
 }
 
-function listFiles {
-    prompt_txt='Upload:'
-    ls -t -1 "$img_path"/teiler-*.$1 | $BACKEND ${(P)BACKEND} -p "Upload" 
+function listFiles () {
+    ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Upload"
 }
 
-function upLoad {
-    if [[ $1 == png ]] 
+function upLoad () {
+    if [[ $1 == png ]]
         then file=$(readlink "$img_path/lastimg.png")
         type="Image"
     elif [[ $1 == webm ]]
@@ -152,17 +159,17 @@ function upLoad {
     fi
     if [[ "$ul" == "scp" ]]
         then scp "$1" "$scp_host":/"$2/"
-        notify-send "$(echo "$type") Uploaded" "$3/$(basename $1)"
-        echo -n "$3/$(basename $1)" | xclip
+        notify-send "$(echo "$type") Uploaded" "$3/$(basename "$1")"
+        echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]
         then fb "$1"
-        notify-send "$(echo "$type") Uploaded" "$(echo $(xclip -o))"
+        notify-send "$(echo "$type") Uploaded" "$(xclip -o)"
     fi
     x_clip
 }
 
-function instantUpload {
-    if [[ $1 == png ]] 
+function instantUpload () {
+    if [[ $1 == png ]]
         then file=$(readlink "$img_path/lastimg.png")
              type="Image"
     elif [[ $1 == webm ]]
@@ -171,24 +178,35 @@ function instantUpload {
     fi
         if [[ "$ul" == scp ]]
         then scp "$file" "$scp_host":/"$2/"
-        notify-send "$(echo $type) Uploaded" "$3/$(basename $file)"
-        echo -n "$3/$(basename $file)" | xclip
+        notify-send "$(echo $type) Uploaded" "$3/$(basename "$file")"
+        echo -n "$3/$(basename "$file")" | xclip
     elif [[ "$ul" == fb ]]
         then fb "$file"
-        notify-send "$(echo $type) Uploaded" "$(echo $(xclip -o))"
+        notify-send "$(echo $type) Uploaded" "$(xclip -o)"
     fi
     x_clip
 }
 
-function x_clip {
+function x_clip () {
     x_clip="(xclip -o) | xclip -selection clipboard"
 }
 
-TEILERRC="${TEILERRC:-$HOME/.config/teiler/config}"
-BACKEND="${BACKEND:-simpleswitcher}"
-[[ ! -f "$TEILERRC" ]] && die 'Please configure teiler!'  1
-(( $+commands[dmenu] || $+commands[simpleswitcher] )) \
-    || die 'Please install either dmenu or simpleswitcher!' 3
+type dmenu simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
-source $TEILERRC
+
+# set default backend options
+source "$HOME/.config/teiler/config"
+
+if [[ "$backend" == "simpleswitcher" ]]
+    then function dmenu_t () {
+        simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu "$@"
+        }
+
+elif [[ "$backend" == "dmenu" ]]
+            then function dmenu_t () {
+            dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90 "$@"
+            }
+fi
+
 mainMenu
+
