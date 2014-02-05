@@ -35,8 +35,18 @@ http_vid=
 
 #   Ffmpeg settings
 
-encopts="-f x11grab -s $res -i $DISPLAY+0,0 -r 25 -quality good -cpu-used 0 -b:v 5000k -qmin 10 -qmax 42 -bufsize 1000k -threads 4"
-ffaudio="-f alsa -ac 2 -i pulse"
+encopts="-r 25 \
+         -quality good \
+         -cpu-used 0 \
+         -b:v 5000k \
+         -qmin 10 \
+         -qmax 42 \
+         -bufsize 1000k \
+         -threads 4"
+
+ffaudio="-f alsa \
+         -ac 2 \
+         -i pulse"
 
 
 
