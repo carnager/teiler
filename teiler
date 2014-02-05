@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # start
+# Interface is created, choices are defined in variable "menu"
+# if function isRecording is positive, menu is altereed
 mainMenu () {
     isRecording && STATE_RECORDING="3. Stop recording screencast"
     menu=("0: Cancel"
@@ -11,10 +13,13 @@ mainMenu () {
           "4. Copy last image to clipboard"
           "5. Upload a File")
 
+# read variable menu and pipe it to dmenu_t
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
     }
 
+# for each entry in variable "menu" define an action
+# if function isRecording is positive actions are altered
     case "$(prompt "${menu[@]}")" in 
         0:*) exit ;;
         1.*) delayPrompt screenshot -d ;;
@@ -48,6 +53,8 @@ uploadMenu () {
 }
 
 
+# record the screen with ffmpeg. 
+# function isRecording is called to make sure that no recording is active.
 screencast () {
     type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
     isRecording && {
@@ -61,11 +68,14 @@ screencast () {
     notify "$time" "Screencast started"
 }
 
+# Draws a little Recording Indicator on screen. 
 indicator () {
     echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -y "$rec_y" -p &
     echo "$!" > "$INDICATOR_PIDFILE"
 }
 
+# Checks the pidfile that is written by the screencast function
+# if present ffmpeg is killed properly and a notification is send
 stopRecording () {
     local pid
     [[ -f $SCREENCAST_PIDFILE ]] && {
@@ -80,6 +90,8 @@ stopRecording () {
     return 0
 }
 
+# Draws a menu with with entries defined in variable "t"
+# delayCountdown variable is then called
 delayPrompt () {
     t=$(prompt 0 2 5 10 20 30 "Cancel")
     if [[ "$t" = *[[:digit:]]* ]]
@@ -90,6 +102,7 @@ delayPrompt () {
     "$@" $((t+1))
 }
 
+# shows a countdown based on variable "t" which is set in the delayPrompt menu
 delayCountdown () {
     for ((n=${1:-t}; n>=0; --n)); do
         printf "\n%s " $n
@@ -98,6 +111,7 @@ delayCountdown () {
     printf "\r \r"  # clean up
 }
 
+# defines a countdown for the amount of time the image is kept in clipboard
 delayClip () {
     for ((n=${1:-10}; n>=0; --n)); do  
         printf "\n%s " $n
@@ -106,6 +120,9 @@ delayClip () {
     printf "\r \r"  # clean up
 }
 
+# calls external python script to hold an actual image in clipboard
+# function delayClip is called to draw a countdown on screen
+# After the countdown is done, clipboard is cleared, by killing the python script
 imgClip () {
     imgclip.py "$img_path"/lastimg.png &
     imgPID=$!
@@ -113,10 +130,12 @@ imgClip () {
     kill "$imgPID"
 }
 
+# checks if pid file written by the screencast function exists.
 isRecording () {
     [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
 }
 
+# checks dependency for screenshots and captures the screen
 screenshot () {
     type scrot &>/dev/null || { echo "Missing scrot!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
@@ -125,6 +144,7 @@ screenshot () {
     archiveImage
 }
 
+# Used for sending Notifications
 notify () {
     notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
 }
@@ -133,22 +153,30 @@ notImplemented () {
     notify "$time" "Feature not implemented yet!"
 }
 
+
+# if set in config, this will rename lastimg.png to the filemask defined in config.
+# then a symlink back to lastimg.png is created
 archiveImage () {
     [[ "$archive_img" = '1' ]] || return
     mv "${img_path}/lastimg.png" "${img_path}/${filemask}.png"
     ln -s "${img_path}/${filemask}.png" "${img_path}/lastimg.png"
 }
 
+# same as archiveImage but for video files created by screencast function
 archiveVid () {
     [[ "$archive_vid" = '1' ]] || return
     mv "${img_path}/lastvid.webm" "${img_path}/${filemask}.webm"
     ln -s "${img_path}/${filemask}.webm" "${img_path}/lastvid.webm"
 }
 
+# shows a list of files using dmenu. this is called by the uploadMenu function
 listFiles () {
     ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
 }
 
+# this function checks for filetype and makes sure
+# that images and videos are uploaded to the appropriate directories from config file
+# if uploader is set to fb, it will simply upload the given file
 upLoad () {
     if [[ $1 == png ]]
         then file=$(readlink "$img_path/lastimg.png")
@@ -168,6 +196,8 @@ upLoad () {
     x_clip
 }
 
+
+# this will upload lastimg.png or lastvid.webm, depending on the option chosen in uploadMenu
 instantUpload () {
     if [[ $1 == png ]]
         then file=$(readlink "$img_path/lastimg.png")
@@ -187,11 +217,13 @@ instantUpload () {
     x_clip
 }
 
+# Make sure Clipboards are synced
 x_clip () {
     x_clip="(xclip -o) | xclip -selection clipboard"
 }
 
-type dmenu simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+# Check if dmenu or simpleswitcher are available 
+type dmenu || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
 
 # set default backend options
@@ -208,5 +240,6 @@ elif [[ "$backend" == "dmenu" ]]
 }
 fi
 
+# actually run the script
 mainMenu
 
