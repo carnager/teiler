@@ -34,7 +34,7 @@ uploadMenu () {
           "4. Video")
 
     prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Teiler:"
+        printf "%s\n" "$@" | dmenu_t -p "Upload:"
     }
 
        case "$(prompt "${menu[@]}")" in
@@ -146,7 +146,7 @@ archiveVid () {
 }
 
 listFiles () {
-    ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Upload"
+    ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
 }
 
 upLoad () {
