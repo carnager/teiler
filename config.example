@@ -6,13 +6,16 @@ source $HOME/.config/dmenurc
 #   general options
 
 img_path=$HOME/Pictures/Screenshots
+paste_path=$HOME/Pictures/Paste
+vid_path=$HOME/Videos
+
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
 namekey=teiler
 img_filemask=$(date +"$namekey-screen"-"%Y%m%d%H%M%S")
 vid_filemask=$(date +"$namekey-cast"-"%Y%m%d%H%M%S")
-paste_filemask=$(date +"$namekey-clip"-"%Y%m%d%H%M%S")
+paste_filemask=$(date +"%Y%m%d%H%M%S")
 
 
 
