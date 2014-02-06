@@ -172,12 +172,12 @@ clipUpload () {
     x_clip
     (xclip -o) > "${paste_path}/lastpaste.paste"
     notify "$time" "Paste saved"
-    if [[ $ul == scp ]]
+    if [[ $paste_ul == scp ]]
         then scp "${paste_path}/lastpaste.paste" "$scp_host":"$scp_path_paste"/"$paste_filemask".paste
         notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" ""$http_paste"/$paste_filemask.paste"
         echo -n ""$http_paste"/$paste_filemask.paste" | xclip
-    elif [[ $ul == fb ]]
-        then fb "$paste_path"/"$pastemask".paste
+    elif [[ $paste_ul == fb ]]
+        then fb "${paste_path}/lastpaste.paste"
         notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
     fi
     x_clip

@@ -20,11 +20,12 @@ paste_filemask=$(date +"%Y%m%d%H%M%S")
 
 
 #   Uploading & archiving options
-#   Possible Choices: fb, scp
+#   Possible Choices for ul and paste_ul: fb, scp
 #   If you don't want a local history of images/videos, 
 #   set archive_img/archive_vid to "0"
 
 ul=scp
+paste_ul=fb
 archive_vid=1
 archive_img=1
 archive_paste=1
