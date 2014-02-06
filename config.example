@@ -23,7 +23,6 @@ archive_img=1
 
 
 #   quick option to quickly make a screenshot and upload in one go...
-#   Set quickActive to 1 to show the Menu Entry
 #   set quickArea to "-s" to enable Area, leave empty for Fullscreen
 
 quickArea=-s
