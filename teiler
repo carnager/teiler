@@ -18,6 +18,10 @@ mainMenu () {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
     }
 
+   promptDelay() {
+        printf "%s\n" "$@" | dmenu_t -p "Delay:"
+    }
+
 # for each entry in variable "menu" define an action
 # if function isRecording is positive actions are altered
     case "$(prompt "${menu[@]}")" in 
@@ -93,7 +97,7 @@ stopRecording () {
 # Draws a menu with with entries defined in variable "t"
 # delayCountdown variable is then called
 delayPrompt () {
-    t=$(prompt 0 2 5 10 20 30 '<< back to Main Menu')
+    t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
     if [[ "$t" = *[[:digit:]]* ]]
         then delayCountdown | dzen2 -fn "$font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -p 1 &
     else echo "Canceled" && mainMenu
