@@ -47,22 +47,13 @@ dzen2_y=540
 #   source $HOME/.config/dmenurc
 #
 #   if [[ "$backend" == "simpleswitcher" ]]
-#       then
-#           function dmenu_t () {
-#           simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu
+#       then function dmenu_t () {
+#               simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu
 #           }
 #
 #   elif [[ "$backend" == "dmenu" ]]
-#       then
-#           if [[ "$dmenu_trans" == "1" ]]
-#               then
-#               function dmenu_t () {
+#       then function dmenu_t () {
 #               dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90
-#               }
-#           else
-#               function dmenu_t () {
-#               dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb"
-#               }
-#           fi
+#          }
 #   fi
 
