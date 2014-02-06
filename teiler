@@ -55,8 +55,8 @@ uploadMenu () {
        0:*) mainMenu ;;
        1.*) instantUpload png "$scp_path_img" "$http_img" ;;
        2.*) instantUpload webm "$scp_path_vid" "$http_vid" ;;
-       3.*) upLoad "$(listFiles png)" "$scp_path_img" "$http_img" ;;
-       4.*) upLoad "$(listFiles webm)" "$scp_path_vid" "$http_vid" ;;
+       3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" ;;
+       4.*) upLoad "$(vidListFiles webm)" "$scp_path_vid" "$http_vid" ;;
          *) mainMenu
    esac
 }
@@ -210,9 +210,14 @@ archivePaste () {
 
 
 # shows a list of files using dmenu. this is called by the uploadMenu function
-listFiles () {
+imgListFiles () {
     ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
 }
+
+vidListFiles () {
+    ls -t -1 "$vid_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
+}
+
 
 # this function checks for filetype and makes sure
 # that images and videos are uploaded to the appropriate directories from config file
