@@ -246,7 +246,7 @@ instantUpload () {
         then file=$(readlink "$img_path/lastimg.png")
         type="Image"
     elif [[ $1 == webm ]]
-        then file=$(readlink "$img_path/lastvid.webm")
+        then file=$(readlink "$vid_path/lastvid.webm")
         type="Video"
     fi
     if [[ "$ul" == scp ]]
