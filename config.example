@@ -30,10 +30,11 @@ archive_paste=1
 
 #   quick option to quickly make a screenshot and upload in one go...
 #   set quickArea to "-s" to enable Area, leave empty for Fullscreen
+#   The "7." at the beginning is mandatory
 
 quickArea=-s
 quickDelay=0
-quickName="6. Shot'n'Go"
+quickName="7. Shot'n'Go"
 
 
 
