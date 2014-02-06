@@ -206,7 +206,7 @@ upLoad () {
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]
         then fb "$1"
-        notify-send "$(echo "$type") Uploaded" "$(xclip -o)"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo "$type") Uploaded" "$(xclip -o)"
     fi
     x_clip
 }
