@@ -57,7 +57,7 @@ encopts="-r 25 \
 
 res=1920x1080
 ffmpeg_display=:0
-ffmpeg_x_offset=2560
+ffmpeg_x_offset=0
 
 ffaudio="-f alsa \
          -ac 2 \
