@@ -63,7 +63,7 @@ uploadMenu () {
 # quickoption (configurable in config file)
 quick () {
     screenshot -d $quickDelay $quickArea
-    upLoad $(readlink "$img_path"/lastimg.png) "$scp_path_img" "$http_img"
+    instantUpload png "$scp_path_img" "$http_img"
 }
 
 
@@ -194,19 +194,17 @@ listFiles () {
 # if uploader is set to fb, it will simply upload the given file
 upLoad () {
     if [[ $1 == png ]]
-        then file=$(readlink "$img_path/lastimg.png")
-        type="Image"
+        then type="Image"
     elif [[ $1 == webm ]]
-        then file=$(readlink "$img_path/lastvid.webm")
-        type="Video"
+        then type="Video"
     fi
     if [[ "$ul" == "scp" ]]
         then scp "$1" "$scp_host":/"$2/"
-        notify-send "$(echo "$type") Uploaded" "$3/$(basename "$1")"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]
         then fb "$1"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo "$type") Uploaded" "$(xclip -o)"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     fi
     x_clip
 }
@@ -223,11 +221,11 @@ instantUpload () {
     fi
     if [[ "$ul" == scp ]]
         then scp "$file" "$scp_host":/"$2/"
-        notify-send "$(echo $type) Uploaded" "$3/$(basename "$file")"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
         echo -n "$3/$(basename "$file")" | xclip
     elif [[ "$ul" == fb ]]
         then fb "$file"
-        notify-send "$(echo $type) Uploaded" "$(xclip -o)"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     fi
     x_clip
 }
