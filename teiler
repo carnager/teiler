@@ -59,14 +59,8 @@ uploadMenu () {
    esac
 }
 
+
 # quickoption (configurable in config file)
-
-quickCheck () {
-    echo $quickActive
-    [[ $quickActive == "true" ]] || echo "true" && return 1;
-}
-
-
 quick () {
     screenshot -d $quickDelay $quickArea
     upLoad $(readlink "$img_path"/lastimg.png) "$scp_path_img" "$http_img"
