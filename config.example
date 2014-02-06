@@ -9,8 +9,10 @@ img_path=$HOME/Pictures/Screenshots
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
-namekey=screen
-filemask=$(date +"$namekey"-"%Y%m%d%H%M%S")
+namekey=teiler
+img_filemask=$(date +"$namekey-screen"-"%Y%m%d%H%M%S")
+vid_filemask=$(date +"$namekey-cast"-"%Y%m%d%H%M%S")
+paste_filemask=$(date +"$namekey-clip"-"%Y%m%d%H%M%S")
 
 
 
@@ -22,6 +24,7 @@ filemask=$(date +"$namekey"-"%Y%m%d%H%M%S")
 ul=scp
 archive_vid=1
 archive_img=1
+archive_paste=1
 
 
 
@@ -39,8 +42,10 @@ quickName="6. Shot'n'Go"
 scp_host=
 scp_path_img=
 scp_path_vid=
+scp_path_paste=
 http_img=
 http_vid=
+http_paste=http://paste.53280.de
 
 
 
