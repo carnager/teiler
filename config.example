@@ -15,6 +15,9 @@ filemask=$(date +"$namekey"-"%Y%m%d%H%M%S")
 
 
 #   Uploading & archiving options
+#   Possible Choices: fb, scp
+#   If you don't want a local history of images/videos, 
+#   set archive_img/archive_vid to "0"
 
 ul=scp
 archive_vid=1
