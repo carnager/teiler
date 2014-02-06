@@ -11,7 +11,9 @@ mainMenu () {
           "${STATE_RECORDING:-"3. Record screencast"}"
           "---"
           "4. Copy last image to clipboard"
-          "5. Upload a File")
+          "5. Upload a File"
+          "---"
+          "$quickName")
 
 # read variable menu and pipe it to dmenu_t
     prompt() {
@@ -31,6 +33,7 @@ mainMenu () {
         3.*) isRecording && stopRecording || screencast ;;
         4.*) imgClip ;;
         5.*) uploadMenu ;;
+        6.*) quick ;;
           *) exit
     esac
 }
@@ -55,6 +58,20 @@ uploadMenu () {
          *) mainMenu
    esac
 }
+
+# quickoption (configurable in config file)
+
+quickCheck () {
+    echo $quickActive
+    [[ $quickActive == "true" ]] || echo "true" && return 1;
+}
+
+
+quick () {
+    screenshot -d $quickDelay $quickArea
+    upLoad $(readlink "$img_path"/lastimg.png) "$scp_path_img" "$http_img"
+}
+
 
 
 # record the screen with ffmpeg. 

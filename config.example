@@ -19,7 +19,16 @@ filemask=$(date +"$namekey"-"%Y%m%d%H%M%S")
 ul=scp
 archive_vid=1
 archive_img=1
-res=1920x1080
+
+
+
+#   quick option to quickly make a screenshot and upload in one go...
+#   Set quickActive to 1 to show the Menu Entry
+#   set quickArea to "-s" to enable Area, leave empty for Fullscreen
+
+quickArea=-s
+quickDelay=0
+quickName="6. Shot'n'Go"
 
 
 
@@ -44,6 +53,7 @@ encopts="-r 25 \
          -bufsize 1000k \
          -threads 4"
 
+res=1920x1080
 ffmpeg_display=:0
 ffmpeg_x_offset=2560
 
