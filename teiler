@@ -111,22 +111,38 @@ stopRecording () {
 # delayCountdown variable is then called
 delayPrompt () {
     t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
-    if [[ "$t" = *[[:digit:]]* ]]
-        then delayCountdown | dzen2 -fn "$font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -p 1 &
-    else echo "Canceled" && mainMenu
-    fi
-    [[ "$t" -gt 2 ]] && notify "$time" "Screenshot will be taken in $t seconds"
+    [[ "$t" = *[[:digit:]]* ]] || mainMenu
+    [[ "$t" -gt 2 ]] && {
+        notify "$time" "Screenshot will be taken in $t seconds"
+        countdown "$t" | progress 0 "$t" &
+        DELAY_PID=$!
+    }
     "$@" $((t+1))
+    unset DELAY_PID
+    killCountdown
 }
 
 # shows a countdown based on variable "t" which is set in the delayPrompt menu
-delayCountdown () {
-    for ((n=${1:-t}; n>=0; --n)); do
-        printf "\n%s " $n
-        sleep 1
+
+function countdown {
+    for i in $(seq $[$1-1] -1 0); do
+         for o in {9..0}; do
+         echo $i.$o; sleep 0.1
     done
-    printf "\r \r"  # clean up
+    done
 }
+
+function killCountdown {
+    [[ -n "$DELAY_PID" ]] && notify 'delayed screenshot aborted!'
+    [[ -f "/proc/$DELAY_PID/comm" && "$(</proc/$DELAY_PID/comm)" = "$progname" ]] \
+        && kill $DELAY_PID
+    exit 0
+}
+
+function progress {
+    gdbar -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" -x "$rec_x" -p 1
+}
+
 
 # defines a countdown for the amount of time the image is kept in clipboard
 delayClip () {
