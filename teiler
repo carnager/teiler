@@ -287,6 +287,7 @@ type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dep
 
 # set default backend options
 source "$HOME/.config/teiler/config"
+source "$HOME/.config/dmenurc"
 
 if [[ "$backend" == "simpleswitcher" ]]
     then function dmenu_t () {
