@@ -1,0 +1,3 @@
+[submodule "xininfo"]
+	path = xininfo
+	url = https://github.com/DaveDavenport/xininfo.git
