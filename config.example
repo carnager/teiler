@@ -24,7 +24,7 @@ paste_filemask=$(date +"%Y%m%d%H%M%S")
 #   If you don't want a local history of images/videos, 
 #   set archive_img/archive_vid to "0"
 
-ul=scp
+ul=fb
 paste_ul=fb
 archive_vid=1
 archive_img=1
