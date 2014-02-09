@@ -54,9 +54,9 @@ uploadMenu () {
        case "$(prompt "${menu[@]}")" in
        0:*) mainMenu ;;
        1.*) instantUpload png "$scp_path_img" "$http_img" ;;
-       2.*) instantUpload webm "$scp_path_vid" "$http_vid" ;;
+       2.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
        3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" ;;
-       4.*) upLoad "$(vidListFiles webm)" "$scp_path_vid" "$http_vid" ;;
+       4.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" ;;
          *) mainMenu
    esac
 }
@@ -73,13 +73,13 @@ quick () {
 # record the screen with ffmpeg. 
 # function isRecording is called to make sure that no recording is active.
 screencast () {
-    type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+    type avconv xdotool xwininfo || type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
     isRecording && {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
-    [[ -f "${vid_path}/lastvid.webm" ]] && rm "${vid_path}/lastvid.webm"
-    ffmpeg -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_x_offset,0 $ffaudio $encopts "${vid_path}/lastvid.webm" &
+    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
+    $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_x_offset,0 $ffaudio $encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
@@ -213,8 +213,8 @@ archiveImage () {
 # same as archiveImage but for video files created by screencast function
 archiveVid () {
     [[ "$archive_vid" = '1' ]] || return
-    mv "${vid_path}/lastvid.webm" "${vid_path}/${vid_filemask}.webm"
-    ln -s "${vid_path}/${vid_filemask}.webm" "${vid_path}/lastvid.webm"
+    mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
+    ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
 }
 
 
@@ -241,7 +241,7 @@ vidListFiles () {
 upLoad () {
     if [[ $1 == png ]]
         then type="Image"
-    elif [[ $1 == webm ]]
+    elif [[ $1 == mp4 ]]
         then type="Video"
     fi
     if [[ "$ul" == "scp" ]]
@@ -256,13 +256,13 @@ upLoad () {
 }
 
 
-# this will upload lastimg.png or lastvid.webm, depending on the option chosen in uploadMenu
+# this will upload lastimg.png or lastvid.mp4, depending on the option chosen in uploadMenu
 instantUpload () {
     if [[ $1 == png ]]
         then file=$(readlink "$img_path/lastimg.png")
         type="Image"
-    elif [[ $1 == webm ]]
-        then file=$(readlink "$vid_path/lastvid.webm")
+    elif [[ $1 == mp4 ]]
+        then file=$(readlink "$vid_path/lastvid.mp4")
         type="Video"
     fi
     if [[ "$ul" == scp ]]
@@ -287,7 +287,6 @@ type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dep
 
 # set default backend options
 source "$HOME/.config/teiler/config"
-source "$HOME/.config/dmenurc"
 
 if [[ "$backend" == "simpleswitcher" ]]
     then function dmenu_t () {
