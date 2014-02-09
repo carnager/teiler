@@ -1,3 +1,5 @@
+v2.0      Complete Rewrite, based on a zsh fork by DarkFox
+
 #v1.0.1   Removed redundant clipboard options from menu, since last image can always be put into clipboard with "i"
           Made descriptions in config file more obvious. Removed inline comments.
 #v1.0 v   Added ffmpeg options to config file. Added Quickoptions in config file. Added possibility to store image in clipboard.
