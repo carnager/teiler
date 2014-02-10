@@ -1,7 +1,7 @@
 
 ###### dmenu/simpleswitcher/dzen2 configuration file ######
 
-backend=simpleswitcher
+backend=dmenu
 
 #Choose 0 if your dmenu has no transparency support
 #(Not needed for Simpleswitcher, since it autodetects transparency)
