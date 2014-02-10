@@ -63,7 +63,7 @@ ffmpeg_x_offset=2560
 encopts="-r 30 \
          -vcodec libx264 \
          -pix_fmt yuv420p \
-         -s hd1080 \
+         -s $res \
          -acodec libmp3lame"
 
 ffaudio="-f alsa \
