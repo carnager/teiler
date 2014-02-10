@@ -58,7 +58,7 @@ http_paste=
 #   Possible encoder options: libav and ffmpeg
 
 encoder=ffmpeg
-ffmpeg_x_offset=2560
+ffmpeg_x_offset=2560,0
 
 encopts="-r 30 \
          -vcodec libx264 \
