@@ -157,10 +157,7 @@ delayClip () {
 # function delayClip is called to draw a countdown on screen
 # After the countdown is done, clipboard is cleared, by killing the python script
 imgClip () {
-    imgclip.py "$img_path"/lastimg.png &
-    imgPID=$!
-    delayClip | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
-    kill "$imgPID"
+    imgclip "$img_path"/lastimg.png &
 }
 
 # checks if pid file written by the screencast function exists.
@@ -213,6 +210,7 @@ archiveImage () {
 # same as archiveImage but for video files created by screencast function
 archiveVid () {
     [[ "$archive_vid" = '1' ]] || return
+    vid_filemask=${vid_filemask}
     mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
     ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
 }
