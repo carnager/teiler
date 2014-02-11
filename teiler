@@ -192,6 +192,9 @@ clipUpload () {
     elif [[ $paste_ul == fb ]]
         then fb "${paste_path}/lastpaste.paste"
         notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
+    elif [[ $paste_ul == ix ]]
+        then ix "${paste_path}/lastpaste.paste"
+        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
     fi
     x_clip
     archivePaste
@@ -246,7 +249,7 @@ upLoad () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]
-        then fb "$1"
+        then fb "$1" | xclip
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     elif [[ "$ul" == "imgur" ]]
         then imgur "$1"
@@ -270,7 +273,7 @@ instantUpload () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
         echo -n "$3/$(basename "$file")" | xclip
     elif [[ "$ul" == fb ]]
-        then fb "$file"
+        then fb "$file" | xclip
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     elif [[ "$ul" == imgur ]]
         then imgur "$file"
