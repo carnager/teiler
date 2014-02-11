@@ -341,10 +341,10 @@ upLoad () {
 # this will upload lastimg.png or lastvid.mp4, depending on the option chosen in uploadMenu
 instantUpload () {
     if [[ $1 == png ]]
-        then file=$(readlink "$img_path/lastimg.png")
+        then file="$img_path/lastimg.png"
         type="Image"
     elif [[ $1 == mp4 ]]
-        then file=$(readlink "$vid_path/lastvid.mp4")
+        then file="$vid_path/lastvid.mp4"
         type="Video"
     fi
     if [[ "$ul" == scp ]]
