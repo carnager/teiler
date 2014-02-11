@@ -248,7 +248,7 @@ upLoad () {
     elif [[ "$ul" == "fb" ]]
         then fb "$1"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-    elif [[ "$ul == "imgur" ]]
+    elif [[ "$ul" == "imgur" ]]
         then imgur "$1"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     fi
@@ -272,10 +272,10 @@ instantUpload () {
     elif [[ "$ul" == fb ]]
         then fb "$file"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-    fi
     elif [[ "$ul" == imgur ]]
         then imgur "$file"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+    fi
     x_clip
 }
 
