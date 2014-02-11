@@ -192,6 +192,10 @@ clipUpload () {
     elif [[ $paste_ul == fb ]]
         then fb "${paste_path}/lastpaste.paste"
         notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
+    elif [[ $paste_ul == ix ]]
+        then x_xclip
+        xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip
+        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
     fi
     x_clip
     archivePaste

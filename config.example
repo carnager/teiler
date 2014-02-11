@@ -20,7 +20,9 @@ paste_filemask=$(date +"%Y%m%d%H%M%S")
 
 
 #   Uploading & archiving options
-#   Possible Choices for ul and paste_ul: fb, scp, imgur
+#   Possible Choices for ul: fb, scp, imgur
+#   Possible Choices for paste_ul: fb, scp, ix
+#
 #   If you don't want a local history of images/videos, 
 #   set archive_img/archive_vid to "0"
 #   keep in mind, that imgur does not support videos
