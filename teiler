@@ -16,7 +16,7 @@ mainMenu () {
           "6. Upload a File"
           "---"
           "$quickName"
-          "${STATE_RECORDING:-"8. Record screencast"}")
+          "${STATE_RECORDING:-"$quickVidName"}")
 
 # read variable menu and pipe it to dmenu_t
     prompt() {
@@ -34,14 +34,30 @@ mainMenu () {
         1.*) delayPrompt screenshot -d ;;
         2.*) delayPrompt screenshot -s -d ;;
         3.*) screencastPrompt ;;
-        4.*) isRecording && stopRecording || screencast ;;
-        5.*) imgClip ;;
-        6.*) clipUpload ;;
-        7.*) uploadMenu ;;
-        8.*) quick ;;
+        4.*) imgClip ;;
+        5.*) clipUpload ;;
+        6.*) uploadMenu ;;
+        7.*) quick ;;
+        8.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastQuick ;;
           *) exit
     esac
 }
+
+askPrompt () {
+    menu=("1. Yes"
+          "2. No")
+    
+    prompt() { 
+        printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
+    }
+       
+       case "$(prompt "${menu[@]}")" in
+       1.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
+       2.*) exit ;;
+         *) exit
+   esac
+}
+
 
 uploadMenu () {
     menu=("0: << back to Main Menu"
@@ -89,6 +105,15 @@ quick () {
     instantUpload png "$scp_path_img" "$http_img"
 }
 
+
+# Check if Quick Screencast should be done for single Window or Fullscreen
+screencastQuick () {
+    if [[ "$quickVidArea" == 1 ]]
+        then isRecording && stopRecording || screencastArea
+    elif [[ "$quickVidArea" == 0 ]]
+        then isRecording && stopRecording || screencast
+    fi
+}
 
 
 # record the screen with ffmpeg. 
