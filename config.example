@@ -7,7 +7,7 @@ source $HOME/.config/dmenurc
 
 img_path=$HOME/Pictures/Screenshots
 paste_path=$HOME/Pictures/Paste
-vid_path=$HOME/Videos
+vid_path=$HOME/Videos/Screencasts
 
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
@@ -20,9 +20,10 @@ paste_filemask=$(date +"%Y%m%d%H%M%S")
 
 
 #   Uploading & archiving options
-#   Possible Choices for ul and paste_ul: fb, scp
+#   Possible Choices for ul and paste_ul: fb, scp, imgur
 #   If you don't want a local history of images/videos, 
 #   set archive_img/archive_vid to "0"
+#   keep in mind, that imgur does not support videos
 
 ul=fb
 paste_ul=fb
