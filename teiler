@@ -3,18 +3,20 @@
 # start
 # Interface is created, choices are defined in variable "menu"
 # if function isRecording is positive, menu is altereed
+export LANG=C
 mainMenu () {
-    isRecording && STATE_RECORDING="3. Stop recording screencast"
+    isRecording && STATE_RECORDING="8. Stop recording screencast"
     menu=("0: Cancel"
           "1. Screenshot (Fullscreen)"
           "2. Screenshot (Area)"
-          "${STATE_RECORDING:-"3. Record screencast"}"
+          "3. Screencasts"
           "---"
           "4. Copy Last Image to Clipboard"
           "5. Upload Clipboard Content"
           "6. Upload a File"
           "---"
-          "$quickName")
+          "$quickName"
+          "${STATE_RECORDING:-"8. Record screencast"}")
 
 # read variable menu and pipe it to dmenu_t
     prompt() {
@@ -31,11 +33,12 @@ mainMenu () {
         0:*) exit ;;
         1.*) delayPrompt screenshot -d ;;
         2.*) delayPrompt screenshot -s -d ;;
-        3.*) isRecording && stopRecording || screencast ;;
-        4.*) imgClip ;;
-        5.*) clipUpload ;;
-        6.*) uploadMenu ;;
-        7.*) quick ;;
+        3.*) screencastPrompt ;;
+        4.*) isRecording && stopRecording || screencast ;;
+        5.*) imgClip ;;
+        6.*) clipUpload ;;
+        7.*) uploadMenu ;;
+        8.*) quick ;;
           *) exit
     esac
 }
@@ -60,6 +63,24 @@ uploadMenu () {
          *) mainMenu
    esac
 }
+
+screencastPrompt () {
+    menu=("0: << back to Main Menu"
+          "1. Screencast (Fullscreen)"
+          "2. Screencast (Area)")
+    
+    prompt() { 
+        printf "%s\n" "$@" | dmenu_t -p "Screencast:"
+    }
+       
+       case "$(prompt "${menu[@]}")" in
+       0:*) mainMenu ;;
+       1.*) isRecording && stopRecording || screencast ;;
+       2.*) isRecording && stopRecording || screencastArea ;;
+         *) mainMenu
+   esac
+}
+
 
 
 # quickoption (configurable in config file)
@@ -173,6 +194,38 @@ screenshot () {
     notify "$time" "Screenshot saved"
     archiveImage
 }
+
+# Get Dimensions of active Window
+function dimensions() {
+  unset x y w h
+  eval $(xwininfo -id $(xdotool getactivewindow) |
+    sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
+           -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
+           -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
+           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
+}
+
+screencastArea () {
+    type avconv xdotool xwininfo || type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+    isRecording && {
+        notify "$time" 'Screencast already in progress'
+        echo "Already recording Screen"; exit 1;
+    }
+
+    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
+        dimensions && {
+        notify "$time" "Screencast will start in 5 seconds"
+        countdown "5" | progress 0 5 &
+        DELAY_PID=$!
+        }
+        sleep 5
+        unset DELAY_PID
+        $encoder -f x11grab -s "${w}x${h}" -i $ffmpeg_display+$x,$y $ffaudio $encopts "${vid_path}/lastvid.mp4" &
+        echo "$!" > "$SCREENCAST_PIDFILE"
+        indicator
+        notify "$time" "Screencast started"
+}
+
 
 # Used for sending Notifications
 notify () {
@@ -294,6 +347,7 @@ type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dep
 
 # set default backend options
 source "$HOME/.config/teiler/config"
+source "$HOME/.config/dmenurc"
 
 if [[ "$backend" == "simpleswitcher" ]]
     then function dmenu_t () {
