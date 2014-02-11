@@ -210,7 +210,6 @@ archiveImage () {
 # same as archiveImage but for video files created by screencast function
 archiveVid () {
     [[ "$archive_vid" = '1' ]] || return
-    vid_filemask=${vid_filemask}
     mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
     ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
 }
