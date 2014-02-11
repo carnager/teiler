@@ -1,4 +1,5 @@
 # Maintainer: Rasmus Steinke <rasi at xssn dot at>
+# Contributor: Christian Rebischke
 
 pkgname=teiler-git
 pkgver=178.49d7657
@@ -7,7 +8,7 @@ pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
 url='http://teiler.53280.de'
 license=('GPL')
-depends=('bc' 'ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'pygtk' 'xininfo-git')
+depends=('bc' 'ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'pygtk' 'xininfo-git' 'xdotool' 'xorg-xwininfo')
 optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'openssh: 			Upload to SSH server'
             'dmenu2: 			Backend for teiler'
@@ -30,14 +31,16 @@ package() {
   install -D -m755 "${srcdir}/teiler/teiler" \
     "${pkgdir}/usr/bin/teiler"
 
-  install -D -m755 "${srcdir}/teiler/imgclip.py" \
-    "${pkgdir}/usr/bin/imgclip.py"
-
   install -D -m644 "${srcdir}/teiler/config.example" \
     "${pkgdir}/usr/share/doc/teiler/config.example"
 
   install -D -m644 "${srcdir}/teiler/dmenurc" \
     "${pkgdir}/usr/share/doc/teiler/dmenurc"
+
+  cd ${srcdir}/teiler/imgclip
+  make
+   install -D -m755 "${srcdir}/teiler/imgclip/imgclip" \
+   "${pkgdir}/usr/bin/imgclip"
 }
 
 md5sums=('SKIP')
