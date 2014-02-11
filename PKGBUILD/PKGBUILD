@@ -16,7 +16,9 @@ optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'xorg-xwininfo: 		Screencast single windows'
             'gtk2:                      Image to Clipboard'
             'gtk3:                      Image to Clipboard'
-            'xdotool: 			Screencast single windows')
+            'xdotool: 			Screencast single windows'
+            'imgur: Upload to imgur.com'
+            'ix: Upload to ix.io')
 
 options=(!strip)
 install="teiler.install"
