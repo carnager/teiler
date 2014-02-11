@@ -11,6 +11,7 @@ license=('GPL')
 depends=('bc' 'ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'pygtk' 'xininfo-git' 'xdotool' 'xorg-xwininfo')
 optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'openssh: 			Upload to SSH server'
+            'imgur:                     Upload images to imgur.com'
             'dmenu2: 			Backend for teiler'
             'simpleswitcher-dd-git: 	Alternative backend for teiler'
             'xorg-xwininfo: 		Screencast single windows'
