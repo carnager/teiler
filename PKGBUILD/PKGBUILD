@@ -14,10 +14,8 @@ optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'imgur:                     Upload images to imgur.com'
             'dmenu2: 			Backend for teiler'
             'simpleswitcher-dd-git: 	Alternative backend for teiler'
-            'xorg-xwininfo: 		Screencast single windows'
             'gtk2:                      Image to Clipboard'
             'gtk3:                      Image to Clipboard'
-            'xdotool: 			Screencast single windows')
 
 options=(!strip)
 install="teiler.install"
