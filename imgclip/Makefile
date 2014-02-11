@@ -8,6 +8,10 @@ else
 	LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
 endif
 
+PREFIX=/usr
+BINDIR=${PREFIX}/bin
+INSTALLDIR=${DESTDIR}${BINDIR}
+
 SOURCE := imgclip.c
 TARGET := imgclip
 
@@ -16,6 +20,10 @@ all: ${TARGET}
 ${TARGET}: ${SOURCE}
 	@echo ${CC} $^ -o $@
 	@${CC} $^ -o $@ ${CFLAGS} ${LDFLAGS}
+
+install: 
+	install -d ${INSTALLDIR}
+	install -m 755 ${TARGET} ${INSTALLDIR}/${TARGET}
 
 clean: 
 	${RM} ${TARGET}
