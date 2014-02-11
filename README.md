@@ -4,7 +4,7 @@ teiler uses dmenu (or simpleswitcher-dd) to draw a menu which lets you
 choose between screenshots or screencasts.
 
 screenshots can be delayed and you can also draw areas to capture.
-teiler can also upload your files via scp or filebin. (http://git.server-speed.net/users/flo/filebin/)
+teiler can also upload your files via scp, ix, imgur or filebin. (http://git.server-speed.net/users/flo/filebin/)
 
 Last, but not least teiler can store your Screenshots in clipboard for use in other applications.
 
@@ -19,3 +19,14 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 * scrot
 * pygtk
 
+## Optional Dependencies
+
+* fb-client
+* dmenu2
+* simpleswitcher-dd-git
+* xorg-xwininfo
+* gtk2
+* gtk3
+* xdotool
+* imgur
+* ix
