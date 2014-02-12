@@ -332,7 +332,7 @@ upLoad () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     elif [[ "$ul" == "imgur" ]]; then
         if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "teiler" "imgur does not support Videos"
+            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
         else 
             imgur "$1"
             notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
@@ -367,7 +367,7 @@ instantUpload () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     elif [[ "$ul" == imgur ]]; then
         if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "teiler" "imgur does not support Videos"
+            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
         else
             imgur "$file"
             notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
