@@ -61,7 +61,7 @@ http_paste=
 
 encoder=ffmpeg
 res=1920x1080
-ffmpeg_x_offset=0,0
+ffmpeg_offset=0,0
 
 encopts="-r 30 \
          -vcodec libx264 \
