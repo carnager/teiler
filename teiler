@@ -1,24 +1,22 @@
 #!/bin/bash
 
-# start
-# Interface is created, choices are defined in variable "menu"
-# if function isRecording is positive, menu is altereed
 export LANG=C
+
+# Menus
+
 mainMenu () {
-    isRecording && STATE_RECORDING="8. Stop recording screencast"
+    isRecording && STATE_RECORDING="3. Stop recording screencast"
     menu=("0: Cancel"
           "1. Screenshot (Fullscreen)"
           "2. Screenshot (Area)"
-          "3. Screencasts"
+          "${STATE_RECORDING:-"3. Screencast"}"
           "---"
           "4. Copy Last Image to Clipboard"
           "5. Upload Clipboard Content"
           "6. Upload a File"
           "---"
-          "$quickName"
-          "${STATE_RECORDING:-"$quickVidName"}")
+          "$quickName")
 
-# read variable menu and pipe it to dmenu_t
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
     }
@@ -27,18 +25,15 @@ mainMenu () {
         printf "%s\n" "$@" | dmenu_t -p "Delay:"
     }
 
-# for each entry in variable "menu" define an action
-# if function isRecording is positive actions are altered
     case "$(prompt "${menu[@]}")" in 
         0:*) exit ;;
         1.*) delayPrompt screenshot -d ;;
         2.*) delayPrompt screenshot -s -d ;;
-        3.*) screencastPrompt ;;
+        3.*) isRecording && stopRecording && sleep 2 && askPrompt || screencast ;;
         4.*) imgClip ;;
         5.*) clipUpload ;;
         6.*) uploadMenu ;;
         7.*) quick ;;
-        8.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastQuick ;;
           *) exit
     esac
 }
@@ -57,7 +52,6 @@ askPrompt () {
          *) exit
    esac
 }
-
 
 uploadMenu () {
     menu=("0: << back to Main Menu"
@@ -80,44 +74,38 @@ uploadMenu () {
    esac
 }
 
-screencastPrompt () {
-    menu=("0: << back to Main Menu"
-          "1. Screencast (Fullscreen)"
-          "2. Screencast (Area)")
-    
-    prompt() { 
-        printf "%s\n" "$@" | dmenu_t -p "Screencast:"
+delayPrompt () {
+    t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
+    [[ "$t" = *[[:digit:]]* ]] || mainMenu
+    [[ "$t" -gt 2 ]] && {
+        notify "$time" "Screenshot will be taken in $t seconds"
+        countdown "$t" | progress 0 "$t" &
+        DELAY_PID=$!
     }
-       
-       case "$(prompt "${menu[@]}")" in
-       0:*) mainMenu ;;
-       1.*) isRecording && stopRecording || screencast ;;
-       2.*) isRecording && stopRecording || screencastArea ;;
-         *) mainMenu
-   esac
+    "$@" $((t+1))
+    unset DELAY_PID
+    killCountdown
 }
 
 
+# main function
 
-# quickoption (configurable in config file)
+# actual screenshot function
+screenshot () {
+    type scrot &>/dev/null || { echo "Missing scrot!"; exit 1; }
+    [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
+    scrot "$@" "${img_path}/lastimg.png"
+    notify "$time" "Screenshot saved"
+    archiveImage
+}
+
 quick () {
     screenshot -d $quickDelay $quickArea
     instantUpload png "$scp_path_img" "$http_img"
 }
 
 
-# Check if Quick Screencast should be done for single Window or Fullscreen
-screencastQuick () {
-    if [[ "$quickVidArea" == 1 ]]
-        then isRecording && stopRecording || screencastArea
-    elif [[ "$quickVidArea" == 0 ]]
-        then isRecording && stopRecording || screencast
-    fi
-}
-
-
-# record the screen with ffmpeg. 
-# function isRecording is called to make sure that no recording is active.
+# screencast related functions (screencast, isRecording, stopRecording)
 screencast () {
     type avconv xdotool xwininfo || type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
     isRecording && {
@@ -131,14 +119,10 @@ screencast () {
     notify "$time" "Screencast started"
 }
 
-# Draws a little Recording Indicator on screen. 
-indicator () {
-    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p &
-    echo "$!" > "$INDICATOR_PIDFILE"
+isRecording () {
+    [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
 }
 
-# Checks the pidfile that is written by the screencast function
-# if present ffmpeg is killed properly and a notification is send
 stopRecording () {
     local pid
     [[ -f $SCREENCAST_PIDFILE ]] && {
@@ -153,22 +137,46 @@ stopRecording () {
     return 0
 }
 
-# Draws a menu with with entries defined in variable "t"
-# delayCountdown variable is then called
-delayPrompt () {
-    t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
-    [[ "$t" = *[[:digit:]]* ]] || mainMenu
-    [[ "$t" -gt 2 ]] && {
-        notify "$time" "Screenshot will be taken in $t seconds"
-        countdown "$t" | progress 0 "$t" &
-        DELAY_PID=$!
-    }
-    "$@" $((t+1))
-    unset DELAY_PID
-    killCountdown
+
+# copy last image to clipboard
+imgClip () {
+    imgclip "$img_path"/lastimg.png &
 }
 
-# shows a countdown based on variable "t" which is set in the delayPrompt menu
+
+# archiving functions
+archiveImage () {
+    [[ "$archive_img" = '1' ]] || return
+    mv "${img_path}/lastimg.png" "${img_path}/${img_filemask}.png"
+    ln -s "${img_path}/${img_filemask}.png" "${img_path}/lastimg.png"
+}
+
+
+archiveVid () {
+    [[ "$archive_vid" = '1' ]] || return
+    mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
+    ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
+}
+
+
+archivePaste () {
+    [[ "$archive_paste" = '1' ]] || return
+    mv "${paste_path}/lastpaste.paste" "${paste_path}/${paste_filemask}.paste"
+    ln -s "${paste_path}/${paste_filemask}.paste" "${paste_path}/lastpaste.paste"
+}
+
+
+# misc functions
+
+# notification and indicator functions
+notify () {
+    notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
+}
+
+indicator () {
+    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p &
+    echo "$!" > "$INDICATOR_PIDFILE"
+}
 
 function countdown {
     for i in $(seq $[$1-1] -1 0); do
@@ -190,121 +198,7 @@ function progress {
 }
 
 
-# defines a countdown for the amount of time the image is kept in clipboard
-delayClip () {
-    for ((n=${1:-10}; n>=0; --n)); do  
-        printf "\n%s " $n
-        sleep 1
-    done
-    printf "\r \r"  # clean up
-}
-
-# calls external python script to hold an actual image in clipboard
-# function delayClip is called to draw a countdown on screen
-# After the countdown is done, clipboard is cleared, by killing the python script
-imgClip () {
-    imgclip "$img_path"/lastimg.png &
-}
-
-# checks if pid file written by the screencast function exists.
-isRecording () {
-    [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
-}
-
-# checks dependency for screenshots and captures the screen
-screenshot () {
-    type scrot &>/dev/null || { echo "Missing scrot!"; exit 1; }
-    [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    scrot "$@" "${img_path}/lastimg.png"
-    notify "$time" "Screenshot saved"
-    archiveImage
-}
-
-# Get Dimensions of active Window
-function dimensions() {
-  unset x y w h
-  eval $(xwininfo -id $(xdotool getactivewindow) |
-    sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
-           -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
-           -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
-           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
-}
-
-screencastArea () {
-    type avconv xdotool xwininfo || type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-    isRecording && {
-        notify "$time" 'Screencast already in progress'
-        echo "Already recording Screen"; exit 1;
-    }
-
-    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-        dimensions && {
-        notify "$time" "Screencast will start in 5 seconds"
-        countdown "5" | progress 0 5 &
-        DELAY_PID=$!
-        }
-        sleep 5
-        unset DELAY_PID
-        $encoder -f x11grab -s "${w}x${h}" -i $ffmpeg_display+$x,$y $ffaudio $encopts "${vid_path}/lastvid.mp4" &
-        echo "$!" > "$SCREENCAST_PIDFILE"
-        indicator
-        notify "$time" "Screencast started"
-}
-
-
-# Used for sending Notifications
-notify () {
-    notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
-}
-
-
-clipUpload () {
-    [[ -f "${paste_path}/lastpaste.paste" ]] && rm "${paste_path}/lastpaste.paste"
-    x_clip
-    (xclip -o) > "${paste_path}/lastpaste.paste"
-    notify "$time" "Paste saved"
-    if [[ $paste_ul == scp ]]
-        then scp "${paste_path}/lastpaste.paste" "$scp_host":"$scp_path_paste"/"$paste_filemask".paste
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "${http_paste}/${paste_filemask}.paste"
-        echo -n "${http_paste}/${paste_filemask}.paste" | xclip
-    elif [[ $paste_ul == fb ]]
-        then fb "${paste_path}/lastpaste.paste"
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
-    elif [[ $paste_ul == ix ]]
-        then x_xclip
-        xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
-    fi
-    x_clip
-    archivePaste
-}
-
-
-# if set in config, this will rename lastimg.png to the filemask defined in config.
-# then a symlink back to lastimg.png is created
-archiveImage () {
-    [[ "$archive_img" = '1' ]] || return
-    mv "${img_path}/lastimg.png" "${img_path}/${img_filemask}.png"
-    ln -s "${img_path}/${img_filemask}.png" "${img_path}/lastimg.png"
-}
-
-
-# same as archiveImage but for video files created by screencast function
-archiveVid () {
-    [[ "$archive_vid" = '1' ]] || return
-    mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
-    ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
-}
-
-
-archivePaste () {
-    [[ "$archive_paste" = '1' ]] || return
-    mv "${paste_path}/lastpaste.paste" "${paste_path}/${paste_filemask}.paste"
-    ln -s "${paste_path}/${paste_filemask}.paste" "${paste_path}/lastpaste.paste"
-}
-
-
-# shows a list of files using dmenu. this is called by the uploadMenu function
+# filelistings for the upLoad function
 imgListFiles () {
     ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
 }
@@ -314,9 +208,29 @@ vidListFiles () {
 }
 
 
-# this function checks for filetype and makes sure
-# that images and videos are uploaded to the appropriate directories from config file
-# if uploader is set to fb, it will simply upload the given file
+# horrible long upload functions
+clipUpload () {
+    [[ -f "${paste_path}/lastpaste.paste" ]] && rm "${paste_path}/lastpaste.paste"
+    x_clip
+    (xclip -o) > "${paste_path}/lastpaste.paste"
+    notify "$time" "Paste saved"
+
+    if [[ $paste_ul == scp ]]; then
+        scp "${paste_path}/lastpaste.paste" "$scp_host":"$scp_path_paste"/"$paste_filemask".paste
+        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "${http_paste}/${paste_filemask}.paste"
+        echo -n "${http_paste}/${paste_filemask}.paste" | xclip
+    elif [[ $paste_ul == fb ]]; then
+        fb "${paste_path}/lastpaste.paste"
+        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
+    elif [[ $paste_ul == ix ]]; then
+        x_xclip
+        xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip
+        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
+    fi
+    x_clip
+    archivePaste
+}
+
 upLoad () {
     if [[ $1 == png ]]; then
         type="Image"
@@ -328,7 +242,7 @@ upLoad () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]; then
-        fberb "$1"
+        fb "$1"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
     elif [[ "$ul" == "imgur" ]]; then
         if [[ $1 == mp4 ]]; then
@@ -341,8 +255,6 @@ upLoad () {
     x_clip
 }
 
-
-# this will upload lastimg.png or lastvid.mp4, depending on the option chosen in uploadMenu
 instantUpload () {
     if [[ $1 == png ]]; then
         if [[ "$archive_img" == 1 ]]; then
@@ -378,16 +290,16 @@ instantUpload () {
     x_clip
 }
 
-# Make sure Clipboards are synced
 x_clip () {
     (xclip -o) | xclip -selection clipboard
 }
 
-# Check if dmenu or simpleswitcher are available 
+################################################################################################################
+
+
 type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
 
-# set default backend options
 source "$HOME/.config/teiler/config"
 source "$HOME/.config/dmenurc"
 
@@ -402,6 +314,5 @@ elif [[ "$backend" == "dmenu" ]]
 }
 fi
 
-# actually run the script
 mainMenu
 
