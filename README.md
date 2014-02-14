@@ -17,5 +17,4 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 * ffmpeg
 * xclip
 * scrot
-* pygtk
 
