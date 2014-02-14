@@ -8,7 +8,7 @@ pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
 url='http://teiler.53280.de'
 license=('GPL')
-depends=('bc' 'ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'pygtk' 'xininfo-git')
+depends=('ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'xininfo-git')
 optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'openssh: 			Upload to SSH server'
             'imgur:                     Upload images to imgur.com'
