@@ -105,7 +105,7 @@ quick () {
 
 # screencast related functions (screencast, isRecording, stopRecording)
 screencast () {
-    type avconv xdotool xwininfo || type ffmpeg xdotool xwininfo &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
     isRecording && {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
