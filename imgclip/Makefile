@@ -1,11 +1,14 @@
 CFLAGS := ${CFLAGS} -std=c99 -Wall -Wextra -Werror -pedantic ${CPPFLAGS}
+DOBUILD:=1
 
 ifeq ($(shell pkg-config --exists gtk+-3.0 && echo 1), 1) 
 	CFLAGS += $(shell pkg-config --cflags gtk+-3.0)
 	LDFLAGS = $(shell pkg-config --libs gtk+-3.0)
-else
+else ifeq ($(shell pkg-config --exists gtk+-3.0 && echo 1), 1) 
 	CFLAGS += $(shell pkg-config --cflags gtk+-2.0)
 	LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
+else
+	DOBUILD:=0
 endif
 
 PREFIX=/usr
@@ -18,12 +21,21 @@ TARGET := imgclip
 all: ${TARGET}
 
 ${TARGET}: ${SOURCE}
-	@echo ${CC} $^ -o $@
-	@${CC} $^ -o $@ ${CFLAGS} ${LDFLAGS}
+ifneq (${DOBUILD}, 0)
+	@echo ${CC} $^ -o $@ 
+	@${CC} $^ -o $@ ${CFLAGS} ${LDFLAGS} 
+else 
+	@echo "imgclip: neither gtk3 nor gtk2 are installed, skipping build"
+endif
 
 install: 
-	install -d ${INSTALLDIR}
-	install -m 755 ${TARGET} ${INSTALLDIR}/${TARGET}
+ifeq ($(wildcard ${TARGET}),)
+	@echo "imgclip: no target created, skipping install" 
+else
+	install -d ${INSTALLDIR} 
+	install -m 755 ${TARGET} ${INSTALLDIR}/${TARGET} 
+endif
+
 
 clean: 
 	${RM} ${TARGET}
