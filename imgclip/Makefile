@@ -4,7 +4,7 @@ DOBUILD:=1
 ifeq ($(shell pkg-config --exists gtk+-3.0 && echo 1), 1) 
 	CFLAGS += $(shell pkg-config --cflags gtk+-3.0)
 	LDFLAGS = $(shell pkg-config --libs gtk+-3.0)
-else ifeq ($(shell pkg-config --exists gtk+-3.0 && echo 1), 1) 
+else ifeq ($(shell pkg-config --exists gtk+-2.0 && echo 1), 1) 
 	CFLAGS += $(shell pkg-config --cflags gtk+-2.0)
 	LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
 else
