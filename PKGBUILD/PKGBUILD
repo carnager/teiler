@@ -8,13 +8,12 @@ pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
 url='http://teiler.53280.de'
 license=('GPL')
-depends=('ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'xininfo-git')
+depends=('ffmpeg' 'scrot' 'xclip' 'dzen2-xft-xpm-xinerama-fixed-svn' 'xininfo-git' 'gtk2')
 optdepends=('fb-client: 		Upload to paste.xinu.at (or selfhosted filebin)'
             'openssh: 			Upload to SSH server'
             'imgur:                     Upload images to imgur.com'
             'dmenu2: 			Backend for teiler'
             'simpleswitcher-dd-git: 	Alternative backend for teiler'
-            'gtk2:                      Image to Clipboard'
             'gtk3:                      Image to Clipboard')
 
 options=(!strip)

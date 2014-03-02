@@ -1,6 +1,6 @@
 # teiler - a little screenshot tool written in bash
 
-teiler uses dmenu (or simpleswitcher-dd) to draw a menu which lets you
+teiler uses dmenu (or rofi) to draw a menu which lets you
 choose between screenshots or screencasts.
 
 screenshots can be delayed and you can also draw areas to capture.
@@ -12,7 +12,7 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 
 * xininfo (https://github.com/DaveDavenport/xininfo)
 * dmenu2 (https://bitbucket.org/melek/dmenu2) OR
-* simpleswitcher-dd (https://github.com/DaveDavenport/simpleswitcher)
+* rofi (https://github.com/DaveDavenport/rofi)
 * dzen2 with xft, xinerama patches (https://sites.google.com/site/gotmor/dzen)
 * ffmpeg
 * xclip

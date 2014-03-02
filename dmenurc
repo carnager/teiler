@@ -4,25 +4,25 @@
 backend=dmenu
 
 #Choose 0 if your dmenu has no transparency support
-#(Not needed for Simpleswitcher, since it autodetects transparency)
+#(Not needed for rofi, since it autodetects transparency)
 dmenu_trans=1
 
-#Font that is used for dmenu/ss
+#Font that is used for dmenu/rofi
 font="Inconsolata-10"
 
-#Foreground color for dmenu/dzen2/ss
+#Foreground color for dmenu/dzen2/rofi
 nf="#a0a0a0"
 
-#background color for dmenu/dzen2/ss
+#background color for dmenu/dzen2/rofi
 nb="#000000"
 
-#foreground active color for dmenu/dzen2/ss
+#foreground active color for dmenu/dzen2/rofi
 sf="#FFFFFF"
 
-#background active color for dmenu/dzen2/ss
+#background active color for dmenu/dzen2/rofi
 sb="#0C73C2"
 
-#Border Color (Only simpleswitcher)
+#Border Color (Only rofi)
 bc="#505050"
 
 #Choose 0 if your dzen2 has no transparency support
@@ -46,9 +46,9 @@ dzen2_y=540
 #
 #   source $HOME/.config/dmenurc
 #
-#   if [[ "$backend" == "simpleswitcher" ]]
+#   if [[ "$backend" == "rofi" ]]
 #       then function dmenu_t () {
-#               simpleswitcher -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu
+#               rofi -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu
 #           }
 #
 #   elif [[ "$backend" == "dmenu" ]]
