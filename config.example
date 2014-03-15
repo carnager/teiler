@@ -12,6 +12,12 @@ SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
 namekey=teiler
+random_string=$(date +%s | sha256sum | base64 | head -c 4 ; echo)
+
+
+# if you prefer short, randomized strings, simply set
+# the following filemasks to img_filename=$random_string
+
 img_filemask=$(date +"$namekey-screen"-"%Y%m%d%H%M%S")
 vid_filemask=$(date +"$namekey-cast"-"%Y%m%d%H%M%S")
 paste_filemask=$(date +"%Y%m%d%H%M%S")
