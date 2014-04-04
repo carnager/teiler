@@ -39,11 +39,11 @@ mainMenu () {
 askPrompt () {
     menu=("1. Yes"
           "2. No")
-    
+
     prompt() { 
         printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
     }
-       
+
        case "$(prompt "${menu[@]}")" in
        1.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
        2.*) exit ;;
@@ -200,11 +200,11 @@ function progress {
 
 # filelistings for the upLoad function
 imgListFiles () {
-    ls -t -1 "$img_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
+    ls -t -1 "$img_path"/*."$1" | dmenu_t -p "Select File:"
 }
 
 vidListFiles () {
-    ls -t -1 "$vid_path"/"$namekey"-*."$1" | dmenu_t -p "Select File:"
+    ls -t -1 "$vid_path"/*."$1" | dmenu_t -p "Select File:"
 }
 
 
@@ -297,7 +297,7 @@ x_clip () {
 ################################################################################################################
 
 
-type dmenu &>/dev/null || type rofi &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
 
 source "$HOME/.config/teiler/config"
@@ -314,5 +314,9 @@ elif [[ "$backend" == "dmenu" ]]
 }
 fi
 
-mainMenu
+if [[ $1 == --quick ]]; then
+    quick
+else
+    mainMenu
+fi
 
