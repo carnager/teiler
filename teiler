@@ -297,7 +297,7 @@ x_clip () {
 ################################################################################################################
 
 
-type dmenu &>/dev/null || type simpleswitcher &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+type dmenu &>/dev/null || type rofi &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
 
 source "$HOME/.config/teiler/config"
