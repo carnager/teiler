@@ -1,5 +1,5 @@
 ###### teiler configuration file ######
-source $HOME/.config/dmenurc
+#source $HOME/.config/dmenurc
 
 
 # general options
@@ -92,3 +92,48 @@ rec_y="0"
 rec_font="Inconsolata-10"
 rec_nf="#FFFFFF"
 rec_sf="#000000"
+
+
+
+#dmenu/rofi/dzen2 settings
+
+#Backend to use. Possible values: dmenu, rofi
+backend=rofi
+
+#Choose 0 if your dmenu has no transparency support
+#(Not needed for Simpleswitcher, since it autodetects transparency)
+dmenu_trans=0
+
+#Font that is used for dmenu/rofi
+font="Dejavu Sans Mono-10"
+
+#Foreground color for dmenu/dzen2/rofi
+nf="#a0a0a0"
+
+#background color for dmenu/dzen2/rofi
+nb="#000000"
+
+#foreground active color for dmenu/dzen2/rofi
+sf="#FFFFFF"
+
+#background active color for dmenu/dzen2/rofi
+sb="#0C73C2"
+
+#Border Color (Only rofi)
+bc="#505050"
+
+#Choose 0 if your dzen2 has no transparency support
+dzen2_trans=0
+
+#font that is used for dzen2
+dzen2_font="Dejavu Sans Mono-10"
+
+#Width of dzen2
+dzen2_w=200
+
+#X Padding of dzen2
+dzen2_x=850
+
+#Y Padding of dzen2
+dzen2_y=540
+
