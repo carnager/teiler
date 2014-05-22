@@ -1,4 +1,4 @@
-###### teiler configuration file ######
+##### teiler configuration file ######
 #source $HOME/.config/dmenurc
 
 
@@ -13,14 +13,9 @@ INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
 namekey=teiler
 random_string=$(date +%s | sha256sum | base64 | head -c 4 ; echo)
-
-
-# if you prefer short, randomized strings, simply set
-# the following filemasks to img_filename=$random_string
-
-img_filemask=$(date +"$namekey-screen"-"%Y%m%d%H%M%S")
-vid_filemask=$(date +"$namekey-cast"-"%Y%m%d%H%M%S")
-paste_filemask=$(date +"%Y%m%d%H%M%S")
+img_filemask=$random_string
+vid_filemask=$random_string
+paste_filemask=$random_string
 
 
 
@@ -32,11 +27,12 @@ paste_filemask=$(date +"%Y%m%d%H%M%S")
 # set archive_img/archive_vid to "0"
 # keep in mind, that imgur does not support videos
 
-ul=imgur
-paste_ul=ix
+ul=scp
+paste_ul=fb
 archive_vid=1
 archive_img=1
-archive_paste=1
+archive_paste=0
+res=1920x1080
 
 
 
@@ -52,13 +48,13 @@ quickName="7. Quick Screenshot (Area)"
 
 # scp options
 
-scp_host=
-scp_path_img=
-scp_path_vid=
-scp_path_paste=
-http_img=
-http_vid=
-http_paste=
+scp_host=proteus
+scp_path_img=/srv/http/images/ss
+scp_path_vid=/srv/http/files/vid
+scp_path_paste=/srv/http/paste
+http_img=https://p.53280.de
+http_vid=https://files.53280.de/vid
+http_paste=https://paste.53280.de
 
 
 
@@ -66,38 +62,33 @@ http_paste=
 # Possible encoder options: libav and ffmpeg
 
 encoder=ffmpeg
-res=1920x1080
-ffmpeg_offset=0,0
+ffmpeg_display=$(echo $DISPLAY)
+ffmpeg_offset=2560,0
 
 encopts="-r 30 \
          -vcodec libx264 \
-         -pix_fmt yuv420p \
-         -s $res \
-         -acodec libmp3lame"
+         -pix_fmt yuv420p"
+#         -s $res"
+#         -acodec libmp3lame"
 
-ffaudio="-f alsa \
-         -ac 2 \
-         -i pulse"
-
-ffmpeg_display=$(echo $DISPLAY)
-
+#ffaudio="-f alsa \
+#         -ac 2 \
+#         -i pulse"
 
 
 # record indicator
 
 rec_text="capturing..."
-rec_w="100"
-rec_x="800"
-rec_y="0"
-rec_font="Inconsolata-10"
-rec_nf="#FFFFFF"
-rec_sf="#000000"
+rec_w=100
+rec_x=3400
+rec_y=0
+rec_font=DejavuSansMono-10
+rec_nf=\#FFFFFF
+rec_sf=\#000000
 
 
+###### dmenu/rofi/dzen2 configuration file ######
 
-#dmenu/rofi/dzen2 settings
-
-#Backend to use. Possible values: dmenu, rofi
 backend=rofi
 
 #Choose 0 if your dmenu has no transparency support
@@ -105,7 +96,7 @@ backend=rofi
 dmenu_trans=0
 
 #Font that is used for dmenu/rofi
-font="Dejavu Sans Mono-10"
+font="DejavuSansMono-10"
 
 #Foreground color for dmenu/dzen2/rofi
 nf="#a0a0a0"
@@ -120,13 +111,13 @@ sf="#FFFFFF"
 sb="#0C73C2"
 
 #Border Color (Only rofi)
-bc="#505050"
+bc="#0C73C2"
 
 #Choose 0 if your dzen2 has no transparency support
 dzen2_trans=0
 
 #font that is used for dzen2
-dzen2_font="Dejavu Sans Mono-10"
+dzen2_font="DejavuSansMono-10"
 
 #Width of dzen2
 dzen2_w=200
