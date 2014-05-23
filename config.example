@@ -48,13 +48,25 @@ quickName="7. Quick Screenshot (Area)"
 
 # scp options
 
-scp_host=proteus
-scp_path_img=/srv/http/images/ss
-scp_path_vid=/srv/http/files/vid
-scp_path_paste=/srv/http/paste
-http_img=https://p.53280.de
-http_vid=https://files.53280.de/vid
-http_paste=https://paste.53280.de
+scp_host=YOUR_SSH_HOST
+scp_path_img=/absolute/path/to/store/images
+scp_path_vid=/absolute/path/to/store/videos
+scp_path_paste=/absolute/path/to/store/pastes
+http_img=http_url/with/path/to/images
+http_vid=http_url/with/path/to/videos
+http_paste=http_url/with/path/to/pastes
+
+
+
+# s3 options
+
+s3_bucket=BUCKET_NAME
+s3_path_img=screenshots
+s3_path_vid=videos
+s3_path_paste=paste
+s3_http_img=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_img
+s3_http_vid=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_vid
+s3_http_paste=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_paste
 
 
 
@@ -63,7 +75,7 @@ http_paste=https://paste.53280.de
 
 encoder=ffmpeg
 ffmpeg_display=$(echo $DISPLAY)
-ffmpeg_offset=2560,0
+ffmpeg_offset=0,0
 
 encopts="-r 30 \
          -vcodec libx264 \

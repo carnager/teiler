@@ -64,10 +64,10 @@ uploadMenu () {
 
        case "$(prompt "${menu[@]}")" in
        0:*) mainMenu ;;
-       1.*) instantUpload png "$scp_path_img" "$http_img" ;;
-       2.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
-       3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" ;;
-       4.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" ;;
+       1.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       2.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       4.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
          *) mainMenu
    esac
 }
@@ -99,7 +99,7 @@ screenshot () {
 
 quick () {
     screenshot -d $quickDelay $quickArea
-    instantUpload png "$scp_path_img" "$http_img"
+    instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
 }
 
 
@@ -243,7 +243,10 @@ upLoad () {
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]; then
         fb "$1"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+    elif [[ "$ul" == "s3" ]]; then
+        s3cmd --no-progress -P put "$1" s3://"$s3_bucket"/"$4/" | grep '^Public URL' | sed s'/.*: //' | xclip
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
     elif [[ "$ul" == "imgur" ]]; then
         if [[ $1 == mp4 ]]; then
             notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
@@ -271,11 +274,13 @@ instantUpload () {
         fi
         type="Video"
     fi
-    if [[ "$ul" == scp ]]; then
-        echo $file
+        if [[ "$ul" == "scp" ]]; then
         scp "$file" "$scp_host":/"$2/"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
         echo -n "$3/$(basename "$file")" | xclip
+    elif [[ "$ul" == "s3" ]]; then
+        s3cmd --no-progress -P put "$file" s3://"$s3_bucket"/"$4/" | grep '^Public URL' | sed s'/.*: //' | xclip
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
     elif [[ "$ul" == fb ]]; then
         fb "$file"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
