@@ -323,6 +323,72 @@ fi
 
 if [[ $1 == --quick ]]; then
     quick
+elif [[ $1 == --check ]]; then
+    if ! command -v dmenu > /dev/null; then
+        dmenu=missing
+    else dmenu=installed
+    fi
+    if ! command -v rofi > /dev/null; then
+        rofi=missing
+    else rofi=installed
+    fi
+    if ! command -v scp > /dev/null; then
+        openssh=missing
+    else openssh=installed
+    fi
+    if ! command -v fb > /dev/null; then
+        filebin=missing
+    else filebin=installed
+    fi
+    if ! command -v imgur > /dev/null; then
+        imgur=missing
+    else imgur=installed
+    fi
+    if ! command -v s3cmd > /dev/null; then
+        s3cmd=missing
+    else s3cmd=installed
+    fi
+    if ! command -v xclip > /dev/null; then
+        xclip=missing
+    else xclip=installed
+    fi
+    if ! command -v dzen2 > /dev/null; then
+        dzen2=missing
+    else dzen2=installed
+    fi
+    if ! command -v ffmpeg > /dev/null; then
+        ffmpeg=missing
+    else ffmpeg=installed
+    fi
+    if ! command -v avconv > /dev/null; then
+        avconv=missing
+    else avconv=installed
+    fi
+    if ! command -v scrot > /dev/null; then
+        scrot=missing
+    else scrot=installed
+    fi
+    if ! command -v ix > /dev/null; then
+        ix=missing
+    else ix=installed
+    fi
+    clear
+    echo "Checking Dependencies"
+    echo ""
+    echo "Essential Tools:"
+    echo "dmenu/rofi:   $dmenu/$rofi"
+    echo "scrot:        $scrot"
+    echo "ffmpeg/libav: $ffmpeg/$avconv"
+    echo "openssh:      $openssh"
+    echo "dzen2:        $dzen2"
+    echo "xclip:        $xclip"
+    echo ""
+    echo "Uploaders:"
+    echo "openssh:      $openssh"
+    echo "filebin:      $filebin"
+    echo "imgur:        $imgur"
+    echo "s3cmd:        $s3cmd"
+    echo "ix:           $ix"
 else
     mainMenu
 fi
