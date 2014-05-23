@@ -14,7 +14,15 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 * dmenu2 (https://bitbucket.org/melek/dmenu2) OR
 * rofi (https://github.com/DaveDavenport/rofi)
 * dzen2 with xft, xinerama patches (https://sites.google.com/site/gotmor/dzen)
-* ffmpeg
+* ffmpeg (http://www.ffmpeg.org)
 * xclip
 * scrot
+
+## Optional Dependencies
+
+* imgur (http://imgur.com/tools/imgurbash.sh) (teiler expects this without a suffix)
+* filebin (http://git.server-speed.net/users/flo/filebin)
+* openssh (http://www.openssh.com)
+* s3cmd (http://s3tools.org/s3cmd)
+* ix (http://ix.io)
 
