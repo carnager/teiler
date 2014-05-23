@@ -245,8 +245,9 @@ upLoad () {
         fb "$1"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
     elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress -P put "$1" s3://"$s3_bucket"/"$4/" | grep '^Public URL' | sed s'/.*: //' | xclip
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+        echo -n "$5/$(basename "$1")" | xclip
     elif [[ "$ul" == "imgur" ]]; then
         if [[ $1 == mp4 ]]; then
             notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
@@ -279,8 +280,9 @@ instantUpload () {
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
         echo -n "$3/$(basename "$file")" | xclip
     elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress -P put "$file" s3://"$s3_bucket"/"$4/" | grep '^Public URL' | sed s'/.*: //' | xclip
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        s3cmd --no-progress put "$file" s3://"$s3_bucket"/"$4/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$file")"
+        echo -n "$5/$(basename "$file")" | xclip
     elif [[ "$ul" == fb ]]; then
         fb "$file"
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
