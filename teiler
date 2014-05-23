@@ -379,7 +379,6 @@ elif [[ $1 == --check ]]; then
     echo "dmenu/rofi:   $dmenu/$rofi"
     echo "scrot:        $scrot"
     echo "ffmpeg/libav: $ffmpeg/$avconv"
-    echo "openssh:      $openssh"
     echo "dzen2:        $dzen2"
     echo "xclip:        $xclip"
     echo ""
