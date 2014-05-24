@@ -387,6 +387,15 @@ elif [[ $1 == --check ]]; then
     echo "imgur:        $imgur"
     echo "s3cmd:        $s3cmd"
     echo "ix:           $ix"
+elif [[ $1 == -h ]]; then
+    echo "teiler 2.x: screenshot tool written in bash"
+    echo "Copyright © 2012 - 2014 Rasmus Steinke"
+    echo "https://teiler.53280.de"
+    echo ""
+    echo "Options"
+    echo "  -h       this help message"
+    echo "  --quick  screenshot of window/area and upload"
+    echo "  --check  check for dependencies"
 else
     mainMenu
 fi
