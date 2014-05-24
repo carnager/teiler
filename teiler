@@ -323,6 +323,9 @@ fi
 
 if [[ $1 == --quick ]]; then
     quick
+elif [[ $1 == --quickfs ]]; then
+    screenshot -d 0
+    instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
 elif [[ $1 == --check ]]; then
     if ! command -v dmenu > /dev/null; then
         dmenu=missing
@@ -393,9 +396,11 @@ elif [[ $1 == -h ]]; then
     echo "https://teiler.53280.de"
     echo ""
     echo "Options"
-    echo "  -h       this help message"
-    echo "  --quick  screenshot of window/area and upload"
-    echo "  --check  check for dependencies"
+    echo "  -h         this help message"
+    echo "  --quick    screenshot of window/area and upload"
+    echo "  --quickfs  fullscreen screenshot and upload"
+    echo ""
+    echo "  --check    check for dependencies"
 else
     mainMenu
 fi
