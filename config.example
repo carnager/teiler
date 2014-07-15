@@ -20,8 +20,8 @@ paste_filemask=$random_string
 
 
 # Uploading & archiving options
-# Possible Choices for ul: fb, scp, imgur (imgur does not support videos)
-# Possible Choices for paste_ul: fb, scp, ix
+# Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
+# Possible Choices for paste_ul: fb, scp, s3, ix
 #
 # If you don't want a local history of images/videos, 
 # set archive_img/archive_vid to "0"
@@ -64,9 +64,9 @@ s3_bucket=BUCKET_NAME
 s3_path_img=screenshots
 s3_path_vid=videos
 s3_path_paste=paste
-s3_http_img=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_img
-s3_http_vid=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_vid
-s3_http_paste=http://$s3_bucket.s3-website-eu-west-1.amazonaws.com/$s3_path_paste
+s3_http_img=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_img"
+s3_http_vid=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_vid"
+s3_http_paste=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_paste"
 
 
 
