@@ -308,16 +308,15 @@ type dmenu &>/dev/null || type rofi &>/dev/null || { echo "Missing Dependencies"
 
 
 source "$HOME/.config/teiler/config"
-source "$HOME/.config/dmenurc"
 
 if [[ "$backend" == "rofi" ]]
     then function dmenu_t () {
-    rofi -font "$font" -fg "$nf" -bg "$nb" -hlfg "$sf" -hlbg "$sb" -o 90 -bc "$bc" -dmenu "$@"
+    rofi -dmenu "$@"
 }
 
 elif [[ "$backend" == "dmenu" ]]
     then function dmenu_t () {
-    dmenu -l 15 -fn "$font" -nf "$nf" -nb "$nb" -sf "$sf" -sb "$sb" -o 90 "$@"
+    dmenu -l 15 "$@"
 }
 fi
 
