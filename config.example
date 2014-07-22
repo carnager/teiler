@@ -102,7 +102,7 @@ rec_sf=\#000000
 backend=rofi
 
 # transparency for rofi (not supported for dmenu)
-opacity=0.8
+opacity=90
 
 
 #To change colors for rofi/dmenu use ~/.Xresources file
