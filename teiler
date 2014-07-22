@@ -311,7 +311,7 @@ source "$HOME/.config/teiler/config"
 
 if [[ "$backend" == "rofi" ]]
     then function dmenu_t () {
-    rofi -dmenu "$@"
+    rofi -dmenu -opacity $opacity "$@"
 }
 
 elif [[ "$backend" == "dmenu" ]]

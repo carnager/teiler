@@ -1,6 +1,4 @@
 ##### teiler configuration file ######
-#source $HOME/.config/dmenurc
-
 
 # general options
 
@@ -103,40 +101,23 @@ rec_sf=\#000000
 
 backend=rofi
 
-#Choose 0 if your dmenu has no transparency support
-#(Not needed for Simpleswitcher, since it autodetects transparency)
-dmenu_trans=0
+# transparency for rofi (not supported for dmenu)
+opacity=0.8
 
-#Font that is used for dmenu/rofi
-font="DejavuSansMono-10"
 
-#Foreground color for dmenu/dzen2/rofi
-nf="#a0a0a0"
+#To change colors for rofi/dmenu use ~/.Xresources file
+#example:
 
-#background color for dmenu/dzen2/rofi
-nb="#000000"
-
-#foreground active color for dmenu/dzen2/rofi
-sf="#FFFFFF"
-
-#background active color for dmenu/dzen2/rofi
-sb="#0C73C2"
-
-#Border Color (Only rofi)
-bc="#0C73C2"
-
-#Choose 0 if your dzen2 has no transparency support
-dzen2_trans=0
-
-#font that is used for dzen2
-dzen2_font="DejavuSansMono-10"
-
-#Width of dzen2
-dzen2_w=200
-
-#X Padding of dzen2
-dzen2_x=850
-
-#Y Padding of dzen2
-dzen2_y=540
-
+#rofi.bordercolor:	    #0C73C2
+#rofi.highlightbg:	    #0C73C2
+#rofi.background:	    #000000
+#rofi.borderwidth:	    1
+#rofi.highlightfg:	    #FFFFFF
+#rofi.foreground:	    #A0A0A0
+#rofi.font:	            Dejavu Sans Mono-12
+#rofi.padding:	        3
+#dmenu.selforeground:	#FFFFFF
+#dmenu.background:	    #000000
+#dmenu.selbackground:	#0C73C2
+#dmenu.foreground:	    #A0A0A0
+#dmenu.font:	        "Dejavu Sans Mono-18"
