@@ -2,7 +2,7 @@
 # Contributor: Christian Rebischke
 
 pkgname=teiler-git
-pkgver=193.1c0eb02
+pkgver=239.75cd77f
 pkgrel=1
 pkgdesc="a simple screenshot/screencast tool written in bash"
 arch=('any')
@@ -14,12 +14,13 @@ optdepends=('fb-client:         Upload to paste.xinu.at (or selfhosted filebin)'
             'imgur:             Upload images to imgur.com'
             'dmenu2:            Backend for teiler'
             'rofi-git:          Alternative backend for teiler'
-            'gtk3:              Image to Clipboard')
+            'gtk3:              Image to Clipboard'
+            's3cmd:             Upload to s3 server')
 
 options=(!strip)
 install="teiler.install"
 makedepends=('git')
-source=('git+http://git.53280.de/carnager/teiler')
+source=('git+http://git.53280.de/teiler')
 
 pkgver() {
 	cd teiler
