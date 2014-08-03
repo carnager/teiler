@@ -101,8 +101,8 @@ rec_sf=\#000000
 
 backend=rofi
 
-# transparency for rofi (not supported for dmenu)
-rofiopts="-width 35 -lines 40 -opacity 90 -padding 12"
+# set these to override global rofi settings (set in ~/.Xresources)
+# rofiopts="-width 35 -lines 40 -opacity 90 -padding 12"
 
 
 #To change colors for rofi/dmenu use ~/.Xresources file
