@@ -4,7 +4,8 @@
 
 mainMenu () {
     isRecording && STATE_RECORDING="3. Stop recording screencast"
-    menu=("0: Cancel"
+    menu=("0: Exit teiler"
+          "---"
           "1. Screenshot (Fullscreen)"
           "2. Screenshot (Area)"
           "${STATE_RECORDING:-"3. Screencast"}"
