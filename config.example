@@ -21,7 +21,7 @@ paste_filemask=$random_string
 # Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
 # Possible Choices for paste_ul: fb, scp, s3, ix
 #
-# If you don't want a local history of images/videos, 
+# If you don't want a local history of images/videos,
 # set archive_img/archive_vid to "0"
 # keep in mind, that imgur does not support videos
 
@@ -102,7 +102,7 @@ rec_sf=\#000000
 backend=rofi
 
 # transparency for rofi (not supported for dmenu)
-opacity=90
+rofiopts="-width 35 -lines 40 -opacity 90 -padding 12"
 
 
 #To change colors for rofi/dmenu use ~/.Xresources file

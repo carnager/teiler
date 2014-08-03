@@ -23,7 +23,7 @@ mainMenu () {
         printf "%s\n" "$@" | dmenu_t -p "Delay:"
     }
 
-    case "$(prompt "${menu[@]}")" in 
+    case "$(prompt "${menu[@]}")" in
         0:*) exit ;;
         1.*) delayPrompt screenshot -d ;;
         2.*) delayPrompt screenshot -s -d ;;
@@ -40,7 +40,7 @@ askPrompt () {
     menu=("1. Yes"
           "2. No")
 
-    prompt() { 
+    prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
     }
 
@@ -251,7 +251,7 @@ upLoad () {
     elif [[ "$ul" == "imgur" ]]; then
         if [[ $1 == mp4 ]]; then
             notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-        else 
+        else
             imgur "$1"
             notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
         fi
@@ -263,14 +263,14 @@ instantUpload () {
     if [[ $1 == png ]]; then
         if [[ "$archive_img" == 1 ]]; then
             file=$(readlink "$img_path"/lastimg.png)
-        else 
+        else
             file="$img_path/lastimg.png"
         fi
         type="Image"
     elif [[ $1 == mp4 ]]; then
         if [[ "$archive_vid" == 1 ]]; then
             file=$(readlink "$vid_path"/lastvid.mp4)
-        else 
+        else
             file="${vid_path}/lastvid.mp4"
         fi
         type="Video"
@@ -311,7 +311,7 @@ source "$HOME/.config/teiler/config"
 
 if [[ "$backend" == "rofi" ]]
     then function dmenu_t () {
-    rofi -dmenu -opacity $opacity "$@"
+        rofi -dmenu $(echo "$rofiopts") "$@"
 }
 
 elif [[ "$backend" == "dmenu" ]]
