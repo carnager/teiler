@@ -111,6 +111,8 @@ screencast () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
+    xrandr --output "$output" --mode "$res"
+    sleep 5
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
     $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
@@ -133,6 +135,7 @@ stopRecording () {
     }
     notify "$time" "Stopped recording"
     archiveVid
+    xrandr --output "$output" --mode "$original_res"
     return 0
 }
 

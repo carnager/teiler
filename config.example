@@ -1,11 +1,93 @@
 ##### teiler configuration file ######
 
-# general options
+# general variables
 
+# the path where images, videos and pastes should be saved
 img_path=$HOME/Pictures/Screenshots
-paste_path=$HOME/Pictures/Paste
 vid_path=$HOME/Videos/Screencasts
+paste_path=$HOME/Pictures/Paste
 
+
+# Uploading & archiving options
+# Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
+# Possible Choices for paste_ul: fb, scp, ix
+#
+# If you don't want a local history of images/videos,
+# set archive_img/archive_vid to "0"
+# keep in mind, that imgur does not support videos
+ul=imgur
+paste_ul=ix
+archive_vid=1
+archive_img=1
+archive_paste=0
+
+
+# For scp you need to provide the actual path on your server
+# where your files should be stored
+# this path normally should be within a http domain.
+# also set the actual URL to the directory
+
+scp_host=HOSTNAME
+scp_path_img=/path/to/images
+scp_path_vid=/path/to/videos
+scp_path_paste=/path/to/pastes
+http_img=https://YOUR_DOMAIN/path/to/images
+http_vid=https://YOUR_DOMAIN/path/to/videos
+http_paste=https://YOUR_DOMAIN/path/to/pastes
+
+
+
+# s3 options
+# same as scp options. set an actual path within your bucket, where
+# files should be stored. Also set the URL to your directories.
+
+s3_bucket=
+s3_path_img=path/to/images
+s3_path_vid=path/to/videos
+s3_path_paste=path/to/pastes
+s3_http_img=http://rasi-teiler.s3-website-eu-west-1.amazonaws.com/path/to/images
+s3_http_vid=http://rasi-teiler.s3-website-eu-west-1.amazonaws.com/path/to/videos
+s3_http_paste=http://rasi-teiler.s3-website-eu-west-1.amazonaws.com/path/to/pastes
+
+
+# Screencast options
+# Resolution to change to when recording:
+res=800x600
+
+# Your original resolution. Teiler will change back to this
+# after a screencast
+original_res=1920x1080
+
+# output to switch resolution on.
+output=DVI-I-1
+
+# Ffmpeg settings
+# Possible encoder options: libav and ffmpeg
+encoder=ffmpeg
+ffmpeg_display=$(echo $DISPLAY)
+ffmpeg_offset=0,0
+encopts="-r 30 -vcodec libx264 -pix_fmt yuv420p -s $res -acodec libmp3lame"
+ffaudio="-f alsa -ac 2 -i pulse"
+
+# record indicator
+rec_text="capturing..."
+rec_w=100
+rec_x=3400
+rec_y=0
+rec_font=PragmataPro-10
+rec_nf=\#FFFFFF
+rec_sf=\#000000
+
+
+# quick option to quickly make a screenshot and upload in one go...
+# set quickArea to "-s" to enable Area, leave empty for Fullscreen
+# The "7." at the beginning is mandatory
+quickArea=-s
+quickDelay=1
+quickName="7. Quick Screenshot (Area)"
+
+
+# Normally you don't want to change anything here!
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
@@ -16,108 +98,11 @@ vid_filemask=$random_string
 paste_filemask=$random_string
 
 
-
-# Uploading & archiving options
-# Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
-# Possible Choices for paste_ul: fb, scp, s3, ix
-#
-# If you don't want a local history of images/videos,
-# set archive_img/archive_vid to "0"
-# keep in mind, that imgur does not support videos
-
-ul=scp
-paste_ul=fb
-archive_vid=1
-archive_img=1
-archive_paste=0
-res=1920x1080
-
-
-
-# quick option to quickly make a screenshot and upload in one go...
-# set quickArea to "-s" to enable Area, leave empty for Fullscreen
-# The "7." at the beginning is mandatory
-
-quickArea=-s
-quickDelay=0
-quickName="7. Quick Screenshot (Area)"
-
-
-
-# scp options
-
-scp_host=YOUR_SSH_HOST
-scp_path_img=/absolute/path/to/store/images
-scp_path_vid=/absolute/path/to/store/videos
-scp_path_paste=/absolute/path/to/store/pastes
-http_img=http_url/with/path/to/images
-http_vid=http_url/with/path/to/videos
-http_paste=http_url/with/path/to/pastes
-
-
-
-# s3 options
-
-s3_bucket=BUCKET_NAME
-s3_path_img=screenshots
-s3_path_vid=videos
-s3_path_paste=paste
-s3_http_img=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_img"
-s3_http_vid=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_vid"
-s3_http_paste=http://"$s3_bucket".s3-website-eu-west-1.amazonaws.com/"$s3_path_paste"
-
-
-
-# Ffmpeg settings
-# Possible encoder options: libav and ffmpeg
-
-encoder=ffmpeg
-ffmpeg_display=$(echo $DISPLAY)
-ffmpeg_offset=0,0
-
-encopts="-r 30 \
-         -vcodec libx264 \
-         -pix_fmt yuv420p"
-#         -s $res"
-#         -acodec libmp3lame"
-
-#ffaudio="-f alsa \
-#         -ac 2 \
-#         -i pulse"
-
-
-# record indicator
-
-rec_text="capturing..."
-rec_w=100
-rec_x=3400
-rec_y=0
-rec_font=DejavuSansMono-10
-rec_nf=\#FFFFFF
-rec_sf=\#000000
-
-
-###### dmenu/rofi/dzen2 configuration file ######
+###### dmenu/rofi/dzen2 configuration ######
 
 backend=rofi
 
-# set these to override global rofi settings (set in ~/.Xresources)
-# rofiopts="-width 35 -lines 40 -opacity 90 -padding 12"
-
-
-#To change colors for rofi/dmenu use ~/.Xresources file
-#example:
-
-#rofi.bordercolor:	    #0C73C2
-#rofi.highlightbg:	    #0C73C2
-#rofi.background:	    #000000
-#rofi.borderwidth:	    1
-#rofi.highlightfg:	    #FFFFFF
-#rofi.foreground:	    #A0A0A0
-#rofi.font:	            Dejavu Sans Mono-12
-#rofi.padding:	        3
-#dmenu.selforeground:	#FFFFFF
-#dmenu.background:	    #000000
-#dmenu.selbackground:	#0C73C2
-#dmenu.foreground:	    #A0A0A0
-#dmenu.font:	        "Dejavu Sans Mono-18"
+# here you can override options for rofi. normally rofi options
+# are read from ~/.Xresources, so setting options there is recommended.
+# you can dump options for ~/.Xresources with "rofi -dump-xresources"
+rofiopts="-border 2 -width 35 -lines 40 -padding 12"
