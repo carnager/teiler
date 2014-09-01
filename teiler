@@ -149,7 +149,7 @@ screencastArea () {
     rectangle2=$(echo $rectangle | awk -F '+' '{ print $2, $NF }' | sed -e 's/ /,/g')
     rectangle1=$(echo $rectangle | awk -F '+' '{ print $1 }')
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s $rectangle1 -i $ffmpeg_display+$rectangle2 $ffaudio $encopts "${vid_path}/lastvid.mp4" &
+    $encoder -f x11grab -s $rectangle1 -i $rectangle+$rectangle2 $ffaudio $encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
