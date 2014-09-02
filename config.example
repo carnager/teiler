@@ -67,6 +67,7 @@ encoder=ffmpeg
 ffmpeg_display=$(echo $DISPLAY)
 ffmpeg_offset=0,0
 encopts="-r 30 -vcodec libx264 -pix_fmt yuv420p -s $res -acodec libmp3lame"
+rect_encopts="-r 30 -c:v libx264 -preset slow -crf 18 -c:a libvorbis"
 ffaudio="-f alsa -ac 2 -i pulse"
 
 # record indicator
