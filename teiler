@@ -38,6 +38,9 @@ mainMenu () {
 }
 
 askPrompt () {
+    if [[ $upload_vid == 0 ]]; then
+        exit
+    elif [[ $upload_vid == 1 ]]; then
     menu=("1. Yes"
           "2. No")
 
@@ -50,6 +53,7 @@ askPrompt () {
        2.*) exit ;;
          *) exit
    esac
+   fi
 }
 
 uploadMenu () {
@@ -127,7 +131,7 @@ screencastPrompt() {
           "2. Area")
 
     prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload:"
+        printf "%s\n" "$@" | dmenu_t -p "Screencast:"
     }
 
        case "$(prompt "${menu[@]}")" in
@@ -161,8 +165,8 @@ screencastInputArea () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
-    rectangle2="$(echo "$1" | cut -d "+" -f2-)"
-    rectangle1="$(echo "$1" | cut -d "+" -f1)"
+    rectangle2="$(echo "$1" | awk -F '+' '{ print $2, $NF }' | sed -e 's/ /,/g')"
+    rectangle1="$(echo "$1" | awk -F '+' '{ print $1 }')"
     echo $rectangle1
     echo $rectangle2
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
