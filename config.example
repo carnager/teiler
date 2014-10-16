@@ -20,7 +20,7 @@ paste_ul=ix
 archive_vid=1
 archive_img=1
 archive_paste=0
-
+upload_vid=0
 
 # For scp you need to provide the actual path on your server
 # where your files should be stored
