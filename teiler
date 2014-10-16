@@ -73,7 +73,7 @@ uploadMenu () {
        2.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
        3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
        4.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-         *) mainMenu
+         *) exit
    esac
 }
 
@@ -140,7 +140,7 @@ screencastPrompt() {
        1.*) screencast ;;
        2.*) screencastWindow ;;
        3.*) screencastArea ;;
-         *) mainMenu
+         *) exit
    esac
 }
 
