@@ -155,6 +155,24 @@ screencastArea () {
     notify "$time" "Screencast started"
 }
 
+screencastInputArea () {
+    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
+    isRecording && {
+        notify "$time" 'Screencast already in progress'
+        echo "Already recording Screen"; exit 1;
+}
+    rectangle2="$(echo "$1" | cut -d "+" -f2-)"
+    rectangle1="$(echo "$1" | cut -d "+" -f1)"
+    echo $rectangle1
+    echo $rectangle2
+    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
+    $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    echo "$!" > "$SCREENCAST_PIDFILE"
+    indicator
+    notify "$time" "Screencast started"
+}
+
+
 
 isRecording () {
     [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
@@ -364,6 +382,8 @@ if [[ $1 == --quick ]]; then
     quick
 elif [[ $1 == --cast ]]; then
     isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
+elif [[ $1 == --recordarea ]]; then
+    screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
     screenshot -d 0
     instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
@@ -437,10 +457,11 @@ elif [[ $1 == -h ]]; then
     echo "https://teiler.53280.de"
     echo ""
     echo "Options"
-    echo "  -h         this help message"
-    echo "  --quick    screenshot of window/area and upload"
-    echo "  --quickfs  fullscreen screenshot and upload"
-    echo "  --cast     start/stop screencast"
+    echo "  -h              this help message"
+    echo "  --quick         screenshot of window/area and upload"
+    echo "  --quickfs       fullscreen screenshot and upload"
+    echo "  --cast          start/stop screencast"
+    echo "  --recordarea    screencast area widthxheight+x-offset+y-offset"
     echo ""
     echo "  --check    check for dependencies"
 else
