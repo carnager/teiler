@@ -233,7 +233,7 @@ notify () {
 }
 
 indicator () {
-    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
+    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" \
     -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p &
     echo "$!" > "$INDICATOR_PIDFILE"
 }
