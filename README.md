@@ -16,7 +16,8 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 * dzen2 with xft, xinerama patches (https://sites.google.com/site/gotmor/dzen)
 * ffmpeg (http://www.ffmpeg.org)
 * xclip
-* scrot
+* maim
+* slop
 
 ## Optional Dependencies
 
