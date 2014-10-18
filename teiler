@@ -95,9 +95,9 @@ delayPrompt () {
 
 # actual screenshot function
 screenshot () {
-    type scrot &>/dev/null || { echo "Missing scrot!"; exit 1; }
+    type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    scrot "$@" "${img_path}/lastimg.png"
+    maim "$@" "${img_path}/lastimg.png"
     notify "$time" "Screenshot saved"
     archiveImage
 }
@@ -128,8 +128,7 @@ screencastPrompt() {
     menu=("0: << back to Main Menu"
           "---"
           "1. Fullscreen"
-          "2. Window"
-          "3. Area")
+          "2. Area")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Screencast:"
@@ -138,8 +137,7 @@ screencastPrompt() {
        case "$(prompt "${menu[@]}")" in
        0:*) mainMenu ;;
        1.*) screencast ;;
-       2.*) screencastWindow ;;
-       3.*) screencastArea ;;
+       2.*) screencastArea ;;
          *) exit
    esac
 }
@@ -151,32 +149,13 @@ screencastArea () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
-    rectangle=$(xrectsel)
-    rectangle2=$(echo $rectangle | awk -F '+' '{ print $2, $NF }' | sed -e 's/ /,/g')
-    rectangle1=$(echo $rectangle | awk -F '+' '{ print $1 }')
+    eval `slop`
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s $rectangle1 -i $ffmpeg_display+$rectangle2 $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
 }
-
-screencastWindow () {
-    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-    isRecording && {
-        notify "$time" 'Screencast already in progress'
-        echo "Already recording Screen"; exit 1;
-}
-    rectangle=$(xwininfo | grep geometry | awk -F '-geometry ' '{ print $2 }')
-    rectangle2=$(echo $rectangle | awk -F '+' '{ print $2, $NF }' | sed -e 's/ /,/g')
-    rectangle1=$(echo $rectangle | awk -F '+' '{ print $1 }')
-    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s $rectangle1 -i $ffmpeg_display+$rectangle2 $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
-    echo "$!" > "$SCREENCAST_PIDFILE"
-    indicator
-    notify "$time" "Screencast started"
-}
-
 
 
 screencastInputArea () {
@@ -452,9 +431,13 @@ elif [[ $1 == --check ]]; then
         avconv=missing
     else avconv=installed
     fi
-    if ! command -v scrot > /dev/null; then
-        scrot=missing
-    else scrot=installed
+    if ! command -v maim > /dev/null; then
+        maim=missing
+    else maim=installed
+    fi
+    if ! command -v slop > /dev/null; then
+        slop=missing
+    else slop=installed
     fi
     if ! command -v ix > /dev/null; then
         ix=missing
@@ -464,7 +447,8 @@ elif [[ $1 == --check ]]; then
     echo ""
     echo "Essential Tools:"
     echo "dmenu/rofi:   $dmenu/$rofi"
-    echo "scrot:        $scrot"
+    echo "maim:         $maim"
+    echo "slop:         $slop"
     echo "ffmpeg/libav: $ffmpeg/$avconv"
     echo "dzen2:        $dzen2"
     echo "xclip:        $xclip"
