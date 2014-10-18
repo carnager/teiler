@@ -3,6 +3,10 @@
 # general variables
 
 # the path where images, videos and pastes should be saved
+backend=rofi
+slop_color="255,0,0"
+slop_border=2
+
 img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
@@ -99,9 +103,7 @@ vid_filemask=$random_string
 paste_filemask=$random_string
 
 
-###### dmenu/rofi/dzen2 configuration ######
-
-backend=rofi
+###### rofi options ######
 
 # here you can override options for rofi. normally rofi options
 # are read from ~/.Xresources, so setting options there is recommended.

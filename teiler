@@ -97,7 +97,7 @@ delayPrompt () {
 screenshot () {
     type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    maim "$@" "${img_path}/lastimg.png"
+    maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
     notify "$time" "Screenshot saved"
     archiveImage
 }
@@ -149,7 +149,7 @@ screencastArea () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
-    eval `slop`
+    eval `slop -b "$slop_border" -c "$slop_color"`
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
     $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
