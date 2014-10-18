@@ -98,8 +98,12 @@ screenshot () {
     type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
     maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+    if [[ $? == 1 ]]; then
+        exit
+    else
     notify "$time" "Screenshot saved"
     archiveImage
+    fi
 }
 
 quick () {
