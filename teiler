@@ -88,6 +88,7 @@ delayPrompt () {
     "$@" $((t+1))
     unset DELAY_PID
     killCountdown
+    sleep 1
 }
 
 
