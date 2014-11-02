@@ -263,7 +263,7 @@ function killCountdown {
 }
 
 function progress {
-    gdbar -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
+    $(echo $gdbar_binary) -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
     -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
 }
 

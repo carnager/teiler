@@ -11,6 +11,9 @@ img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
 
+# some distibutions rename the gdbar binary to dzen2-gdbar
+# set it here, accordingly
+gdbar=dzen2-gdbar
 
 # Uploading & archiving options
 # Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
