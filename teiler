@@ -406,7 +406,7 @@ elif [[ $1 == --fullscreen ]]; then
 elif [[ $1 == --area ]]; then
     delayPrompt screenshot -s -d
 elif [[ $1 == --upload ]]; then
-    upLoad
+    uploadMenu
 elif [[ $1 == --clipboard ]]; then
     clipUpload
 elif [[ $1 == --check ]]; then
@@ -502,6 +502,7 @@ elif [[ $1 == -h ]]; then
     echo "  --clipboard     upload text from clipboard"
     echo "  --cast          start/stop screencast"
     echo "  --recordarea    screencast area widthxheight+x-offset+y-offset"
+    echo "  --upload        upload existing shots/casts"
     echo ""
     echo "  --check         check for dependencies"
 else
