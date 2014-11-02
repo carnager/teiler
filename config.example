@@ -92,7 +92,7 @@ rec_sf=\#000000
 # The "7." at the beginning is mandatory
 quickArea=-s
 quickDelay=1
-quickName="7. Quick Screenshot (Area)"
+quickName="8. Quick Screenshot (Area)"
 
 
 # Normally you don't want to change anything here!

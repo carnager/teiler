@@ -11,13 +11,14 @@ mainMenu () {
     isRecording && STATE_RECORDING="3. Stop recording screencast"
     menu=("0: Exit teiler"
           "---"
-          "1. Screenshot (Fullscreen)"
-          "2. Screenshot (Area)"
-          "${STATE_RECORDING:-"3. Screencast"}"
+          "1. Screenshot (Active Monitor)"
+          "2. Screenshot (All Monitors)"
+          "3. Screenshot (Area)"
+          "${STATE_RECORDING:-"4. Screencast"}"
           "---"
-          "4. Copy Last Image to Clipboard"
-          "5. Upload Clipboard Content"
-          "6. Upload a File"
+          "5. Copy Last Image to Clipboard"
+          "6. Upload Clipboard Content"
+          "7. Upload a File"
           "---"
           "$quickName")
 
@@ -32,12 +33,13 @@ mainMenu () {
     case "$(prompt "${menu[@]}")" in
         0:*) exit ;;
         1.*) delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d ;;
-        2.*) delayPrompt screenshot -s -d ;;
-        3.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
-        4.*) imgClip ;;
-        5.*) clipUpload ;;
-        6.*) uploadMenu ;;
-        7.*) quick ;;
+        2.*) delayPrompt screenshot -d ;;
+        3.*) delayPrompt screenshot -s -d ;;
+        4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
+        5.*) imgClip ;;
+        6.*) clipUpload ;;
+        7.*) uploadMenu ;;
+        8.*) quick ;;
           *) exit
     esac
 }
@@ -448,7 +450,7 @@ elif [[ $1 == --check ]]; then
         slop=missing
     else slop=installed
     fi
-    if ! command -v gdbar > /dev/null; then
+    if ! command -v $(echo $gdbar_binary) > /dev/null; then
         gdbar=missing
     else gdbar=installed
     fi
