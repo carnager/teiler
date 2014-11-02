@@ -2,6 +2,11 @@
 
 # Menus
 
+xoffset=$(xininfo -mon-x)
+yoffset=$(xininfo -mon-y)
+width=$(xininfo -mon-width)
+height=$(xininfo -mon-height)
+
 mainMenu () {
     isRecording && STATE_RECORDING="3. Stop recording screencast"
     menu=("0: Exit teiler"
@@ -26,7 +31,7 @@ mainMenu () {
 
     case "$(prompt "${menu[@]}")" in
         0:*) exit ;;
-        1.*) delayPrompt screenshot -d ;;
+        1.*) delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d ;;
         2.*) delayPrompt screenshot -s -d ;;
         3.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
         4.*) imgClip ;;
@@ -88,7 +93,6 @@ delayPrompt () {
     "$@" $((t+1))
     unset DELAY_PID
     killCountdown
-    sleep 1
 }
 
 
