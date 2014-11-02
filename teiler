@@ -448,6 +448,14 @@ elif [[ $1 == --check ]]; then
         slop=missing
     else slop=installed
     fi
+    if ! command -v gdbar > /dev/null; then
+        gdbar=missing
+    else gdbar=installed
+    fi
+    if ! command -v xininfo > /dev/null; then
+        xininfo=missing
+    else xininfo=installed
+    fi
     if ! command -v ix > /dev/null; then
         ix=missing
     else ix=installed
@@ -461,6 +469,8 @@ elif [[ $1 == --check ]]; then
     echo "ffmpeg/libav: $ffmpeg/$avconv"
     echo "dzen2:        $dzen2"
     echo "xclip:        $xclip"
+    echo "xininfo:      $xininfo"
+    echo "gdbar:        $gdbar"
     echo ""
     echo "Uploaders:"
     echo "openssh:      $openssh"
