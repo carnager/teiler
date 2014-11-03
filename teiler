@@ -2,13 +2,14 @@
 
 # Menus
 
+output=$(xininfo -name)
 xoffset=$(xininfo -mon-x)
 yoffset=$(xininfo -mon-y)
 width=$(xininfo -mon-width)
 height=$(xininfo -mon-height)
 
 mainMenu () {
-    isRecording && STATE_RECORDING="3. Stop recording screencast"
+    isRecording && STATE_RECORDING="4. Stop recording screencast"
     menu=("0: Exit teiler"
           "---"
           "1. Screenshot (Active Monitor)"
@@ -203,7 +204,7 @@ stopRecording () {
     }
     notify "$time" "Stopped recording"
     archiveVid
-    xrandr --output "$output" --mode "$original_res"
+    xrandr --output "$output" --auto
     return 0
 }
 

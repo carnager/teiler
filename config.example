@@ -61,13 +61,6 @@ s3_http_paste=http://rasi-teiler.s3-website-eu-west-1.amazonaws.com/path/to/past
 # Resolution to change to when recording:
 res=800x600
 
-# Your original resolution. Teiler will change back to this
-# after a screencast
-original_res=1920x1080
-
-# output to switch resolution on.
-output=DVI-I-1
-
 # Ffmpeg settings
 # Possible encoder options: libav and ffmpeg
 encoder=ffmpeg
