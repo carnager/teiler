@@ -65,7 +65,7 @@ res=800x600
 # Possible encoder options: libav and ffmpeg
 encoder=ffmpeg
 ffmpeg_display=$(echo $DISPLAY)
-ffmpeg_offset=0,0
+ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
 encopts="-r 30 -vcodec libx264 -pix_fmt yuv420p -s $res -acodec libmp3lame"
 rect_encopts="-r 30 -c:v libx264 -preset slow -crf 18 -c:a libvorbis"
 ffaudio="-f alsa -ac 2 -i pulse"
