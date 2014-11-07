@@ -127,7 +127,13 @@ screencast () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
-    xrandr --output "$output" --mode "$res"
+    res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
+    if [[ $res_now == $res ]]; then
+        echo " "
+    elif
+        xrandr --output "$output" --mode "$res"
+        sleep 5
+    fi
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
     $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
