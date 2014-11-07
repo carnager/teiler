@@ -130,7 +130,7 @@ screencast () {
     res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
     if [[ $res_now == $res ]]; then
         echo " "
-    elif
+    else
         xrandr --output "$output" --mode "$res"
         sleep 5
     fi
