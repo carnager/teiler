@@ -128,7 +128,6 @@ screencast () {
         echo "Already recording Screen"; exit 1;
 }
     xrandr --output "$output" --mode "$res"
-    sleep 5
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
     $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
     echo "$!" > "$SCREENCAST_PIDFILE"
