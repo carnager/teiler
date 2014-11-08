@@ -403,7 +403,7 @@ elif [[ $1 == --cast ]]; then
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
-    screenshot -w $width -h $height -x $xoffset -y $yoffset -d 0
+    screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d 0
     instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
 elif [[ $1 == --fullscreen ]]; then
     delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d
