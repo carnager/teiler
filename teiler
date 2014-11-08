@@ -123,6 +123,8 @@ screencast () {
         notify "$time" 'Screencast already in progress'
         echo "Already recording Screen"; exit 1;
 }
+    ffmpeg_display=$(echo $DISPLAY)
+    ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
     res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
     if [[ $res_now == $res ]]; then
         echo " "
