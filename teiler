@@ -2,7 +2,7 @@
 
 # Menus
 
-xinfo=$(xininfo -name -mon-x -mon-y -mon-width -mon-height)
+xinfo=$(xininfo -mon-x -mon-y -mon-width -mon-height)
 
 mainMenu () {
     isRecording && STATE_RECORDING="4. Stop recording screencast"
@@ -127,7 +127,8 @@ screencast () {
     if [[ $res_now == $res ]]; then
         echo " "
     else
-        xrandr --output $(echo $xinfo | sed -n "5p") --mode "$res"
+        output=$(xininfo -name)
+        xrandr --output "$output" --mode "$res"
         sleep 5
     fi
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
@@ -205,6 +206,7 @@ stopRecording () {
     }
     notify "$time" "Stopped recording"
     archiveVid
+    output=$(xininfo -name)
     xrandr --output "$output" --auto
     return 0
 }
