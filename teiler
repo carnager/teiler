@@ -413,6 +413,8 @@ elif [[ $1 == --area ]]; then
     delayPrompt screenshot -s -d
 elif [[ $1 == --upload ]]; then
     uploadMenu
+elif [[ $1 == --uploadlast ]]; then
+    instantUpload png
 elif [[ $1 == --clipboard ]]; then
     clipUpload
 elif [[ $1 == --check ]]; then
@@ -510,6 +512,7 @@ elif [[ $1 == -h ]]; then
     echo "  --recordarea    screencast specific area"
     echo "                  example: --recordarea 500x250+10+0"
     echo "  --upload        upload existing shots/casts"
+    echo "  --uploadlast    upload last image"
     echo ""
     echo "  --check         check for dependencies"
 else
