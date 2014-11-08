@@ -29,7 +29,7 @@ mainMenu () {
 
     case "$(prompt "${menu[@]}")" in
         0:*) exit ;;
-        1.*) delayPrompt screenshot -w $(echo $xinfo | sed -n "4p") -h $(echo $xinfo | sed -n "5p") -x $(echo $xinfo | sed -n "2p") -y $(echo $xinfo | sed -n "3p") -d ;;
+        1.*) delayPrompt screenshot -w $(echo $xinfo | sed -n "1p") -h $(echo $xinfo | sed -n "2p") -x $(echo $xinfo | sed -n "3p") -y $(echo $xinfo | sed -n "4p") -d ;;
         2.*) delayPrompt screenshot -d ;;
         3.*) delayPrompt screenshot -s -d ;;
         4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
@@ -127,7 +127,7 @@ screencast () {
     if [[ $res_now == $res ]]; then
         echo " "
     else
-        xrandr --output $(echo $xinfo | sed -n "1p") --mode "$res"
+        xrandr --output $(echo $xinfo | sed -n "5p") --mode "$res"
         sleep 5
     fi
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
