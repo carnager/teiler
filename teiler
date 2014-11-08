@@ -2,11 +2,7 @@
 
 # Menus
 
-output=$(xininfo -name)
-xoffset=$(xininfo -mon-x)
-yoffset=$(xininfo -mon-y)
-width=$(xininfo -mon-width)
-height=$(xininfo -mon-height)
+xinfo=$(xininfo -name -mon-x -mon-y -mon-width -mon-height)
 
 mainMenu () {
     isRecording && STATE_RECORDING="4. Stop recording screencast"
@@ -33,7 +29,7 @@ mainMenu () {
 
     case "$(prompt "${menu[@]}")" in
         0:*) exit ;;
-        1.*) delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d ;;
+        1.*) delayPrompt screenshot -w $(echo $xinfo | sed -n 4) -h $(echo $xinfo | sed -5) -x $(echo $xinfo | sed -n 2) -y $(echo $xinfo | sed -n 3) -d ;;
         2.*) delayPrompt screenshot -d ;;
         3.*) delayPrompt screenshot -s -d ;;
         4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
@@ -131,7 +127,7 @@ screencast () {
     if [[ $res_now == $res ]]; then
         echo " "
     else
-        xrandr --output "$output" --mode "$res"
+        xrandr --output $(echo $xinfo | sed -n 1) --mode "$res"
         sleep 5
     fi
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
