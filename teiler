@@ -99,7 +99,11 @@ delayPrompt () {
 screenshot () {
     type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+    if [[ hidecursor == "yes" ]]; then
+        maim --hidecursor -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+    else
+        maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+    fi
     if [[ $? == 1 ]]; then
         exit
     else

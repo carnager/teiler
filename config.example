@@ -2,11 +2,12 @@
 
 # general variables
 
-# the path where images, videos and pastes should be saved
 backend=rofi
 slop_color="255,0,0"
 slop_border=2
+hidecursor=yes
 
+# the path where images, videos and pastes should be saved
 img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
