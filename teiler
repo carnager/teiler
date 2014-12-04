@@ -2,6 +2,11 @@
 
 # Menus
 
+promptDelay() {
+    printf "%s\n" "$@" | dmenu_t -p "Delay:"
+}
+
+
 mainMenu () {
     isRecording && STATE_RECORDING="4. Stop recording screencast"
     menu=("0: Exit teiler"
