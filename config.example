@@ -33,6 +33,10 @@ archive_img=1
 archive_paste=0
 upload_vid=0
 
+# filebin history
+# for filebin history to work, you need to set your host here:
+filebin_host=https://fb.53280.de
+
 # For scp you need to provide the actual path on your server
 # where your files should be stored
 # this path normally should be within a http domain.
@@ -51,7 +55,6 @@ http_paste=https://YOUR_DOMAIN/path/to/pastes
 # s3 options
 # same as scp options. set an actual path within your bucket, where
 # files should be stored. Also set the URL to your directories.
-
 s3_bucket=
 s3_path_img=path/to/images
 s3_path_vid=path/to/videos
