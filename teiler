@@ -237,7 +237,7 @@ stopRecording () {
 
 # copy last image to clipboard
 imgClip () {
-    imgclip "$img_path"/lastimg.png &
+    copyq write image/png - < "$img_path"/lastimg.png &
 }
 
 
