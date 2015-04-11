@@ -16,6 +16,9 @@ paste_path=$HOME/Pictures/Paste
 # set it here, accordingly
 gdbar=gdbar
 
+# editor to be used
+editor=pinta
+
 # Uploading & archiving options
 # Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
 # Possible Choices for paste_ul: fb, scp, ix
@@ -77,14 +80,6 @@ rec_y=0
 rec_font=PragmataPro-10
 rec_nf=\#FFFFFF
 rec_sf=\#000000
-
-
-# quick option to quickly make a screenshot and upload in one go...
-# set quickArea to "-s" to enable Area, leave empty for Fullscreen
-# The "8." at the beginning is mandatory
-quickArea=-s
-quickDelay=1
-quickName="8. Quick Screenshot (Area)"
 
 
 # Normally you don't want to change anything here!
