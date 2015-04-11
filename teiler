@@ -19,7 +19,7 @@ mainMenu () {
           "5. Copy Last Image to Clipboard"
           "6. Edit last Image"
           "---"
-          "7. Upload Clipboard Content"
+          "7. Upload Text from Clipboard"
           "8. Upload a File")
 
     prompt() {
