@@ -18,7 +18,7 @@ mainMenu () {
           "---"
           "5. Copy Last Image to Clipboard"
           "6. Upload Text from Clipboard"
-          "7. Upload a File")
+          "7. Upload Menu")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
@@ -71,13 +71,17 @@ editImage () {
 }
 
 uploadMenu () {
+    if [[ "$ul" == "fb" ]]; then history="5. Show Filebin History"; fi
     menu=("0: << back to Main Menu"
           "---"
           "1. Upload Image from History"
           "2. Upload Video from History"
           "---"
           "3. Upload last Image"
-          "4. Upload last Video")
+          "4. Upload last Video"
+          "---"
+          "${history}"
+         )
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Upload:"
@@ -89,9 +93,24 @@ uploadMenu () {
        4.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
        1.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
        2.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       5.*) fb_history ;;
          *) exit
    esac
 }
+
+fb_history () {
+    menu=$(echo -e "0: << back to main menu\n---\n$(fb -H | awk -F '|' 'NR > 2 { print $1, $2, $4, $6 }')" | tac | rofi -dmenu -p "Chose Entry > ")
+    if [[ "$menu" == "0: << back to main menu" ]]; then
+        mainMenu
+    elif [[ "$menu" == "" ]]; then
+        uploadMenu
+    else
+        echo -n "${filebin_host}/$(echo ${menu} | awk '{ print $1 }')" | xclip
+        x_clip
+        notify-send "teiler" "Copied Entry to Clipboard"
+    fi
+}
+
 
 delayPrompt () {
     t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
