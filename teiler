@@ -18,10 +18,9 @@ mainMenu () {
           "---"
           "5. Copy Last Image to Clipboard"
           "6. Edit last Image"
-          "7. Upload Clipboard Content"
-          "8. Upload a File"
           "---"
-          "$quickName")
+          "7. Upload Clipboard Content"
+          "8. Upload a File")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
@@ -41,7 +40,6 @@ mainMenu () {
         6.*) editImage ;;
         7.*) clipUpload ;;
         8.*) uploadMenu ;;
-        9.*) quick ;;
           *) exit
     esac
 }
@@ -127,13 +125,13 @@ screenshot () {
     notify "$time" "Screenshot saved"
     archiveImage
     fi
+    menu=$(echo -e "1. Yes\n2. No" | rofi -dmenu -p "Upload File? >")
+    if [[ "$menu" == "1. Yes" ]]; then
+        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+    else
+        exit
+    fi
 }
-
-quick () {
-    screenshot -d $quickDelay $quickArea
-    instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-}
-
 
 # screencast related functions (screencast, isRecording, stopRecording)
 screencast () {
