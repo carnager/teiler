@@ -17,10 +17,8 @@ mainMenu () {
           "${STATE_RECORDING:-"4. Screencast"}"
           "---"
           "5. Copy Last Image to Clipboard"
-          "6. Edit last Image"
-          "---"
-          "7. Upload Text from Clipboard"
-          "8. Upload a File")
+          "6. Upload Text from Clipboard"
+          "7. Upload a File")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
@@ -37,9 +35,8 @@ mainMenu () {
         3.*) delayPrompt screenshot -s -d ;;
         4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
         5.*) imgClip ;;
-        6.*) editImage ;;
-        7.*) clipUpload ;;
-        8.*) uploadMenu ;;
+        6.*) clipUpload ;;
+        7.*) uploadMenu ;;
           *) exit
     esac
 }
@@ -127,9 +124,11 @@ screenshot () {
     notify "$time" "Screenshot saved"
     archiveImage
     fi
-    menu=$(echo -e "1. Yes\n2. No" | rofi -dmenu -p "Upload File? >")
-    if [[ "$menu" == "1. Yes" ]]; then
+    menu=$(echo -e "1. Upload Image\n2. Edit Image" | rofi -dmenu -p "> ")
+    if [[ "$menu" == "1. Upload Image" ]]; then
         instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+    elif [[ "$menu" == "2. Edit Image" ]]; then
+        editImage
     else
         exit
     fi
