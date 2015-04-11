@@ -5,6 +5,7 @@ choose between screenshots or screencasts.
 
 screenshots can be delayed and you can also draw areas to capture.
 teiler can also upload your files via scp or filebin. (http://git.server-speed.net/users/flo/filebin/)
+Editing your screenshots before uploading is also supported.
 
 Last, but not least teiler can store your Screenshots in clipboard for use in other applications.
 
@@ -26,4 +27,5 @@ Last, but not least teiler can store your Screenshots in clipboard for use in ot
 * openssh (http://www.openssh.com)
 * s3cmd (http://s3tools.org/s3cmd)
 * ix (http://ix.io)
+* copyq (https://github.com/hluk/CopyQ)
 
