@@ -75,10 +75,12 @@ editImage () {
 
 uploadMenu () {
     menu=("0: << back to Main Menu"
-          "1. Upload last Image"
-          "2. Upload last Video"
-          "3. Image"
-          "4. Video")
+          "---"
+          "1. Upload Image from History"
+          "2. Upload Video from History"
+          "---"
+          "3. Upload last Image"
+          "4. Upload last Video")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Upload:"
@@ -86,10 +88,10 @@ uploadMenu () {
 
        case "$(prompt "${menu[@]}")" in
        0:*) mainMenu ;;
-       1.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       2.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-       3.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       4.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       3.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       4.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       1.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       2.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
          *) exit
    esac
 }
@@ -297,11 +299,12 @@ function progress {
 
 # filelistings for the upLoad function
 imgListFiles () {
-    ls -t -1 "$img_path"/*."$1" | dmenu_t -p "Select File:"
+    menu="$(ls -t -l "$img_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File > ")"
+    basename $(echo "$menu" | awk '{ print $5 }')
 }
 
 vidListFiles () {
-    ls -t -1 "$vid_path"/*."$1" | dmenu_t -p "Select File:"
+    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File:"
 }
 
 
@@ -329,13 +332,14 @@ clipUpload () {
 }
 
 upLoad () {
+    cd "$img_path"
     if [[ $1 == png ]]; then
         type="Image"
     elif [[ $1 == mp4 ]]; then
         type="Video"
     fi
     if [[ "$ul" == "scp" ]]; then
-        scp "$1" "$scp_host":/"$2/"
+        scp "$1" "$scp_host":/"$2"/
         notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
         echo -n "$3/$(basename "$1")" | xclip
     elif [[ "$ul" == "fb" ]]; then
