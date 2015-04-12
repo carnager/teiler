@@ -35,7 +35,7 @@ upload_vid=0
 
 # filebin history
 # for filebin history to work, you need to set your host here:
-filebin_host=https://fb.53280.de
+filebin_host=https://host.example.com
 
 # For scp you need to provide the actual path on your server
 # where your files should be stored

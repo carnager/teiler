@@ -17,8 +17,9 @@ mainMenu () {
           "${STATE_RECORDING:-"4. Screencast"}"
           "---"
           "5. Copy Last Image to Clipboard"
+          "---"
           "6. Upload Text from Clipboard"
-          "7. Upload Menu")
+          "7. Upload History")
 
     prompt() {
         printf "%s\n" "$@" | dmenu_t -p "Teiler:"
@@ -425,7 +426,7 @@ x_clip () {
 
 type dmenu &>/dev/null || type rofi &>/dev/null || { echo "Missing Dependencies"; exit 1; }
 
-
+source "/etc/teiler.conf"
 source "$HOME/.config/teiler/config"
 
 if [[ "$backend" == "rofi" ]]
