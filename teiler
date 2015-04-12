@@ -63,7 +63,7 @@ askPrompt () {
 
 editImage () {
     $editor "${img_path}/lastimg.png"
-    menu=$(echo -e "1. Yes\n2. No" | rofi -dmenu -p "Upload File? >")
+    menu=$(echo -e "1. Yes\n2. No" | dmenu_t -p "Upload File? >")
     if [[ "$menu" == "1. Yes" ]]; then
         instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
     else
@@ -144,7 +144,7 @@ screenshot () {
     notify "$time" "Screenshot saved"
     archiveImage
     fi
-    menu=$(echo -e "1. Upload Image\n2. Edit Image" | rofi -dmenu -p "> ")
+    menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
     if [[ "$menu" == "1. Upload Image" ]]; then
         instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
     elif [[ "$menu" == "2. Edit Image" ]]; then
