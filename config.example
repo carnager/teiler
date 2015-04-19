@@ -101,4 +101,4 @@ paste_filemask=$random_string
 # here you can override options for rofi. normally rofi options
 # are read from ~/.Xresources, so setting options there is recommended.
 # you can dump options for ~/.Xresources with "rofi -dump-xresources"
-rofiopts="-border 2 -width 35 -lines 40 -padding 12"
+# rofiopts="-border 2 -width 35 -lines 40 -padding 12"
