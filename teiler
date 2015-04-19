@@ -112,6 +112,10 @@ fb_history () {
     fi
 }
 
+quick () {
+    screenshot -d $quickDelay $quickArea
+    instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+}
 
 delayPrompt () {
     t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
