@@ -113,6 +113,7 @@ fb_history () {
 }
 
 quick () {
+
     screenshot -d $quickDelay $quickArea
     instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
 }
@@ -157,6 +158,25 @@ screenshot () {
         exit
     fi
 }
+
+screenshot_quick () {
+     type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
+     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
+     if [[ $hidecursor == "yes" ]]; then
+         maim --hidecursor -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+     else
+         maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
+     fi
+     if [[ $? == 1 ]]; then
+         exit
+     else
+     notify "$time" "Screenshot saved"
+     archiveImage
+         instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+         exit
+     fi
+ }
+
 
 # screencast related functions (screencast, isRecording, stopRecording)
 screencast () {
@@ -445,14 +465,13 @@ elif [[ "$backend" == "dmenu" ]]
 fi
 
 if [[ $1 == --quick ]]; then
-    quick
+    screenshot_quick -d 1 -s
 elif [[ $1 == --cast ]]; then
     isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
-    screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d 0
-    instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+    screenshot_quick -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d 0
 elif [[ $1 == --fullscreen ]]; then
     delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d
 elif [[ $1 == --area ]]; then
