@@ -464,6 +464,16 @@ elif [[ $1 == --uploadlast ]]; then
 elif [[ $1 == --clipboard ]]; then
     clipUpload
 elif [[ $1 == --check ]]; then
+    if [[ -d "$img_path" ]]; then
+        ipath="Image path: "$img_path" exists"
+    else
+        ipath="WARNING: Image path "$img_path" does not exist"
+    fi
+    if [[ -d "$vid_path" ]]; then
+        vpath="Video path: "$vid_path" exists"
+    else
+        vpath="WARNING: Video path "$vid_path" does not exist"
+    fi
     if ! command -v dmenu > /dev/null; then
         dmenu=missing
     else dmenu=installed
@@ -524,6 +534,10 @@ elif [[ $1 == --check ]]; then
         ix=missing
     else ix=installed
     fi
+    echo "Checking for paths..."
+    echo "$ipath"
+    echo "$vpath"
+    echo ""
     echo "Checking Dependencies"
     echo ""
     echo "Essential Tools:"
