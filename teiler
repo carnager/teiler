@@ -124,7 +124,7 @@ delayPrompt () {
         countdown "$t" | progress 0 "$t" &
         DELAY_PID=$!
     }
-    "$@" $((t+1))
+    "$@" $((t+2))
     unset DELAY_PID
     killCountdown
 }
