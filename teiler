@@ -146,6 +146,7 @@ screenshot () {
     else
     notify "$time" "Screenshot saved"
     archiveImage
+    xdotool key Escape
     fi
     menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
     if [[ "$menu" == "1. Upload Image" ]]; then
