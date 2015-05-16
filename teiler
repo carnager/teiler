@@ -3,43 +3,74 @@
 # Menus
 
 promptDelay() {
-    printf "%s\n" "$@" | dmenu_t -p "Delay:"
+    printf "%s\n" "$@" | dmenu_t -p "Delay > "
 }
 
 
 mainMenu () {
-    isRecording && STATE_RECORDING="4. Stop recording screencast"
-    menu=("0: Exit teiler"
-          "---"
-          "1. Screenshot (Active Monitor)"
-          "2. Screenshot (All Monitors)"
-          "3. Screenshot (Area)"
-          "${STATE_RECORDING:-"4. Screencast"}"
-          "---"
-          "5. Copy Last Image to Clipboard"
-          "---"
-          "6. Upload Text from Clipboard"
-          "7. Upload History")
+isRecording && STATE_RECORDING="2. Stop recording screencast"
+menu="0: Exit teiler
+---
+1. Screenshot (Default: ${img_default})
+${STATE_RECORDING:-"2. Screencast"} (Default: ${vid_default})
+---
+5. Copy Last Image to CopyQ History
+6. Pastebin Text from Clipboard
+7. Upload Menu
+---
+>> Alt+1: Fullscreen | Alt+2: Area"
 
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Teiler:"
-    }
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 9 -p "Teiler > ")
+
+    val=$?
 
    promptDelay() {
-        printf "%s\n" "$@" | dmenu_t -p "Delay:"
+        printf "%s\n" "$@" | dmenu_t -no-levenshtein-sort -p "Delay > "
     }
 
-    case "$(prompt "${menu[@]}")" in
-        0:*) exit ;;
-        1.*) delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ;;
-        2.*) delayPrompt screenshot -d ;;
-        3.*) delayPrompt screenshot -s -d ;;
-        4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
-        5.*) imgClip ;;
-        6.*) clipUpload ;;
-        7.*) uploadMenu ;;
-          *) exit
-    esac
+
+    if [[ "$menu" == "1. Screenshot"* ]]; then
+        if [[ $img_default == "Fullscreen" ]]; then
+            if [[ $val -eq 10 || $val -eq 0 ]]; then
+                delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+            elif [[ $val -eq 11 ]]; then
+                delayPrompt screenshot -s -d
+            fi
+        elif [[ $img_default == "Area" ]]; then
+            if [[ $val -eq 11 || $val -eq 0 ]]; then
+                delayPrompt screenshot -s -d
+            elif [[ $val -eq 10 ]]; then
+                delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+            fi
+        fi
+
+
+    elif [[ "$menu" == "2. Screencast"* ]]; then
+        if [[ $vid_default == "Area" ]]; then
+            if [[ $val -eq 11 || $val -eq 0 ]]; then
+                isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
+           elif [[ $val -eq 10 ]]; then
+                isRecording && stopRecording && sleep 2 && askPrompt || screencast
+            fi
+        elif [[ $vid_default == "Fullscreen" ]]; then
+            if [[ $val -eq 10 || $val -eq 0 ]]; then
+                isRecording && stopRecording && sleep 2 && askPrompt || screencast
+            elif [[ $val -eq 11 ]]; then
+                isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
+            fi
+        fi
+
+    elif [[ "$menu" == "2. Stop recording screencast" ]]; then
+        isRecording && stopRecording && sleep 2 && askPrompt
+    elif [[ "$menu" == "5. Copy Last Image to Clipboard" ]]; then
+        imgClip
+    elif [[ "$menu" == "6. Upload Text Selection" ]]; then
+        clipUpload
+    elif [[ "$menu" == "7. Upload Menu" ]]; then
+        uploadMenu
+    elif [[ $val -eq 1 ]]; then
+        exit
+    fi
 }
 
 askPrompt () {
@@ -85,7 +116,7 @@ uploadMenu () {
          )
 
     prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload:"
+        printf "%s\n" "$@" | dmenu_t -p "Upload > "
     }
 
        case "$(prompt "${menu[@]}")" in
@@ -146,6 +177,7 @@ screenshot () {
     else
     notify "$time" "Screenshot saved"
     archiveImage
+    xdotool key Escape
     fi
     menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
     if [[ "$menu" == "1. Upload Image" ]]; then
@@ -207,7 +239,7 @@ screencastPrompt() {
           "2. Area")
 
     prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Screencast:"
+        printf "%s\n" "$@" | dmenu_t -p "Screencast > "
     }
 
        case "$(prompt "${menu[@]}")" in
@@ -278,7 +310,9 @@ stopRecording () {
 
 # copy last image to clipboard
 imgClip () {
-    copyq write image/png - < "$img_path"/lastimg.png &
+    copyq enable
+    copyq copy image/png - < "$img_path"/lastimg.png &
+    copyq select
 }
 
 
@@ -345,7 +379,7 @@ imgListFiles () {
 }
 
 vidListFiles () {
-    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File:"
+    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File > "
 }
 
 
