@@ -195,7 +195,16 @@ screencast () {
         sleep 5
     fi
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
+
+    if [[ -z $ffaudio ]]; then
+        clear
+        echo "no audio defined"
+        $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/lastvid.mp4" &
+    else
+        clear
+        echo "audio defined"
+        $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
+    fi
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
@@ -230,7 +239,16 @@ screencastArea () {
     ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
     eval `slop -b "$slop_border" -c "$slop_color"`
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    if [[ -z $ffaudio ]]; then
+        clear
+        echo "no audio output"
+        $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/lastvid.mp4" &
+    else
+        clear
+        echo "audio defined"
+        echo "$ffaudio"
+        $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    fi
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
@@ -248,7 +266,11 @@ screencastInputArea () {
     echo $rectangle1
     echo $rectangle2
     [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    if [[ -z $ffaudio ]]; then
+        $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $rect_encopts "${vid_path}/lastvid.mp4" &
+    else
+        $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
+    fi
     echo "$!" > "$SCREENCAST_PIDFILE"
     indicator
     notify "$time" "Screencast started"
