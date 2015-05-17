@@ -645,7 +645,7 @@ fi
 if [[ $1 == --quick ]]; then
     export val=10; screenshot_quick -d 1 -s
 elif [[ $1 == --cast ]]; then
-    isRecording && stopRecording && sleep 2 && askPrompt || screencast
+    isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
