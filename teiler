@@ -12,18 +12,19 @@ isRecording && STATE_RECORDING="2. Stop recording screencast"
 menu="0: Exit teiler
 ${STATE_RECORDING:-"---"}
 1. Screenshot
-2. Screenshot (Area)
+2. Screenshot (All Monitors)
+3. Screenshot (Area)
 ---
-3. Screencast
-4. Screencast (Area)
+4. Screencast
+5. Screencast (Area)
 ---
-5. Copy Last Image to CopyQ History
-6. Pastebin Text from Clipboard
-7. Upload Menu
+6. Copy Last Image to CopyQ History
+7. Pastebin Text from Clipboard
+8. Upload Menu
 ---
->> Alt+1: Upload | Alt+2: No Upload <3"
+>> Watch Input Line for Hotkeys!"
 
-menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 12 -p "Alt+1: Upload, Alt+2: No Upload > ")
+menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload, Alt+2: No Upload > ")
 
     val_temp=$?
     export val=$val_temp
@@ -40,32 +41,40 @@ menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 12 -p "Alt+1: Upload,
             exit
         fi
 
-    elif [[ "$menu" == "2. Screenshot (Area)" ]]; then
+    elif [[ "$menu" == "2. Screenshot (All Monitors)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -d
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+
+    elif [[ "$menu" == "3. Screenshot (Area)" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
             delayPrompt screenshot -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
         elif [[ $val -eq 1 ]]; then
             exit
         fi
 
-    elif [[ "$menu" == "3. Screencast" ]]; then
+    elif [[ "$menu" == "4. Screencast" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
             isRecording && stopRecording && sleep 2 || screencastArea
         fi
 
-    elif [[ $menu == "3. Screencast (Area)" ]]; then
+    elif [[ $menu == "5. Screencast (Area)" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
             isRecording && stopRecording && sleep 2 || screencast
         elif [[ $val -eq 1 ]]; then
             exit
         fi
 
-    elif [[ "$menu" == "2. Stop recording screencast" ]]; then
+    elif [[ "$menu" == "5. Stop recording screencast" ]]; then
         isRecording && stopRecording && sleep 2 && askPrompt
-    elif [[ "$menu" == "5. Copy Last Image to CopyQ History" ]]; then
+    elif [[ "$menu" == "6. Copy Last Image to CopyQ History" ]]; then
         imgClip
-    elif [[ "$menu" == "6. Pastebin Text from Clipboard" ]]; then
+    elif [[ "$menu" == "7. Pastebin Text from Clipboard" ]]; then
         clipUpload
-    elif [[ "$menu" == "7. Upload Menu" ]]; then
+    elif [[ "$menu" == "8. Upload Menu" ]]; then
         uploadMenu
     elif [[ $val -eq 1 ]]; then
         exit
