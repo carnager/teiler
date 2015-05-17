@@ -62,9 +62,9 @@ ${STATE_RECORDING:-"2. Screencast"} (Default: ${vid_default})
 
     elif [[ "$menu" == "2. Stop recording screencast" ]]; then
         isRecording && stopRecording && sleep 2 && askPrompt
-    elif [[ "$menu" == "5. Copy Last Image to Clipboard" ]]; then
+    elif [[ "$menu" == "5. Copy Last Image to CopyQ History" ]]; then
         imgClip
-    elif [[ "$menu" == "6. Upload Text Selection" ]]; then
+    elif [[ "$menu" == "6. Pastebin Text from Clipboard" ]]; then
         clipUpload
     elif [[ "$menu" == "7. Upload Menu" ]]; then
         uploadMenu
