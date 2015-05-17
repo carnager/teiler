@@ -10,10 +10,12 @@ promptDelay() {
 mainMenu () {
 isRecording && STATE_RECORDING="2. Stop recording screencast"
 menu="0: Exit teiler
----
+${STATE_RECORDING:-"---"}
 1. Screenshot
 2. Screenshot (Area)
-${STATE_RECORDING:-"3. Screencast"}
+---
+3. Screencast
+4. Screencast (Area)
 ---
 5. Copy Last Image to CopyQ History
 6. Pastebin Text from Clipboard
@@ -21,9 +23,10 @@ ${STATE_RECORDING:-"3. Screencast"}
 ---
 >> Alt+1: Upload | Alt+2: No Upload <3"
 
-menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 9-10 -p "A-1: Full, A-2: Area, A-3: Full (No Upload), A-4: Area (No Upload) > ")
+menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 12 -p "Alt+1: Upload, Alt+2: No Upload > ")
 
-    val=$?
+    val_temp=$?
+    export val=$val_temp
 
    promptDelay() {
         printf "%s\n" "$@" | dmenu_t -no-levenshtein-sort -p "Delay > "
@@ -37,28 +40,23 @@ menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 9-10 -p "A-1: Full, A
             exit
         fi
 
-    elif [[ "$menu" == "2. Screenshot (Fullscreen)" ]]; then
+    elif [[ "$menu" == "2. Screenshot (Area)" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
             delayPrompt screenshot -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
         elif [[ $val -eq 1 ]]; then
             exit
         fi
 
+    elif [[ "$menu" == "3. Screencast" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 || screencastArea
+        fi
 
-
-    elif [[ "$menu" == "2. Screencast" ]]; then
-        if [[ $vid_default == "Area" ]]; then
-            if [[ $val -eq 11 || $val -eq 0 || $val -eq 13 ]]; then
-                isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
-           elif [[ $val -eq 10 ]]; then
-                isRecording && stopRecording && sleep 2 && askPrompt || screencast
-            fi
-        elif [[ $vid_default == "Fullscreen" ]]; then
-            if [[ $val -eq 10 || $val -eq 0 || $val -eq 12 ]]; then
-                isRecording && stopRecording && sleep 2 && askPrompt || screencast
-            elif [[ $val -eq 11 ]]; then
-                isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
-            fi
+    elif [[ $menu == "3. Screencast (Area)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 || screencast
+        elif [[ $val -eq 1 ]]; then
+            exit
         fi
 
     elif [[ "$menu" == "2. Stop recording screencast" ]]; then
@@ -187,12 +185,15 @@ screenshot () {
             instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
         fi
     else
-        menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
-        if [[ "$menu" == "1. Upload Image" ]]; then
+#        menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
+#        if [[ "$menu" == "1. Upload Image" ]]; then
+#            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+#        elif [[ "$menu" == "2. Edit Image" ]]; then
+#            editImage
+#        else
+        if [[ $val -eq 10 ]]; then
             instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-        elif [[ "$menu" == "2. Edit Image" ]]; then
-            editImage
-        else
+        elif [[ $val -eq 11 || $val -eq 0 ]]; then
             exit
         fi
     fi
@@ -416,36 +417,102 @@ clipUpload () {
 }
 
 upLoad () {
-    cd "$img_path"
-    if [[ $1 == png ]]; then
-        type="Image"
-    elif [[ $1 == mp4 ]]; then
-        type="Video"
-    fi
-    if [[ "$ul" == "scp" ]]; then
-        scp "$1" "$scp_host":/"$2"/
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
-        echo -n "$3/$(basename "$1")" | xclip
-    elif [[ "$ul" == "fb" ]]; then
-        fb "$1"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
-    elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
-        echo -n "$5/$(basename "$1")" | xclip
-    elif [[ "$ul" == "imgur" ]]; then
-        if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-        else
-            imgur "$1"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+        cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
+    if [[ $always_ul == "1" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 ]]; then
+            cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+    elif [[ $always_ul == "0" ]]; then
+        if [[ $val -eq 10 ]]; then
+         cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
         fi
     fi
-    x_clip
 }
 
 instantUpload () {
-    if [[ $1 == png ]]; then
+    if [[ $always_ul == "1" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 ]]; then
+     if [[ $1 == png ]]; then
         if [[ "$archive_img" == 1 ]]; then
             file=$(readlink "$img_path"/lastimg.png)
         else
@@ -480,6 +547,54 @@ instantUpload () {
         fi
     fi
     x_clip
+
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+    elif [[ $always_ul == "0" ]]; then
+        if [[ $val -eq 10 ]]; then
+            echo "test"
+     if [[ $1 == png ]]; then
+        if [[ "$archive_img" == 1 ]]; then
+            file=$(readlink "$img_path"/lastimg.png)
+        else
+            file="$img_path/lastimg.png"
+        fi
+        type="Image"
+    elif [[ $1 == mp4 ]]; then
+        if [[ "$archive_vid" == 1 ]]; then
+            file=$(readlink "$vid_path"/lastvid.mp4)
+        else
+            file="${vid_path}/lastvid.mp4"
+        fi
+        type="Video"
+    fi
+        if [[ "$ul" == "scp" ]]; then
+        scp "$file" "$scp_host":/"$2/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
+        echo -n "$3/$(basename "$file")" | xclip
+    elif [[ "$ul" == "s3" ]]; then
+        s3cmd --no-progress put "$file" s3://"$s3_bucket"/"$4/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$file")"
+        echo -n "$5/$(basename "$file")" | xclip
+    elif [[ "$ul" == fb ]]; then
+        fb "$file"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+    elif [[ "$ul" == imgur ]]; then
+        if [[ $1 == mp4 ]]; then
+            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+        else
+            imgur "$file"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+        fi
+    fi
+    x_clip
+
+        else
+            echo "hmm"
+        fi
+    fi
+
 }
 
 x_clip () {
