@@ -8,23 +8,26 @@ promptDelay() {
 
 
 mainMenu () {
-isRecording && STATE_RECORDING="2. Stop recording screencast"
+isRecording && STATE_RECORDING="4. Stop recording screencast"
+isRecording && STATE_RECORDING2=">> Alt+1: Upload | Alt+2: No Upload"
 menu="0: Exit teiler
-${STATE_RECORDING:-"---"}
+---
 1. Screenshot
 2. Screenshot (All Monitors)
 3. Screenshot (Area)
 ---
-4. Screencast
-5. Screencast (Area)
+${STATE_RECORDING:-"4. Screencast"}
+${STATE_RECORDING2:-"5. Screencast (Area)"}
 ---
 6. Copy Last Image to CopyQ History
 7. Pastebin Text from Clipboard
-8. Upload Menu
----
->> Watch Input Line for Hotkeys!"
+8. Upload Menu"
 
-menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload, Alt+2: No Upload > ")
+if [[ -z $(echo -e "$menu" | grep "Stop recording screencast") ]]; then
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload, Alt+2: No Upload > ")
+else
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 7,13 -p "Alt+1: Upload, Alt+2: No Upload > ")
+fi
 
     val_temp=$?
     export val=$val_temp
@@ -58,18 +61,22 @@ menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload,
 
     elif [[ "$menu" == "4. Screencast" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            isRecording && stopRecording && sleep 2 || screencastArea
+            isRecording && stopRecording && sleep 2 || screencast
         fi
 
     elif [[ $menu == "5. Screencast (Area)" ]]; then
         if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            isRecording && stopRecording && sleep 2 || screencast
+            isRecording && stopRecording && sleep 2 || screencastArea
         elif [[ $val -eq 1 ]]; then
             exit
         fi
 
-    elif [[ "$menu" == "5. Stop recording screencast" ]]; then
-        isRecording && stopRecording && sleep 2 && askPrompt
+    elif [[ "$menu" == "4. Stop recording screencast" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 && instantUpload mp4 "$scp_path_vid" "$http_vid"
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
     elif [[ "$menu" == "6. Copy Last Image to CopyQ History" ]]; then
         imgClip
     elif [[ "$menu" == "7. Pastebin Text from Clipboard" ]]; then
@@ -81,24 +88,6 @@ menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload,
     fi
 }
 
-askPrompt () {
-    if [[ $upload_vid == 0 ]]; then
-        exit
-    elif [[ $upload_vid == 1 ]]; then
-    menu=("1. Yes"
-          "2. No")
-
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
-    }
-
-       case "$(prompt "${menu[@]}")" in
-       1.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
-       2.*) exit ;;
-         *) exit
-   esac
-   fi
-}
 
 editImage () {
     $editor "${img_path}/lastimg.png"
@@ -109,6 +98,10 @@ editImage () {
         exit
     fi
 }
+
+clean_stdin () {
+        while read -e -t 0.1; do : ; done
+    }
 
 uploadMenu () {
     if [[ "$ul" == "fb" ]]; then history="5. Show Filebin History"; fi
@@ -206,6 +199,7 @@ screenshot () {
             exit
         fi
     fi
+    clean_stdin
 }
 
 screenshot_quick () {
@@ -630,13 +624,13 @@ elif [[ "$backend" == "dmenu" ]]
 fi
 
 if [[ $1 == --quick ]]; then
-    screenshot_quick -d 1 -s
+    export val=10; screenshot_quick -d 1 -s
 elif [[ $1 == --cast ]]; then
     isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
-    screenshot_quick -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d 0
+    export val=10; delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
 elif [[ $1 == --fullscreen ]]; then
     delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d
 elif [[ $1 == --area ]]; then
