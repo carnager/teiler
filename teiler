@@ -131,6 +131,25 @@ uploadMenu () {
    esac
 }
 
+askPrompt () {
+    if [[ $upload_vid == 0 ]]; then
+        exit
+    elif [[ $upload_vid == 1 ]]; then
+    menu=("1. Yes"
+          "2. No")
+
+    prompt() {
+        printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
+    }
+
+       case "$(prompt "${menu[@]}")" in
+       1.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
+       2.*) exit ;;
+         *) exit
+   esac
+   fi
+}
+
 fb_history () {
     menu=$(echo -e "0: << back to main menu\n---\n$(fb -H | awk -F '|' 'NR > 2 { print $1, $2, $4, $6 }')" | tac | rofi -dmenu -p "Chose Entry > ")
     if [[ "$menu" == "0: << back to main menu" ]]; then
@@ -626,7 +645,7 @@ fi
 if [[ $1 == --quick ]]; then
     export val=10; screenshot_quick -d 1 -s
 elif [[ $1 == --cast ]]; then
-    isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
+    isRecording && stopRecording && sleep 2 && askPrompt || screencast
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
