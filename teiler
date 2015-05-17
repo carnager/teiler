@@ -11,16 +11,17 @@ mainMenu () {
 isRecording && STATE_RECORDING="2. Stop recording screencast"
 menu="0: Exit teiler
 ---
-1. Screenshot (Default: ${img_default})
-${STATE_RECORDING:-"2. Screencast"} (Default: ${vid_default})
+1. Screenshot
+2. Screenshot (Area)
+${STATE_RECORDING:-"3. Screencast"}
 ---
 5. Copy Last Image to CopyQ History
 6. Pastebin Text from Clipboard
 7. Upload Menu
 ---
->> Alt+1: Fullscreen | Alt+2: Area"
+>> Alt+1: Upload | Alt+2: No Upload <3"
 
-    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 9 -p "Teiler > ")
+menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 9-10 -p "A-1: Full, A-2: Area, A-3: Full (No Upload), A-4: Area (No Upload) > ")
 
     val=$?
 
@@ -29,31 +30,31 @@ ${STATE_RECORDING:-"2. Screencast"} (Default: ${vid_default})
     }
 
 
-    if [[ "$menu" == "1. Screenshot"* ]]; then
-        if [[ $img_default == "Fullscreen" ]]; then
-            if [[ $val -eq 10 || $val -eq 0 ]]; then
-                delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
-            elif [[ $val -eq 11 ]]; then
-                delayPrompt screenshot -s -d
-            fi
-        elif [[ $img_default == "Area" ]]; then
-            if [[ $val -eq 11 || $val -eq 0 ]]; then
-                delayPrompt screenshot -s -d
-            elif [[ $val -eq 10 ]]; then
-                delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
-            fi
+    if [[ "$menu" == "1. Screenshot" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+    elif [[ "$menu" == "2. Screenshot (Fullscreen)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+        elif [[ $val -eq 1 ]]; then
+            exit
         fi
 
 
-    elif [[ "$menu" == "2. Screencast"* ]]; then
+
+    elif [[ "$menu" == "2. Screencast" ]]; then
         if [[ $vid_default == "Area" ]]; then
-            if [[ $val -eq 11 || $val -eq 0 ]]; then
+            if [[ $val -eq 11 || $val -eq 0 || $val -eq 13 ]]; then
                 isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
            elif [[ $val -eq 10 ]]; then
                 isRecording && stopRecording && sleep 2 && askPrompt || screencast
             fi
         elif [[ $vid_default == "Fullscreen" ]]; then
-            if [[ $val -eq 10 || $val -eq 0 ]]; then
+            if [[ $val -eq 10 || $val -eq 0 || $val -eq 12 ]]; then
                 isRecording && stopRecording && sleep 2 && askPrompt || screencast
             elif [[ $val -eq 11 ]]; then
                 isRecording && stopRecording && sleep 2 && askPrompt || screencastArea
@@ -179,13 +180,21 @@ screenshot () {
     archiveImage
     xdotool key Escape
     fi
-    menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
-    if [[ "$menu" == "1. Upload Image" ]]; then
-        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-    elif [[ "$menu" == "2. Edit Image" ]]; then
-        editImage
+    if [[ "$always_ul" == "1" ]]; then
+        if [[ $val -eq 11 ]]; then
+            exit
+        else
+            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+        fi
     else
-        exit
+        menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
+        if [[ "$menu" == "1. Upload Image" ]]; then
+            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+        elif [[ "$menu" == "2. Edit Image" ]]; then
+            editImage
+        else
+            exit
+        fi
     fi
 }
 
