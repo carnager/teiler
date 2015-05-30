@@ -23,10 +23,11 @@ ${STATE_RECORDING2:-"5. Screencast (Area)"}
 7. Pastebin Text from Clipboard
 8. Upload Menu"
 
+HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
 if [[ -z $(echo -e "$menu" | grep "Stop recording screencast") ]]; then
-    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -p "Alt+1: Upload, Alt+2: No Upload > ")
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -mesg "${HELP}" -p "teiler > ")
 else
-    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 7,13 -p "Alt+1: Upload, Alt+2: No Upload > ")
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 7,13 -mesg "${HELP}" -p "teiler > ")
 fi
 
     val_temp=$?
