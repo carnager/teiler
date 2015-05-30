@@ -3,43 +3,133 @@
 # Menus
 
 promptDelay() {
-    printf "%s\n" "$@" | dmenu_t -p "Delay:"
+    printf "%s\n" "$@" | dmenu_t -p "Delay > "
 }
 
 
 mainMenu () {
-    isRecording && STATE_RECORDING="4. Stop recording screencast"
-    menu=("0: Exit teiler"
-          "---"
-          "1. Screenshot (Active Monitor)"
-          "2. Screenshot (All Monitors)"
-          "3. Screenshot (Area)"
-          "${STATE_RECORDING:-"4. Screencast"}"
-          "---"
-          "5. Copy Last Image to Clipboard"
-          "---"
-          "6. Upload Text from Clipboard"
-          "7. Upload History")
+isRecording && STATE_RECORDING="4. Stop recording screencast"
+isRecording && STATE_RECORDING2=">> Alt+1: Upload | Alt+2: No Upload"
+menu="0: Exit teiler
+---
+1. Screenshot
+2. Screenshot (All Monitors)
+3. Screenshot (Area)
+---
+${STATE_RECORDING:-"4. Screencast"}
+${STATE_RECORDING2:-"5. Screencast (Area)"}
+---
+6. Copy Last Image to CopyQ History
+7. Pastebin Text from Clipboard
+8. Upload Menu"
 
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Teiler:"
-    }
+HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
+if [[ -z $(echo -e "$menu" | grep "Stop recording screencast") ]]; then
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -mesg "${HELP}" -p "teiler > ")
+else
+    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 7,13 -mesg "${HELP}" -p "teiler > ")
+fi
+
+    val_temp=$?
+    export val=$val_temp
 
    promptDelay() {
-        printf "%s\n" "$@" | dmenu_t -p "Delay:"
+        printf "%s\n" "$@" | dmenu_t -no-levenshtein-sort -p "Delay > "
     }
 
-    case "$(prompt "${menu[@]}")" in
-        0:*) exit ;;
-        1.*) delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ;;
-        2.*) delayPrompt screenshot -d ;;
-        3.*) delayPrompt screenshot -s -d ;;
-        4.*) isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt ;;
-        5.*) imgClip ;;
-        6.*) clipUpload ;;
-        7.*) uploadMenu ;;
-          *) exit
-    esac
+
+    if [[ "$menu" == "1. Screenshot" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+    elif [[ "$menu" == "2. Screenshot (All Monitors)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -d
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+
+    elif [[ "$menu" == "3. Screenshot (Area)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            delayPrompt screenshot -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+    elif [[ "$menu" == "4. Screencast" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 || screencast
+        fi
+
+    elif [[ $menu == "5. Screencast (Area)" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 || screencastArea
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+
+    elif [[ "$menu" == "4. Stop recording screencast" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
+            isRecording && stopRecording && sleep 2 && instantUpload mp4 "$scp_path_vid" "$http_vid"
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+    elif [[ "$menu" == "6. Copy Last Image to CopyQ History" ]]; then
+        imgClip
+    elif [[ "$menu" == "7. Pastebin Text from Clipboard" ]]; then
+        clipUpload
+    elif [[ "$menu" == "8. Upload Menu" ]]; then
+        uploadMenu
+    elif [[ $val -eq 1 ]]; then
+        exit
+    fi
+}
+
+
+editImage () {
+    $editor "${img_path}/lastimg.png"
+    menu=$(echo -e "1. Yes\n2. No" | dmenu_t -p "Upload File? >")
+    if [[ "$menu" == "1. Yes" ]]; then
+        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+    else
+        exit
+    fi
+}
+
+clean_stdin () {
+        while read -e -t 0.1; do : ; done
+    }
+
+uploadMenu () {
+    if [[ "$ul" == "fb" ]]; then history="5. Show Filebin History"; fi
+    menu=("0: << back to Main Menu"
+          "---"
+          "1. Upload Image from History"
+          "2. Upload Video from History"
+          "---"
+          "3. Upload last Image"
+          "4. Upload last Video"
+          "---"
+          "${history}"
+         )
+
+    prompt() {
+        printf "%s\n" "$@" | dmenu_t -p "Upload > "
+    }
+
+       case "$(prompt "${menu[@]}")" in
+       0:*) mainMenu ;;
+       3.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       4.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       1.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
+       2.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
+       5.*) fb_history ;;
+         *) exit
+   esac
 }
 
 askPrompt () {
@@ -59,44 +149,6 @@ askPrompt () {
          *) exit
    esac
    fi
-}
-
-editImage () {
-    $editor "${img_path}/lastimg.png"
-    menu=$(echo -e "1. Yes\n2. No" | dmenu_t -p "Upload File? >")
-    if [[ "$menu" == "1. Yes" ]]; then
-        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-    else
-        exit
-    fi
-}
-
-uploadMenu () {
-    if [[ "$ul" == "fb" ]]; then history="5. Show Filebin History"; fi
-    menu=("0: << back to Main Menu"
-          "---"
-          "1. Upload Image from History"
-          "2. Upload Video from History"
-          "---"
-          "3. Upload last Image"
-          "4. Upload last Video"
-          "---"
-          "${history}"
-         )
-
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload:"
-    }
-
-       case "$(prompt "${menu[@]}")" in
-       0:*) mainMenu ;;
-       3.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       4.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-       1.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       2.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-       5.*) fb_history ;;
-         *) exit
-   esac
 }
 
 fb_history () {
@@ -148,14 +200,26 @@ screenshot () {
     archiveImage
     xdotool key Escape
     fi
-    menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
-    if [[ "$menu" == "1. Upload Image" ]]; then
-        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-    elif [[ "$menu" == "2. Edit Image" ]]; then
-        editImage
+    if [[ "$always_ul" == "1" ]]; then
+        if [[ $val -eq 11 ]]; then
+            exit
+        else
+            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+        fi
     else
-        exit
+#        menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
+#        if [[ "$menu" == "1. Upload Image" ]]; then
+#            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+#        elif [[ "$menu" == "2. Edit Image" ]]; then
+#            editImage
+#        else
+        if [[ $val -eq 10 ]]; then
+            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+        elif [[ $val -eq 11 || $val -eq 0 ]]; then
+            exit
+        fi
     fi
+    clean_stdin
 }
 
 screenshot_quick () {
@@ -185,7 +249,7 @@ screencast () {
         echo "Already recording Screen"; exit 1;
 }
     ffmpeg_display=$(echo $DISPLAY)
-    ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
+    ffmpeg_offset=$(echo $(( $(xininfo -mon-x) -1 )),$(xininfo -mon-y))
     res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
     if [[ $res_now == $res ]]; then
         echo " "
@@ -217,7 +281,7 @@ screencastPrompt() {
           "2. Area")
 
     prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Screencast:"
+        printf "%s\n" "$@" | dmenu_t -p "Screencast > "
     }
 
        case "$(prompt "${menu[@]}")" in
@@ -301,7 +365,9 @@ stopRecording () {
 
 # copy last image to clipboard
 imgClip () {
-    copyq write image/png - < "$img_path"/lastimg.png &
+    copyq enable
+    copyq copy image/png - < "$img_path"/lastimg.png &
+    copyq select
 }
 
 
@@ -368,7 +434,7 @@ imgListFiles () {
 }
 
 vidListFiles () {
-    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File:"
+    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File > "
 }
 
 
@@ -396,36 +462,102 @@ clipUpload () {
 }
 
 upLoad () {
-    cd "$img_path"
-    if [[ $1 == png ]]; then
-        type="Image"
-    elif [[ $1 == mp4 ]]; then
-        type="Video"
-    fi
-    if [[ "$ul" == "scp" ]]; then
-        scp "$1" "$scp_host":/"$2"/
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
-        echo -n "$3/$(basename "$1")" | xclip
-    elif [[ "$ul" == "fb" ]]; then
-        fb "$1"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
-    elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
-        echo -n "$5/$(basename "$1")" | xclip
-    elif [[ "$ul" == "imgur" ]]; then
-        if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-        else
-            imgur "$1"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+        cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
+    if [[ $always_ul == "1" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 ]]; then
+            cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+    elif [[ $always_ul == "0" ]]; then
+        if [[ $val -eq 10 ]]; then
+         cd "$img_path"
+        if [[ $1 == png ]]; then
+            type="Image"
+        elif [[ $1 == mp4 ]]; then
+            type="Video"
+        fi
+        if [[ "$ul" == "scp" ]]; then
+            scp "$1" "$scp_host":/"$2"/
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
+            echo -n "$3/$(basename "$1")" | xclip
+        elif [[ "$ul" == "fb" ]]; then
+            fb "$1"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
+        elif [[ "$ul" == "s3" ]]; then
+            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
+            echo -n "$5/$(basename "$1")" | xclip
+        elif [[ "$ul" == "imgur" ]]; then
+            if [[ $1 == mp4 ]]; then
+                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+            else
+                imgur "$1"
+                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+            fi
+        fi
+        x_clip
+
         fi
     fi
-    x_clip
 }
 
 instantUpload () {
-    if [[ $1 == png ]]; then
+    if [[ $always_ul == "1" ]]; then
+        if [[ $val -eq 10 || $val -eq 0 ]]; then
+     if [[ $1 == png ]]; then
         if [[ "$archive_img" == 1 ]]; then
             file=$(readlink "$img_path"/lastimg.png)
         else
@@ -460,6 +592,54 @@ instantUpload () {
         fi
     fi
     x_clip
+
+        elif [[ $val -eq 1 ]]; then
+            exit
+        fi
+    elif [[ $always_ul == "0" ]]; then
+        if [[ $val -eq 10 ]]; then
+            echo "test"
+     if [[ $1 == png ]]; then
+        if [[ "$archive_img" == 1 ]]; then
+            file=$(readlink "$img_path"/lastimg.png)
+        else
+            file="$img_path/lastimg.png"
+        fi
+        type="Image"
+    elif [[ $1 == mp4 ]]; then
+        if [[ "$archive_vid" == 1 ]]; then
+            file=$(readlink "$vid_path"/lastvid.mp4)
+        else
+            file="${vid_path}/lastvid.mp4"
+        fi
+        type="Video"
+    fi
+        if [[ "$ul" == "scp" ]]; then
+        scp "$file" "$scp_host":/"$2/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
+        echo -n "$3/$(basename "$file")" | xclip
+    elif [[ "$ul" == "s3" ]]; then
+        s3cmd --no-progress put "$file" s3://"$s3_bucket"/"$4/"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$file")"
+        echo -n "$5/$(basename "$file")" | xclip
+    elif [[ "$ul" == fb ]]; then
+        fb "$file"
+        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+    elif [[ "$ul" == imgur ]]; then
+        if [[ $1 == mp4 ]]; then
+            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
+        else
+            imgur "$file"
+            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
+        fi
+    fi
+    x_clip
+
+        else
+            echo "hmm"
+        fi
+    fi
+
 }
 
 x_clip () {
@@ -486,13 +666,13 @@ elif [[ "$backend" == "dmenu" ]]
 fi
 
 if [[ $1 == --quick ]]; then
-    screenshot_quick -d 1 -s
+    export val=10; screenshot_quick -d 1 -s
 elif [[ $1 == --cast ]]; then
     isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
 elif [[ $1 == --recordarea ]]; then
     screencastInputArea $2
 elif [[ $1 == --quickfs ]]; then
-    screenshot_quick -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d 0
+    export val=10; delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
 elif [[ $1 == --fullscreen ]]; then
     delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d
 elif [[ $1 == --area ]]; then

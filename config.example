@@ -19,10 +19,16 @@ gdbar=gdbar
 # editor to be used
 editor=pinta
 
+
+# Hitting Enter will upload
+# It's always possible to supress uploads with Alt+2
+# Alt+F1 will always upload, even if this setting is disabled
+always_ul=1
+
 # Uploading & archiving options
 # Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
 # Possible Choices for paste_ul: fb, scp, ix
-#
+
 # If you don't want a local history of images/videos,
 # set archive_img/archive_vid to "0"
 # keep in mind, that imgur does not support videos
@@ -31,7 +37,6 @@ paste_ul=ix
 archive_vid=1
 archive_img=1
 archive_paste=0
-upload_vid=0
 
 # filebin history
 # for filebin history to work, you need to set your host here:
@@ -94,7 +99,7 @@ random_string=$(date +%s | sha256sum | base64 | head -c 4 ; echo)
 img_filemask=$random_string
 vid_filemask=$random_string
 paste_filemask=$random_string
-
+help_color="#0C73C2"
 
 ###### rofi options ######
 
