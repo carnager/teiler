@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source $HOME/.config/teiler/config
+
+# define uploaders
+if [[ $ul == "fb" ]]; then
+    imageUpload () { cd "${img_path}"; fb "${1}.png"; notify-send "Image Uploaded" "$(xclip -o)"; }
+    videoUpload () { cd "${vid_path}"; fb "${1}.mp4"; notify-send "Video Uploaded" "$(xclip -o)"; }
+    clipUpload () { cd "${paste_path}"; fb "${1}"; notify-send "Paste Uploaded" "$(xclip -o)"; }
+
+elif [[ $ul == "scp" ]]; then
+    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}/${scp_path_img}/${1}.png"; notify-send "Image Uploaded" "${http_img}/${1}"; }
+    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}.mp4"; notify-send "Video Uploaded" "${http_vid}/${1}"; }
+    clipUpload () { cd "${paste_path}"; scp "$1" "${scp_host}/${scp_path_paste}/${1}"; notify-send "Paste Uploaded" "${http_paste}/${1}"; }
+
+elif [[ $ul == "imgur" ]]; then
+    imageUpload () { cd "${img_path}"; imgur "${1}.png"; notify-send "Image Uploaded" "$(xclip -o)"; }
+    videoUpload () { notify-send "teiler" "imgur does not support Video"; }
+    clipUpload () { notify-send "teiler" "imgur does not support text"; }
+fi
+
+if [[ $1 == "--upload" ]]; then
+    if [[ $2 == "image" ]]; then imageUpload "$3"
+    elif [[ $2 == "video" ]]; then videoUpload "$3"
+    elif [[ $2 == "text" ]]; then clipUpload "$3"
+    fi
+fi

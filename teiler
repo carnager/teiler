@@ -1,403 +1,168 @@
 #!/bin/bash
-
-# Menus
-
-promptDelay() {
-    printf "%s\n" "$@" | dmenu_t -p "Delay > "
-}
-
+source $HOME/.config/teiler/config
 
 mainMenu () {
-isRecording && STATE_RECORDING="4. Stop recording screencast"
-isRecording && STATE_RECORDING2=">> Alt+1: Upload | Alt+2: No Upload"
-menu="0: Exit teiler
----
-1. Screenshot
-2. Screenshot (All Monitors)
-3. Screenshot (Area)
----
-${STATE_RECORDING:-"4. Screencast"}
-${STATE_RECORDING2:-"5. Screencast (Area)"}
----
-6. Copy Last Image to CopyQ History
-7. Pastebin Text from Clipboard
-8. Upload Menu"
-
-HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
-if [[ -z $(echo -e "$menu" | grep "Stop recording screencast") ]]; then
-    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 13 -mesg "${HELP}" -p "teiler > ")
-else
-    menu=$(echo -e "${menu}" | dmenu_t -no-levenshtein-sort -u 7,13 -mesg "${HELP}" -p "teiler > ")
-fi
-
-    val_temp=$?
-    export val=$val_temp
-
-   promptDelay() {
-        printf "%s\n" "$@" | dmenu_t -no-levenshtein-sort -p "Delay > "
-    }
-
-
-    if [[ "$menu" == "1. Screenshot" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
-        elif [[ $val -eq 1 ]]; then
-            exit
+    filename="$(cat /tmp/__teiler_cast_name)"
+    isRecording && STATE_RECORDING="2 Stop Recording Screencast"
+    if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
+        HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | rofi -dmenu -u 2 -mesg "${HELP}" -p "teiler > ")
+        val=$?
+        if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
+        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
+        elif [[ $val -eq 1 ]]; then exit;
+        elif [[ $val -eq 0 ]]; then
+            if [[ $always_ul == "1" ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
+            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; fi
         fi
 
-    elif [[ "$menu" == "2. Screenshot (All Monitors)" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            delayPrompt screenshot -d
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-
-
-    elif [[ "$menu" == "3. Screenshot (Area)" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            delayPrompt screenshot -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-
-    elif [[ "$menu" == "4. Screencast" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            isRecording && stopRecording && sleep 2 || screencast
-        fi
-
-    elif [[ $menu == "5. Screencast (Area)" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            isRecording && stopRecording && sleep 2 || screencastArea
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-
-    elif [[ "$menu" == "4. Stop recording screencast" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 || $val -eq 11 ]]; then
-            isRecording && stopRecording && sleep 2 && instantUpload mp4 "$scp_path_vid" "$http_vid"
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-    elif [[ "$menu" == "6. Copy Last Image to CopyQ History" ]]; then
-        imgClip
-    elif [[ "$menu" == "7. Pastebin Text from Clipboard" ]]; then
-        clipUpload
-    elif [[ "$menu" == "8. Upload Menu" ]]; then
-        uploadMenu
-    elif [[ $val -eq 1 ]]; then
-        exit
+    elif [[ -z "$STATE_RECORDING" ]]; then
+        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n---\n3 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
+        val=$?
+        if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
+        elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
+        elif [[ $menu == "3 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
+        elif [[ $val -eq 1 ]]; then exit; fi
     fi
 }
 
+screenshotMenu () {
+    HELP="<span color='$help_color'>Alt+1: Upload             | Alt+2: No Upload
+Alt+Shift+1: Delay+Upload | Alt+Shift+2: Delay+No Upload</span>"
 
-editImage () {
-    $editor "${img_path}/lastimg.png"
-    menu=$(echo -e "1. Yes\n2. No" | dmenu_t -p "Upload File? >")
-    if [[ "$menu" == "1. Yes" ]]; then
-        instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-    else
-        exit
-    fi
-}
+    if [[ -z $delay ]]; then delay="0"; fi
 
-clean_stdin () {
-        while read -e -t 0.1; do : ; done
-    }
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | rofi -dmenu -kb-custom-3 "Alt+Shift+1" -kb-custom-4 "Alt+Shift+2" -mesg "${HELP}" -p "Screenshot > ")
+    val=$?
+    export filename=${img_filemask}
 
-uploadMenu () {
-    if [[ "$ul" == "fb" ]]; then history="5. Show Filebin History"; fi
-    menu=("0: << back to Main Menu"
-          "---"
-          "1. Upload Image from History"
-          "2. Upload Video from History"
-          "---"
-          "3. Upload last Image"
-          "4. Upload last Video"
-          "---"
-          "${history}"
-         )
+    if [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
+    elif [[ $menu == "1 Fullscreen" ]]; then
+        if [[ $val -eq 10 ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 11 ]]; then maimCmd nodelay fullscreen "${filename}" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && exit
+        elif [[ $val -eq 1 ]]; then exit
+        elif [[ $val -eq 0 ]]; then
+            if [[ $always_ul == "1" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+            elif [[ $always_ul == "0" ]]; then maimCmd nodelay fullscreen "${filename}"
+            fi
+        fi
 
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload > "
-    }
+    elif [[ $menu == "2 Fullscreen (All Monitors)" ]]; then
+        if [[ $val -eq 10 ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 11 ]]; then maimCmd nodelay fullscreenAll "${filename}" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && exit
+        elif [[ $val -eq 1 ]]; then exit
+        elif [[ $val -eq 0 ]]; then
+            if [[ $always_ul == "1" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+            elif [[ $always_ul == "0" ]]; then maimCmd nodelay fullscreenAll "${filename}"
+            fi
+        fi
 
-       case "$(prompt "${menu[@]}")" in
-       0:*) mainMenu ;;
-       3.*) instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       4.*) instantUpload mp4 "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-       1.*) upLoad "$(imgListFiles png)" "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img" ;;
-       2.*) upLoad "$(vidListFiles mp4)" "$scp_path_vid" "$http_vid" "$s3_path_vid" "$s3_http_vid" ;;
-       5.*) fb_history ;;
-         *) exit
-   esac
-}
-
-askPrompt () {
-    if [[ $upload_vid == 0 ]]; then
-        exit
-    elif [[ $upload_vid == 1 ]]; then
-    menu=("1. Yes"
-          "2. No")
-
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Upload Video?"
-    }
-
-       case "$(prompt "${menu[@]}")" in
-       1.*) instantUpload mp4 "$scp_path_vid" "$http_vid" ;;
-       2.*) exit ;;
-         *) exit
-   esac
-   fi
-}
-
-fb_history () {
-    menu=$(echo -e "0: << back to main menu\n---\n$(fb -H | awk -F '|' 'NR > 2 { print $1, $2, $4, $6 }')" | tac | rofi -dmenu -p "Chose Entry > ")
-    if [[ "$menu" == "0: << back to main menu" ]]; then
+    elif [[ $menu == "3 Area" ]]; then
+        if [[ $val -eq 10 ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 11 ]]; then maimCmd nodelay area "${filename}" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && exit
+        elif [[ $val -eq 1 ]]; then exit
+        elif [[ $val -eq 0 ]]; then
+            if [[ $always_ul == "1" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+            elif [[ $always_ul == "0" ]]; then maimCmd nodelay area "${filename}"
+            fi
+        fi
+    elif [[ $menu == "< Return to Main Menu" ]]; then
         mainMenu
-    elif [[ "$menu" == "" ]]; then
-        uploadMenu
-    else
-        echo -n "${filebin_host}/$(echo ${menu} | awk '{ print $1 }')" | xclip
-        x_clip
-        notify-send "teiler" "Copied Entry to Clipboard"
     fi
 }
 
-quick () {
-    screenshot -d $quickDelay $quickArea
-}
-
-delayPrompt () {
-    t=$(promptDelay 0 2 5 10 20 30 '<< back to Main Menu')
-    [[ "$t" = *[[:digit:]]* ]] || mainMenu
-    [[ "$t" -gt 2 ]] && {
-        notify "$time" "Screenshot will be taken in $t seconds"
-        countdown "$t" | progress 0 "$t" &
-        DELAY_PID=$!
-    }
-    "$@" $((t+2))
-    unset DELAY_PID
-    killCountdown
-}
-
-
-# main function
-
-# actual screenshot function
-screenshot () {
-    type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
-    [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-    if [[ $hidecursor == "yes" ]]; then
-        maim --hidecursor -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
-    else
-        maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
-    fi
-    if [[ $? == 1 ]]; then
-        exit
-    else
-    notify "$time" "Screenshot saved"
-    archiveImage
-    xdotool key Escape
-    fi
-    if [[ "$always_ul" == "1" ]]; then
-        if [[ $val -eq 11 ]]; then
-            exit
-        else
-            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
+screencastMenu () {
+    filename="$(cat /tmp/__teiler_cast_name)"
+    isRecording && STATE_RECORDING="2 Stop Recording Screencast"
+    if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
+        HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | rofi -dmenu -u 2 -mesg "${HELP}" -p "teiler > ")
+        val=$?
+        if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
+        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
+        elif [[ $val -eq 1 ]]; then exit
+        elif [[ $val -eq 0 ]]; then
+            if [[ $always_ul ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
+            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
+            fi
         fi
-    else
-#        menu=$(echo -e "1. Upload Image\n2. Edit Image" | dmenu_t -p "> ")
-#        if [[ "$menu" == "1. Upload Image" ]]; then
-#            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-#        elif [[ "$menu" == "2. Edit Image" ]]; then
-#            editImage
-#        else
-        if [[ $val -eq 10 ]]; then
-            instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-        elif [[ $val -eq 11 || $val -eq 0 ]]; then
-            exit
-        fi
+
+    elif [[ -z "$STATE_RECORDING" ]]; then
+        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "Screenshot > ")
+        val=$?
+        filename="${vid_filemask}"
+        echo "${filename}" > /tmp/__teiler_cast_name
+
+        if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
+        elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+        elif [[ $menu == "" ]]; then exit;
+        elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu; fi
     fi
-    clean_stdin
 }
 
-screenshot_quick () {
-     type maim &>/dev/null || { echo "Missing maim!"; exit 1; }
-     [[ -f "${img_path}/lastimg.png" ]] && rm "${img_path}/lastimg.png"
-     if [[ $hidecursor == "yes" ]]; then
-         maim --hidecursor -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
-     else
-         maim -b "$slop_border" -c "$slop_color" "$@" "${img_path}/lastimg.png"
-     fi
-     if [[ $? == 1 ]]; then
-         exit
-     else
-     notify "$time" "Screenshot saved"
-     archiveImage
-         instantUpload png "$scp_path_img" "$http_img" "$s3_path_img" "$s3_http_img"
-         exit
-     fi
- }
-
-
-# screencast related functions (screencast, isRecording, stopRecording)
-screencast () {
-    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-    isRecording && {
-        notify "$time" 'Screencast already in progress'
-        echo "Already recording Screen"; exit 1;
-}
-    ffmpeg_display=$(echo $DISPLAY)
-    ffmpeg_offset=$(echo $(( $(xininfo -mon-x) -1 )),$(xininfo -mon-y))
-    res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
-    if [[ $res_now == $res ]]; then
-        echo " "
-    else
-        output=$(xininfo -name)
-        xrandr --output "$output" --mode "$res"
-        sleep 5
-    fi
-    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-
-    if [[ -z $ffaudio ]]; then
-        clear
-        echo "no audio defined"
-        $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/lastvid.mp4" &
-    else
-        clear
-        echo "audio defined"
-        $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/lastvid.mp4" &
-    fi
-    echo "$!" > "$SCREENCAST_PIDFILE"
-    indicator
-    notify "$time" "Screencast started"
-}
-
-screencastPrompt() {
-    menu=("0: << back to Main Menu"
-          "---"
-          "1. Fullscreen"
-          "2. Area")
-
-    prompt() {
-        printf "%s\n" "$@" | dmenu_t -p "Screencast > "
-    }
-
-       case "$(prompt "${menu[@]}")" in
-       0:*) mainMenu ;;
-       1.*) screencast ;;
-       2.*) screencastArea ;;
-         *) exit
-   esac
-}
-
-
-screencastArea () {
-    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-    isRecording && {
-        notify "$time" 'Screencast already in progress'
-        echo "Already recording Screen"; exit 1;
-}
-    ffmpeg_display=$(echo $DISPLAY)
-    ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
-    eval `slop -b "$slop_border" -c "$slop_color"`
-    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    if [[ -z $ffaudio ]]; then
-        clear
-        echo "no audio output"
-        $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/lastvid.mp4" &
-    else
-        clear
-        echo "audio defined"
-        echo "$ffaudio"
-        $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
-    fi
-    echo "$!" > "$SCREENCAST_PIDFILE"
-    indicator
-    notify "$time" "Screencast started"
-}
-
-
-screencastInputArea () {
-    type avconv || type ffmpeg &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-    isRecording && {
-        notify "$time" 'Screencast already in progress'
-        echo "Already recording Screen"; exit 1;
-}
-    rectangle2="$(echo "$1" | awk -F '+' '{ print $2, $NF }' | sed -e 's/ /,/g')"
-    rectangle1="$(echo "$1" | awk -F '+' '{ print $1 }')"
-    echo $rectangle1
-    echo $rectangle2
-    [[ -f "${vid_path}/lastvid.mp4" ]] && rm "${vid_path}/lastvid.mp4"
-    if [[ -z $ffaudio ]]; then
-        $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $rect_encopts "${vid_path}/lastvid.mp4" &
-    else
-        $encoder -f x11grab -s $(echo $rectangle1) -i $ffmpeg_display+$(echo $rectangle2) $ffaudio $rect_encopts "${vid_path}/lastvid.mp4" &
-    fi
-    echo "$!" > "$SCREENCAST_PIDFILE"
-    indicator
-    notify "$time" "Screencast started"
-}
-
-
-
-isRecording () {
-    [[ -f "$SCREENCAST_PIDFILE" ]] || return 1;
-}
+isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
     local pid
-    [[ -f $SCREENCAST_PIDFILE ]] && {
-        pid=$(cat "$SCREENCAST_PIDFILE")
-        pid2=$(cat "$INDICATOR_PIDFILE")
-        isRecording && kill "$pid" "$pid2"
-        rm "$SCREENCAST_PIDFILE"
-        rm "$INDICATOR_PIDFILE"
-    }
-    notify "$time" "Stopped recording"
-    archiveVid
-    output=$(xininfo -name)
-    xrandr --output "$output" --auto
-    return 0
+    [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); pid2=$(cat "$INDICATOR_PIDFILE"); isRecording && kill "$pid" "$pid2"; rm "$SCREENCAST_PIDFILE"; rm "$INDICATOR_PIDFILE"; }
+    notify "$time" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
 }
 
 
-# copy last image to clipboard
-imgClip () {
-    copyq enable
-    copyq copy image/png - < "$img_path"/lastimg.png &
-    copyq select
+ffmpegCmd () {
+    if [[ $1 == "fullscreen" ]]; then
+        isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
+        ffmpeg_display=$(echo $DISPLAY)
+        ffmpeg_offset=$(echo $(( $(xininfo -mon-x) -1 )),$(xininfo -mon-y))
+        res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
+        if [[ $res_now == $res ]]; then echo " "
+        else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
+
+        [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}.mp4" &
+        else $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}.mp4" &
+        fi
+        echo "$!" > "$SCREENCAST_PIDFILE"
+        notify-send -t "1" "teiler" "Screencast started"
+
+    elif [[ $1 == "area" ]]; then
+        isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
+        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
+        [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$(( $W - 1))"x"$(( $H - 1))" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}.mp4" &
+        else $encoder -f x11grab -s "$(( $W -1 ))"x"$(( $H - 1 ))" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}.mp4" &
+        fi
+        echo "$!" > "$SCREENCAST_PIDFILE"
+        notify-send -t "1" "teiler" "Screencast started"
+    fi
+    indicator
 }
 
-
-# archiving functions
-archiveImage () {
-    [[ "$archive_img" = '1' ]] || return
-    mv "${img_path}/lastimg.png" "${img_path}/${img_filemask}.png"
-    ln -s "${img_path}/${img_filemask}.png" "${img_path}/lastimg.png"
+maimCmd () {
+    if [[ $1 == "delay" ]]; then
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreenAll" ]]; then maim -d ${delay} "${img_path}/${3}.png"; fi
+    elif [[ $1 == "nodelay" ]]; then
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreenAll" ]]; then maim "${img_path}/${3}.png"; fi
+    fi
 }
 
-
-archiveVid () {
-    [[ "$archive_vid" = '1' ]] || return
-    mv "${vid_path}/lastvid.mp4" "${vid_path}/${vid_filemask}.mp4"
-    ln -s "${vid_path}/${vid_filemask}.mp4" "${vid_path}/lastvid.mp4"
+clipCmd () {
+    x_clip
+    (xclip -o) > "${paste_path}/${paste_filemask}"
 }
 
-
-archivePaste () {
-    [[ "$archive_paste" = '1' ]] || return
-    mv "${paste_path}/lastpaste.paste" "${paste_path}/${paste_filemask}.paste"
-    ln -s "${paste_path}/${paste_filemask}.paste" "${paste_path}/lastpaste.paste"
-}
-
-
-# misc functions
-
-# notification and indicator functions
-notify () {
-    notify-send -u low --hint=int:transient:1 -t "$1" "Teiler" "$2"
+delayPrompt () {
+    delay=$(echo -e "< Return $(seq 0 10)" | rofi -dmenu -p "Choose Delay > ")
 }
 
 indicator () {
@@ -406,396 +171,19 @@ indicator () {
     echo "$!" > "$INDICATOR_PIDFILE"
 }
 
-function countdown {
-    for i in $(seq $[$1-1] -1 0); do
-         for o in {9..0}; do
-         echo $i.$o; sleep 0.1
-    done
-    done
-}
+killCountdown () { kill $DELAY_PID; }
 
-function killCountdown {
-    [[ -n "$DELAY_PID" ]] && notify 'delayed screenshot aborted!'
-    [[ -f "/proc/$DELAY_PID/comm" && "$(</proc/$DELAY_PID/comm)" = "$progname" ]] \
-        && kill $DELAY_PID
-    exit 0
-}
+countdown () { for i in $(seq $[$1-1] -1 0); do for o in {9..0}; do echo $i.$o; sleep 0.1; done; done }
 
-function progress {
+progress () {
     $(echo $gdbar_binary) -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
     -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
 }
 
-
-# filelistings for the upLoad function
-imgListFiles () {
-    menu="$(ls -t -l "$img_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File > ")"
-    basename $(echo "$menu" | awk '{ print $5 }')
-}
-
-vidListFiles () {
-    ls -t -l "$vid_path"/*."$1" | awk '{ print $5, $6, $7, $8, $9 }' | column -t -s ' ' | dmenu_t -p "Select File > "
-}
-
-
-# horrible long upload functions
-clipUpload () {
-    [[ -f "${paste_path}/lastpaste.paste" ]] && rm "${paste_path}/lastpaste.paste"
-    x_clip
-    (xclip -o) > "${paste_path}/lastpaste.paste"
-    notify "$time" "Paste saved"
-
-    if [[ $paste_ul == scp ]]; then
-        scp "${paste_path}/lastpaste.paste" "$scp_host":"$scp_path_paste"/"$paste_filemask".paste
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "${http_paste}/${paste_filemask}.paste"
-        echo -n "${http_paste}/${paste_filemask}.paste" | xclip
-    elif [[ $paste_ul == fb ]]; then
-        fb "${paste_path}/lastpaste.paste"
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
-    elif [[ $paste_ul == ix ]]; then
-        x_xclip
-        xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip
-        notify-send -u low --hint=int:transient:1 -t "$time" "Paste Uploaded" "$(echo -n $(xclip -o))"
-    fi
-    x_clip
-    archivePaste
-}
-
-upLoad () {
-        cd "$img_path"
-        if [[ $1 == png ]]; then
-            type="Image"
-        elif [[ $1 == mp4 ]]; then
-            type="Video"
-        fi
-        if [[ "$ul" == "scp" ]]; then
-            scp "$1" "$scp_host":/"$2"/
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
-            echo -n "$3/$(basename "$1")" | xclip
-        elif [[ "$ul" == "fb" ]]; then
-            fb "$1"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
-        elif [[ "$ul" == "s3" ]]; then
-            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
-            echo -n "$5/$(basename "$1")" | xclip
-        elif [[ "$ul" == "imgur" ]]; then
-            if [[ $1 == mp4 ]]; then
-                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-            else
-                imgur "$1"
-                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-            fi
-        fi
-        x_clip
-
-    if [[ $always_ul == "1" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 ]]; then
-            cd "$img_path"
-        if [[ $1 == png ]]; then
-            type="Image"
-        elif [[ $1 == mp4 ]]; then
-            type="Video"
-        fi
-        if [[ "$ul" == "scp" ]]; then
-            scp "$1" "$scp_host":/"$2"/
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
-            echo -n "$3/$(basename "$1")" | xclip
-        elif [[ "$ul" == "fb" ]]; then
-            fb "$1"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
-        elif [[ "$ul" == "s3" ]]; then
-            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
-            echo -n "$5/$(basename "$1")" | xclip
-        elif [[ "$ul" == "imgur" ]]; then
-            if [[ $1 == mp4 ]]; then
-                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-            else
-                imgur "$1"
-                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-            fi
-        fi
-        x_clip
-
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-    elif [[ $always_ul == "0" ]]; then
-        if [[ $val -eq 10 ]]; then
-         cd "$img_path"
-        if [[ $1 == png ]]; then
-            type="Image"
-        elif [[ $1 == mp4 ]]; then
-            type="Video"
-        fi
-        if [[ "$ul" == "scp" ]]; then
-            scp "$1" "$scp_host":/"$2"/
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$1")"
-            echo -n "$3/$(basename "$1")" | xclip
-        elif [[ "$ul" == "fb" ]]; then
-            fb "$1"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) uploaded" "$(xclip -o)"
-        elif [[ "$ul" == "s3" ]]; then
-            s3cmd --no-progress put "$1" s3://"$s3_bucket"/"$4/"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$1")"
-            echo -n "$5/$(basename "$1")" | xclip
-        elif [[ "$ul" == "imgur" ]]; then
-            if [[ $1 == mp4 ]]; then
-                notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-            else
-                imgur "$1"
-                notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-            fi
-        fi
-        x_clip
-
-        fi
-    fi
-}
-
-instantUpload () {
-    if [[ $always_ul == "1" ]]; then
-        if [[ $val -eq 10 || $val -eq 0 ]]; then
-     if [[ $1 == png ]]; then
-        if [[ "$archive_img" == 1 ]]; then
-            file=$(readlink "$img_path"/lastimg.png)
-        else
-            file="$img_path/lastimg.png"
-        fi
-        type="Image"
-    elif [[ $1 == mp4 ]]; then
-        if [[ "$archive_vid" == 1 ]]; then
-            file=$(readlink "$vid_path"/lastvid.mp4)
-        else
-            file="${vid_path}/lastvid.mp4"
-        fi
-        type="Video"
-    fi
-        if [[ "$ul" == "scp" ]]; then
-        scp "$file" "$scp_host":/"$2/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
-        echo -n "$3/$(basename "$file")" | xclip
-    elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress put "$file" s3://"$s3_bucket"/"$4/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$file")"
-        echo -n "$5/$(basename "$file")" | xclip
-    elif [[ "$ul" == fb ]]; then
-        fb "$file"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-    elif [[ "$ul" == imgur ]]; then
-        if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-        else
-            imgur "$file"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-        fi
-    fi
-    x_clip
-
-        elif [[ $val -eq 1 ]]; then
-            exit
-        fi
-    elif [[ $always_ul == "0" ]]; then
-        if [[ $val -eq 10 ]]; then
-            echo "test"
-     if [[ $1 == png ]]; then
-        if [[ "$archive_img" == 1 ]]; then
-            file=$(readlink "$img_path"/lastimg.png)
-        else
-            file="$img_path/lastimg.png"
-        fi
-        type="Image"
-    elif [[ $1 == mp4 ]]; then
-        if [[ "$archive_vid" == 1 ]]; then
-            file=$(readlink "$vid_path"/lastvid.mp4)
-        else
-            file="${vid_path}/lastvid.mp4"
-        fi
-        type="Video"
-    fi
-        if [[ "$ul" == "scp" ]]; then
-        scp "$file" "$scp_host":/"$2/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$3/$(basename "$file")"
-        echo -n "$3/$(basename "$file")" | xclip
-    elif [[ "$ul" == "s3" ]]; then
-        s3cmd --no-progress put "$file" s3://"$s3_bucket"/"$4/"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$5/$(basename "$file")"
-        echo -n "$5/$(basename "$file")" | xclip
-    elif [[ "$ul" == fb ]]; then
-        fb "$file"
-        notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-    elif [[ "$ul" == imgur ]]; then
-        if [[ $1 == mp4 ]]; then
-            notify-send -u critical --hint=int:transient:1 -t "$time" "teiler" "imgur does not support Videos"
-        else
-            imgur "$file"
-            notify-send -u low --hint=int:transient:1 -t "$time" "$(echo $type) Uploaded" "$(xclip -o)"
-        fi
-    fi
-    x_clip
-
-        else
-            echo "hmm"
-        fi
-    fi
-
-}
-
-x_clip () {
-    (xclip -o) | xclip -selection clipboard
-}
-
-################################################################################################################
-
-
-type dmenu &>/dev/null || type rofi &>/dev/null || { echo "Missing Dependencies"; exit 1; }
-
-source "/etc/teiler.conf"
-source "$HOME/.config/teiler/config"
-
-if [[ "$backend" == "rofi" ]]
-    then function dmenu_t () {
-        rofi -dmenu $(echo "$rofiopts") "$@"
-}
-
-elif [[ "$backend" == "dmenu" ]]
-    then function dmenu_t () {
-    dmenu -l 15 "$@"
-}
-fi
-
-if [[ $1 == --quick ]]; then
-    export val=10; screenshot_quick -d 1 -s
-elif [[ $1 == --cast ]]; then
-    isRecording && stopRecording && sleep 2 && askPrompt || screencastPrompt
-elif [[ $1 == --recordarea ]]; then
-    screencastInputArea $2
-elif [[ $1 == --quickfs ]]; then
-    export val=10; delayPrompt screenshot -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d
-elif [[ $1 == --fullscreen ]]; then
-    delayPrompt screenshot -w $width -h $height -x $xoffset -y $yoffset -d
-elif [[ $1 == --area ]]; then
-    delayPrompt screenshot -s -d
-elif [[ $1 == --upload ]]; then
-    uploadMenu
-elif [[ $1 == --uploadlast ]]; then
-    instantUpload png
-elif [[ $1 == --clipboard ]]; then
-    clipUpload
-elif [[ $1 == --check ]]; then
-    if [[ -d "$img_path" ]]; then
-        ipath="Image path: "$img_path" exists"
-    else
-        ipath="WARNING: Image path "$img_path" does not exist"
-    fi
-    if [[ -d "$vid_path" ]]; then
-        vpath="Video path: "$vid_path" exists"
-    else
-        vpath="WARNING: Video path "$vid_path" does not exist"
-    fi
-    if ! command -v dmenu > /dev/null; then
-        dmenu=missing
-    else dmenu=installed
-    fi
-    if ! command -v rofi > /dev/null; then
-        rofi=missing
-    else rofi=installed
-    fi
-    if ! command -v scp > /dev/null; then
-        openssh=missing
-    else openssh=installed
-    fi
-    if ! command -v fb > /dev/null; then
-        filebin=missing
-    else filebin=installed
-    fi
-    if ! command -v imgur > /dev/null; then
-        imgur=missing
-    else imgur=installed
-    fi
-    if ! command -v s3cmd > /dev/null; then
-        s3cmd=missing
-    else s3cmd=installed
-    fi
-    if ! command -v xclip > /dev/null; then
-        xclip=missing
-    else xclip=installed
-    fi
-    if ! command -v dzen2 > /dev/null; then
-        dzen2=missing
-    else dzen2=installed
-    fi
-    if ! command -v ffmpeg > /dev/null; then
-        ffmpeg=missing
-    else ffmpeg=installed
-    fi
-    if ! command -v avconv > /dev/null; then
-        avconv=missing
-    else avconv=installed
-    fi
-    if ! command -v maim > /dev/null; then
-        maim=missing
-    else maim=installed
-    fi
-    if ! command -v slop > /dev/null; then
-        slop=missing
-    else slop=installed
-    fi
-    if ! command -v $(echo $gdbar_binary) > /dev/null; then
-        gdbar=missing
-    else gdbar=installed
-    fi
-    if ! command -v xininfo > /dev/null; then
-        xininfo=missing
-    else xininfo=installed
-    fi
-    if ! command -v ix > /dev/null; then
-        ix=missing
-    else ix=installed
-    fi
-    echo "Checking for paths..."
-    echo "$ipath"
-    echo "$vpath"
-    echo ""
-    echo "Checking Dependencies"
-    echo ""
-    echo "Essential Tools:"
-    echo "dmenu/rofi:   $dmenu/$rofi"
-    echo "maim:         $maim"
-    echo "slop:         $slop"
-    echo "ffmpeg/libav: $ffmpeg/$avconv"
-    echo "dzen2:        $dzen2"
-    echo "xclip:        $xclip"
-    echo "xininfo:      $xininfo"
-    echo "gdbar:        $gdbar"
-    echo ""
-    echo "Uploaders:"
-    echo "openssh:      $openssh"
-    echo "filebin:      $filebin"
-    echo "imgur:        $imgur"
-    echo "s3cmd:        $s3cmd"
-    echo "ix:           $ix"
-elif [[ $1 == -h ]]; then
-    echo "teiler 2.x: screenshot tool written in bash"
-    echo "Copyright © 2012 - 2014 Rasmus Steinke"
-    echo "https://teiler.53280.de"
-    echo ""
-    echo "Options"
-    echo "  -h              this help message"
-    echo "  --quick         screenshot of window/area and upload"
-    echo "  --quickfs       fullscreen screenshot and upload"
-    echo "  --fullscreen    fullscreen screenshot"
-    echo "  --area          screenshot of area"
-    echo "  --clipboard     upload text from clipboard"
-    echo "  --cast          start/stop screencast"
-    echo "  --recordarea    screencast specific area"
-    echo "                  example: --recordarea 500x250+10+0"
-    echo "  --upload        upload existing shots/casts"
-    echo "  --uploadlast    upload last image"
-    echo ""
-    echo "  --check         check for dependencies"
+if [[ $1 == "--screenshot" ]]; then
+    screenshotMenu
+elif [[ $1 == "--screencast" ]]; then
+    screencastMenu
 else
     mainMenu
 fi
-
