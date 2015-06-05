@@ -152,30 +152,23 @@ stopRecording () {
     notify-send -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
 }
 
-
 ffmpegCmd () {
     if [[ $1 == "fullscreen" ]]; then
-        x="$(teiler_helper --resolution | grep "x=" | awk -F "x=" '{ print $2 }')"
-        y="$(teiler_helper --resolution | grep "y=" |awk -F "y=" '{ print $2 }')"
-        xoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "xoff=" '{ print $2 }')"
-        yoff="$(teiler_helper --resolution | grep "yoff=" | awk -F "yoff=" '{ print $2 }')"
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY)
-        ffmpeg_offset=$(echo $(( ${xoff} -1 )),${yoff})
-        res_now="${x}x${y}"
+        ffmpeg_offset=$(echo $(( $(xininfo -mon-x) -1 )),$(xininfo -mon-y))
+        res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
         if [[ $res_now == $res ]]; then echo " "
         else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
-
         [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
         if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}.mp4" &
         else $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}.mp4" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
-
     elif [[ $1 == "area" ]]; then
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
-        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset="${xoff},${yoff}"; eval `slop -b "$slop_border" -c "$slop_color"`
+        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
         [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
         if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$(( $W - 1))"x"$(( $H - 1))" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}.mp4" &
         else $encoder -f x11grab -s "$(( $W -1 ))"x"$(( $H - 1 ))" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}.mp4" &
@@ -187,17 +180,13 @@ ffmpegCmd () {
 }
 
 maimCmd () {
-    x="$(teiler_helper --resolution | grep "x=" | awk -F "x=" '{ print $2 }')"
-    y="$(teiler_helper --resolution | grep "y=" | awk -F "y=" '{ print $2 }')"
-    xoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "xoff=" '{ print $2 }')"
-    yoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "yoff=" '{ print $2 }')"
     if [[ $1 == "delay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w "${x}" -h "${y}" -x "${xoff}" -y "${yoff}" -d ${delay} "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreen" ]]; then maim -w "${x}" -h "${y}" -x "${xoff}" -y "$yoff}" -d ${delay} "${img_path}/${3}.png";
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
         elif [[ $2 == "fullscreenAll" ]]; then maim -d ${delay} "${img_path}/${3}.png"; fi
     elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w "${x}" -h "${y}" -x "${xoff}" -y "${yoff}" "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreen" ]]; then maim -w "${x}" -h "${y}" -x "${xoff}" -y "${yoff}" "${img_path}/${3}.png";
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
         elif [[ $2 == "fullscreenAll" ]]; then maim "${img_path}/${3}.png"; fi
     fi
 }
