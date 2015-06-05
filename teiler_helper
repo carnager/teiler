@@ -28,41 +28,6 @@ elif [[ $paste_ul == "ix" ]]; then
     clipUpload () { xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
 fi
 
-getRes () {
-    ## found on "https://superuser.com/questions/603528/how-to-get-the-current-monitor-resolution-or-monitor-name-lvds-vga1-etc"
-    ## Get screen info
-    screen1=($(xrandr | grep -w connected  | sed 's/ primary//g' | awk -F'[ +]' '{print $1,$3,$4}' | head -n 1))
-    screen2=($(xrandr | grep -w connected  | sed 's/ primary//g' | awk -F'[ +]' '{print $1,$3,$4}' | tail -n 1))
-
-    ## Figure out which screen is to the right of which
-    if [[ ${screen1[2]} -eq 0 ]]; then
-        right=(${screen2[@]});
-        left=(${screen1[@]});
-    else
-        right=(${screen1[@]});
-        left=(${screen2[@]});
-    fi
-
-    ## Get window position
-    pos=$(xwininfo -id $(xdotool getactivewindow) | grep "Absolute upper-left X" | awk '{print $NF}')
-
-    ## is greater than the offset of the rightmost screen,
-    ## then the window is on the right hand one
-    if [[ "$pos" -gt "${right[2]}" ]]
-    then
-        echo "x=${right[1]%x*}"
-        echo "y=${right[1]#*x}"
-        echo "off-x="${left[1]%x*}""
-        echo "off-y="${left[2]#*x}""
-    else
-        echo "x=${left[1]%x*}"
-        echo "y=${left[1]#*x}"
-        echo "xoff="0""
-        echo "yoff="0""
-
-   fi
-}
-
 x_clip () {
     (xclip -o) | xclip -selection clipboard
 }
@@ -72,6 +37,4 @@ if [[ $1 == "--upload" ]]; then
     elif [[ $2 == "video" ]]; then videoUpload "$3"
     elif [[ $2 == "text" ]]; then clipUpload "$3"
     fi
-elif [[ $1 == "--resolution" ]]; then
-    getRes
 fi
