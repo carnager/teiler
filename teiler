@@ -109,7 +109,6 @@ screencastMenu () {
 }
 
 uploadMenu () {
-    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit &amp; Upload</span>"
     menu=$(echo -e "1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
     if [[ $menu = "1 Images" ]]; then
         imageMenu
@@ -118,6 +117,7 @@ uploadMenu () {
 
 imageMenu () {
     cd "${img_path}"
+    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit &amp; Upload</span>"
     imagemenu=$(echo -e "0 Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     imagemenu="${imagemenu%.*}"
