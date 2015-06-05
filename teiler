@@ -86,6 +86,9 @@ screencastMenu () {
         HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
         menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | rofi -dmenu -u 2 -mesg "${HELP}" -p "teiler > ")
         val=$?
+        if [[ "$menu" == "< Exit" ]]; then
+            exit
+        fi
         if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
         elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
         elif [[ $val -eq 1 ]]; then exit
@@ -202,9 +205,10 @@ maimCmd () {
 askPrompt () {
     isRecording && STATE_RECORDING="Recording"
     if [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "Fullscreen\nArea" | rofi -dmenu -p "> ")
-        if [[ $menu == "Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
+        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "> ")
+        if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
         elif [[ $menu == "Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+        elif [[ $menu == "" ]]; then exit
         fi
     else
         isRecording && stopRecording && sleep 2
