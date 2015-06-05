@@ -202,6 +202,22 @@ maimCmd () {
     fi
 }
 
+askPrompt () {
+    isRecording && STATE_RECORDING="Recording"
+    if [[ -z "$STATE_RECORDING" ]]; then
+        menu=$(echo -e "Fullscreen\nArea" | rofi -dmenu -p "> ")
+        if [[ $menu == "Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
+        elif [[ $menu == "Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+        fi
+    else
+        isRecording && stopRecording && sleep 2
+        ask=$(echo -e "Yes\nNo" | rofi -dmenu -p "Upload? > ")
+        if [[ $ask == "Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
+        elif [[ $ask == "No" ]]; then rm -f /tmp/__teiler_cast_name;
+        fi
+    fi
+}
+
 clipCmd () {
     x_clip
     (xclip -o) > "${paste_path}/${paste_filemask}"
