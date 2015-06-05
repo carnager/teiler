@@ -57,8 +57,8 @@ getRes () {
     else
         echo "x=${left[2]%x*}"
         echo "y=${left[2]#*x}"
-        echo "x-off="0""
-        echo "y-off="0""
+        echo "xoff="0""
+        echo "yoff="0""
 
    fi
 }

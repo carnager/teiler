@@ -155,10 +155,10 @@ stopRecording () {
 
 ffmpegCmd () {
     if [[ $1 == "fullscreen" ]]; then
-        x="$(teiler_helper --resolution | awk -F "x=" '{ print $2 }')"
-        y="$(teiler_helper --resolution | awk -F "y=" '{ print $2 }')"
-        xoff="$(teiler_helper --resolution | awk -F "x-off=" '{ print $2 }')"
-        yoff="$(teiler_helper --resolution | awk -F "y-off=" '{ print $2 }')"
+        x="$(teiler_helper --resolution | grep "x=" | awk -F "x=" '{ print $2 }')"
+        y="$(teiler_helper --resolution | grep "y=" |awk -F "y=" '{ print $2 }')"
+        xoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "xoff=" '{ print $2 }')"
+        yoff="$(teiler_helper --resolution | grep "yoff=" | awk -F "yoff=" '{ print $2 }')"
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY)
         ffmpeg_offset=$(echo $(( ${xoff} -1 )),${yoff})
@@ -187,10 +187,10 @@ ffmpegCmd () {
 }
 
 maimCmd () {
-    x="$(teiler_helper --resolution | awk -F "x=" '{ print $2 }')"
-    y="$(teiler_helper --resolution | awk -F "y=" '{ print $2 }')"
-    xoff="$(teiler_helper --resolution | awk -F "x-off=" '{ print $2 }')"
-    yoff="$(teiler_helper --resolution | awk -F "y-off=" '{ print $2 }')"
+    x="$(teiler_helper --resolution | grep "x=" | awk -F "x=" '{ print $2 }')"
+    y="$(teiler_helper --resolution | grep "y=" | awk -F "y=" '{ print $2 }')"
+    xoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "xoff=" '{ print $2 }')"
+    yoff="$(teiler_helper --resolution | grep "xoff=" | awk -F "yoff=" '{ print $2 }')"
     if [[ $1 == "delay" ]]; then
         if [[ $2 == "area" ]]; then maim -s -w "${x}" -h "${y}" -x "${xoff}" -y "${yoff}" -d ${delay} "${img_path}/${3}.png";
         elif [[ $2 == "fullscreen" ]]; then maim -w "${x}" -h "${y}" -x "${xoff}" -y "$yoff}" -d ${delay} "${img_path}/${3}.png";
