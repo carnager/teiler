@@ -110,8 +110,10 @@ screencastMenu () {
 
 uploadMenu () {
     menu=$(echo -e "1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
-    if [[ $menu = "1 Images" ]]; then
+    if [[ $menu == "1 Images" ]]; then
         imageMenu
+    elif [[ $menu == "2 Videos" ]]; then
+        videoMenu
     fi
 }
 
@@ -123,8 +125,21 @@ imageMenu () {
     imagemenu="${imagemenu%.*}"
     if [[ "${imagemenu}" == "0 Return to Upload Menu" ]]; then uploadMenu; fi
     if [[ $val -eq 11 ]]; then teiler_helper --upload image "${imagemenu}";
-    elif [[ $val -eq 10 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
+    elif [[ $val -eq 10 ]]; then $viewer "${imagemenu}.png"; export entry="${imagemenu}"; imageMenu
     elif [[ $val -eq 12 ]]; then $editor "${imagemenu}.png"; teiler_helper --upload image "${imagemenu}"
+    elif [[ $val -eq 1 ]]; then exit
+    fi
+}
+
+videoMenu () {
+    cd "${img_path}"
+    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload</span>"
+    videomenu=$(echo -e "0 Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
+    val=$?
+    videomenu="${videomenu%.*}"
+    if [[ "${videomenu}" == "0 Return to Upload Menu" ]]; then uploadMenu; fi
+    if [[ $val -eq 11 ]]; then teiler_helper --upload image "${videomenu}";
+    elif [[ $val -eq 10 ]]; then $player "${videomenu}"; export entry="${videomenu}"; imageMenu
     elif [[ $val -eq 1 ]]; then exit
     fi
 }

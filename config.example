@@ -12,6 +12,7 @@ paste_path=$HOME/Pictures/Paste
 
 viewer=eog
 editor=pinta
+player=mpv
 
 # Hitting Enter will upload
 always_ul=1
