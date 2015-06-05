@@ -17,11 +17,12 @@ mainMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n---\n3 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ Upload Menu ]>\n---\n4 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
         val=$?
         if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
         elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
-        elif [[ $menu == "3 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
+        elif [[ $menu == "3 [ Upload Menu ]>" ]]; then uploadMenu;
+        elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
         elif [[ $val -eq 1 ]]; then exit; fi
     fi
 }
@@ -75,6 +76,7 @@ Alt+Shift+1: Delay+Upload | Alt+Shift+2: Delay+No Upload</span>"
     elif [[ $menu == "< Return to Main Menu" ]]; then
         mainMenu
     fi
+    echo "${filename}" > $HOME/.config/teiler/last_image
 }
 
 screencastMenu () {
@@ -106,12 +108,33 @@ screencastMenu () {
     fi
 }
 
+uploadMenu () {
+    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit &amp; Upload</span>"
+    menu=$(echo -e "1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
+    if [[ $menu = "1 Images" ]]; then
+        imageMenu
+    fi
+}
+
+imageMenu () {
+    cd "${img_path}"
+    imagemenu=$(echo -e "0 Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
+    val=$?
+    imagemenu="${imagemenu%.*}"
+    if [[ "${imagemenu}" == "0 Return to Upload Menu" ]]; then uploadMenu; fi
+    if [[ $val -eq 11 ]]; then teiler_helper --upload image "${imagemenu}";
+    elif [[ $val -eq 10 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
+    elif [[ $val -eq 12 ]]; then $editor "${imagemenu}.png"; teiler_helper --upload image "${imagemenu}"
+    elif [[ $val -eq 1 ]]; then exit
+    fi
+}
+
 isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
     local pid
     [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); pid2=$(cat "$INDICATOR_PIDFILE"); isRecording && kill "$pid" "$pid2"; rm "$SCREENCAST_PIDFILE"; rm "$INDICATOR_PIDFILE"; }
-    notify "$time" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
+    notify-send -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
 }
 
 

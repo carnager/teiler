@@ -1,8 +1,6 @@
 ##### teiler configuration file ######
 
 # general variables
-
-backend=rofi
 slop_color="255,0,0"
 slop_border=2
 hidecursor=yes
@@ -12,41 +10,24 @@ img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
 
-# some distibutions rename the gdbar binary to dzen2-gdbar
-# set it here, accordingly
-gdbar=gdbar
-
-# editor to be used
+viewer=eog
 editor=pinta
 
-
 # Hitting Enter will upload
-# It's always possible to supress uploads with Alt+2
-# Alt+F1 will always upload, even if this setting is disabled
 always_ul=1
 
-# Uploading & archiving options
-# Possible Choices for ul: fb, scp, s3, imgur (imgur does not support videos)
+# Uploading options
+# Possible Choices for img_ul: fb, scp, s3, imgur
+# Possible Choices for vid_ul: fb, scp, s3
 # Possible Choices for paste_ul: fb, scp, ix
-
-# If you don't want a local history of images/videos,
-# set archive_img/archive_vid to "0"
-# keep in mind, that imgur does not support videos
-ul=imgur
+img_ul=imgur
+vid_ul=fb
 paste_ul=ix
-archive_vid=1
-archive_img=1
-archive_paste=0
-
-# filebin history
-# for filebin history to work, you need to set your host here:
-filebin_host=https://host.example.com
 
 # For scp you need to provide the actual path on your server
 # where your files should be stored
 # this path normally should be within a http domain.
 # also set the actual URL to the directory
-
 scp_host=HOSTNAME
 scp_path_img=/path/to/images
 scp_path_vid=/path/to/videos
@@ -54,8 +35,6 @@ scp_path_paste=/path/to/pastes
 http_img=https://YOUR_DOMAIN/path/to/images
 http_vid=https://YOUR_DOMAIN/path/to/videos
 http_paste=https://YOUR_DOMAIN/path/to/pastes
-
-
 
 # s3 options
 # same as scp options. set an actual path within your bucket, where
@@ -95,10 +74,10 @@ SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 time=1000
 namekey=teiler
-random_string=$(date +%s | sha256sum | base64 | head -c 4 ; echo)
-img_filemask=$random_string
-vid_filemask=$random_string
-paste_filemask=$random_string
+random_string=$(date +'%Y-%m-%d-%H%M%S')
+img_filemask=img-$random_string
+vid_filemask=vid-$random_string
+paste_filemask=txt-$random_string
 help_color="#0C73C2"
 
 ###### rofi options ######
