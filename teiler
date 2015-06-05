@@ -218,18 +218,34 @@ progress () {
     -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
 }
 
-if [[ $1 == "--screenshot" ]]; then
-    screenshotMenu
-elif [[ $1 == "--screencast" ]]; then
-    screencastMenu
-elif [[ $1 == "--paste" ]]; then
-    export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+helpCmd () {
+    cat << EOF
+teiler - a rofi-driven screen{shot,cast} utility
+(C) Rasmus Steinke <rasi@xssn.at>
+
+--screenshots             open screenshots menu
+--screencasts             open screencasts menu
+--history {images,video}  open history menus
+--paste                   upload text from clipboard
+--togglecast              start/stop screencast
+--quick {area,fullscreen} quickly create screenshot and upload
+EOF
+}
+
+
+if [[ $1 == "--screenshot" ]]; then screenshotMenu
+elif [[ $1 == "--screencast" ]]; then screencastMenu
+elif [[ $1 == "--paste" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
 elif [[ $1 == "--history" ]]; then
-    if [[ $2 == "images" ]]; then
-        imageMenu
-    elif [[ $2 == "videos" ]]; then
-        videoMenu
+    if [[ $2 == "images" ]]; then imageMenu
+    elif [[ $2 == "videos" ]]; then videoMenu
     fi
+elif [[ $1 == "--quick" ]]; then
+    if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+    elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+    fi
+elif [[ $1 == "--help" ]]; then
+    helpCmd
 else
     mainMenu
 fi
