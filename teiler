@@ -122,7 +122,7 @@ uploadMenu () {
 
 imageMenu () {
     cd "${img_path}"
-    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit</span>"
+    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit | Alt+4: Copy to Clipboard</span>"
     imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     imagemenu2="${imagemenu%.*}"
@@ -132,15 +132,12 @@ imageMenu () {
     elif [[ $val -eq 12 ]]; then
         cp "${imagemenu}" "${imagemenu2}-mod.png"
         $editor "${imagemenu2}-mod.png"
-#        ask=$(echo -e "1 Yes\n2 No" | rofi -dmenu -p "Upload? > ")
-#        if [[ $ask == "1 Yes" ]]; then
-#            teiler_helper --upload image "${imagemenu2}-mod"
-#        elif [[ $ask == "2 No" ]]; then
-#            exit
-#        fi
         export entry="${imagemenu}"
         imageMenu
-    elif [[ $val -eq 1 ]]; then exit
+    elif [[ $val -eq 13 ]]; then
+        copyq
+        copyq write image/png - < "${imagemenu}"; copyq \select 0
+    elif [[ $val -eq 1 ]]; then exit;
     fi
 }
 
