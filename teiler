@@ -17,11 +17,11 @@ mainMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ Upload Menu ]>\n---\n4 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
         val=$?
         if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
         elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
-        elif [[ $menu == "3 [ Upload Menu ]>" ]]; then uploadMenu;
+        elif [[ $menu == "3 [ History ]>" ]]; then uploadMenu;
         elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
         elif [[ $val -eq 1 ]]; then exit; fi
     fi
