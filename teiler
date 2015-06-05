@@ -227,6 +227,8 @@ elif [[ $1 == "--paste" ]]; then
 elif [[ $1 == "--history" ]]; then
     if [[ $2 == "images" ]]; then
         imageMenu
+    elif [[ $2 == "videos" ]]; then
+        videoMenu
     fi
 else
     mainMenu
