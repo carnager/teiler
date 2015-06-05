@@ -119,14 +119,21 @@ uploadMenu () {
 
 imageMenu () {
     cd "${img_path}"
-    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit &amp; Upload</span>"
+    HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit</span>"
     imagemenu=$(echo -e "0 Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     imagemenu2="${imagemenu%.*}"
     if [[ "${imagemenu}" == "0 Return to Upload Menu" ]]; then uploadMenu; fi
     if [[ $val -eq 11 ]]; then teiler_helper --upload image "${imagemenu}";
     elif [[ $val -eq 10 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
-    elif [[ $val -eq 12 ]]; then $editor "${imagemenu}"; teiler_helper --upload image "${imagemenu2}"
+    elif [[ $val -eq 12 ]]; then
+        $editor "${imagemenu}"
+        ask=$(echo -e "1 Yes\n2 No" | rofi -dmenu -p "Upload? > ")
+        if [[ $ask == "1 Yes" ]]; then
+            teiler_helper --upload image "${imagemenu2}"
+        elif [[ $ask == "2 No" ]]; then
+            exit
+        fi
     elif [[ $val -eq 1 ]]; then exit
     fi
 }
@@ -200,9 +207,9 @@ askPrompt () {
         fi
     else
         isRecording && stopRecording && sleep 2
-        ask=$(echo -e "Yes\nNo" | rofi -dmenu -p "Upload? > ")
-        if [[ $ask == "Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
-        elif [[ $ask == "No" ]]; then rm -f /tmp/__teiler_cast_name;
+        ask=$(echo -e "1 Yes\n2 No" | rofi -dmenu -p "Upload? > ")
+        if [[ $ask == "1 Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
+        elif [[ $ask == "2 No" ]]; then rm -f /tmp/__teiler_cast_name;
         fi
     fi
 }
@@ -225,6 +232,11 @@ indicator () {
 killCountdown () { kill $DELAY_PID; }
 
 countdown () { for i in $(seq $[$1-1] -1 0); do for o in {9..0}; do echo $i.$o; sleep 0.1; done; done }
+
+progress () {
+    $(echo $gdbar_binary) -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
+    -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
+}
 
 helpCmd () {
     cat << EOF
