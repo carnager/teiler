@@ -31,8 +31,8 @@ fi
 getRes () {
     ## found on "https://superuser.com/questions/603528/how-to-get-the-current-monitor-resolution-or-monitor-name-lvds-vga1-etc"
     ## Get screen info
-    screen1=($(xrandr | grep -w connected  | awk -F'[ +]' '{print $1,$3,$4}' | head -n 1))
-    screen2=($(xrandr | grep -w connected  | awk -F'[ +]' '{print $1,$3,$4}' | tail -n 1))
+    screen1=($(xrandr | grep -w connected  | sed 's/ primary//g' | awk -F'[ +]' '{print $1,$3,$4}' | head -n 1))
+    screen2=($(xrandr | grep -w connected  | sed 's/ primary//g' | awk -F'[ +]' '{print $1,$3,$4}' | tail -n 1))
 
     ## Figure out which screen is to the right of which
     if [[ ${screen1[2]} -eq 0 ]]; then
@@ -52,11 +52,11 @@ getRes () {
     then
         echo "x=${right[1]%x*}"
         echo "y=${right[1]#*x}"
-        echo "off-x="${left[2]%x*}""
+        echo "off-x="${left[1]%x*}""
         echo "off-y="${left[2]#*x}""
     else
-        echo "x=${left[2]%x*}"
-        echo "y=${left[2]#*x}"
+        echo "x=${left[1]%x*}"
+        echo "y=${left[1]#*x}"
         echo "xoff="0""
         echo "yoff="0""
 
