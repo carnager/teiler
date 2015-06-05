@@ -127,10 +127,11 @@ imageMenu () {
     if [[ $val -eq 11 ]]; then teiler_helper --upload image "${imagemenu}";
     elif [[ $val -eq 10 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
     elif [[ $val -eq 12 ]]; then
-        $editor "${imagemenu}"
+        cp "${imagemenu}" "edit-${imagemenu}"
+        $editor "edit-${imagemenu}"
         ask=$(echo -e "1 Yes\n2 No" | rofi -dmenu -p "Upload? > ")
         if [[ $ask == "1 Yes" ]]; then
-            teiler_helper --upload image "${imagemenu2}"
+            teiler_helper --upload image "edit-${imagemenu}"
         elif [[ $ask == "2 No" ]]; then
             exit
         fi
