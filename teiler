@@ -207,6 +207,12 @@ if [[ $1 == "--screenshot" ]]; then
     screenshotMenu
 elif [[ $1 == "--screencast" ]]; then
     screencastMenu
+elif [[ $1 == "--paste" ]]; then
+    export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+elif [[ $1 == "--history" ]]; then
+    if [[ $2 == "images" ]]; then
+        imageMenu
+    fi
 else
     mainMenu
 fi
