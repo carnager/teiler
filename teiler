@@ -109,7 +109,7 @@ screencastMenu () {
 }
 
 uploadMenu () {
-    menu=$(echo -e "0 Return to Main Menu\---n1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
+    menu=$(echo -e "0 Return to Main Menu\n---n1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
     if [[ $menu == "1 Images" ]]; then imageMenu;
     elif [[ $menu == "2 Videos" ]]; then videoMenu;
     elif [[ $menu == "0 Return to Main Menu" ]]; then mainMenu;
