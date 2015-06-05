@@ -1,15 +1,13 @@
 ##### teiler configuration file ######
 
 # general variables
-slop_color="255,0,0"
-slop_border=2
-hidecursor=yes
 
 # the path where images, videos and pastes should be saved
 img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
 
+# set viewer for images and videos plus editor for images
 viewer=eog
 editor=pinta
 player=mpv
@@ -54,7 +52,6 @@ s3_http_paste=http://rasi-teiler.s3-website-eu-west-1.amazonaws.com/path/to/past
 res=800x600
 
 # Ffmpeg settings
-# Possible encoder options: libav and ffmpeg
 encoder=ffmpeg
 encopts="-r 30 -vcodec libx264 -pix_fmt yuv420p -s $res -acodec libmp3lame"
 rect_encopts="-r 30 -c:v libx264 -preset slow -crf 18 -c:a libvorbis"
@@ -63,8 +60,6 @@ ffaudio="-f alsa -ac 2 -i pulse"
 # record indicator
 rec_text="capturing..."
 rec_w=100
-rec_x=3400
-rec_y=0
 rec_font=PragmataPro-10
 rec_nf=\#FFFFFF
 rec_sf=\#000000
@@ -73,13 +68,15 @@ rec_sf=\#000000
 # Normally you don't want to change anything here!
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
-time=1000
 namekey=teiler
 random_string=$(date +'%Y-%m-%d-%H%M%S')
 img_filemask=img-$random_string
 vid_filemask=vid-$random_string
 paste_filemask=txt-$random_string
 help_color="#0C73C2"
+slop_color="255,0,0"
+slop_border=2
+hidecursor=yes
 
 ###### rofi options ######
 
