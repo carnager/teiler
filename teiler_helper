@@ -25,7 +25,7 @@ if [[ $paste_ul == "fb" ]]; then
 elif [[ $paste_ul == "scp" ]]; then
     clipUpload () { cd "${paste_path}"; scp "$1" "${scp_host}/${scp_path_paste}/${1}"; x_clip; notify-send "Paste Uploaded" "${http_paste}/${1}"; }
 elif [[ $paste_ul == "ix" ]]; then
-    clipUpload () { cd "${paste_path}"; ix "$1"; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
+    clipUpload { xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
 fi
 
 getRes () {
