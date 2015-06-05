@@ -132,7 +132,7 @@ imageMenu () {
 }
 
 videoMenu () {
-    cd "${img_path}"
+    cd "${vid_path}"
     HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload</span>"
     videomenu=$(echo -e "0 Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
