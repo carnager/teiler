@@ -3,25 +3,75 @@
 source $HOME/.config/teiler/config
 
 # define uploaders
-if [[ $ul == "fb" ]]; then
-    imageUpload () { cd "${img_path}"; fb "${1}.png"; notify-send "Image Uploaded" "$(xclip -o)"; }
-    videoUpload () { cd "${vid_path}"; fb "${1}.mp4"; notify-send "Video Uploaded" "$(xclip -o)"; }
-    clipUpload () { cd "${paste_path}"; fb "${1}"; notify-send "Paste Uploaded" "$(xclip -o)"; }
-
-elif [[ $ul == "scp" ]]; then
-    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}/${scp_path_img}/${1}.png"; notify-send "Image Uploaded" "${http_img}/${1}"; }
-    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}.mp4"; notify-send "Video Uploaded" "${http_vid}/${1}"; }
-    clipUpload () { cd "${paste_path}"; scp "$1" "${scp_host}/${scp_path_paste}/${1}"; notify-send "Paste Uploaded" "${http_paste}/${1}"; }
-
-elif [[ $ul == "imgur" ]]; then
-    imageUpload () { cd "${img_path}"; imgur "${1}.png"; notify-send "Image Uploaded" "$(xclip -o)"; }
-    videoUpload () { notify-send "teiler" "imgur does not support Video"; }
-    clipUpload () { notify-send "teiler" "imgur does not support text"; }
+# images
+if [[ $img_ul == "fb" ]]; then
+    imageUpload () { cd "${img_path}"; fb "${1}.png"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
+elif [[ $img_ul == "scp" ]]; then
+    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}/${scp_path_img}/${1}.png"; x_clip; notify-send "Image Uploaded" "${http_img}/${1}"; }
+elif [[ $img_ul == "imgur" ]]; then
+    imageUpload () { cd "${img_path}"; imgur "${1}.png"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
 fi
+
+# Videos
+if [[ $vid_ul == "fb" ]]; then
+    videoUpload () { cd "${vid_path}"; fb "${1}.mp4"; x_clip; notify-send "Video Uploaded" "$(xclip -o)"; }
+elif [[ $vid_ul == "scp" ]]; then
+    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}.mp4"; x_clip; notify-send "Video Uploaded" "${http_vid}/${1}"; }
+fi
+
+# text
+if [[ $paste_ul == "fb" ]]; then
+    clipUpload () { cd "${paste_path}"; fb "${1}"; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
+elif [[ $paste_ul == "scp" ]]; then
+    clipUpload () { cd "${paste_path}"; scp "$1" "${scp_host}/${scp_path_paste}/${1}"; x_clip; notify-send "Paste Uploaded" "${http_paste}/${1}"; }
+elif [[ $paste_ul == "ix" ]]; then
+    clipUpload () { cd "${paste_path}"; ix "$1"; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
+fi
+
+getRes () {
+    ## found on "https://superuser.com/questions/603528/how-to-get-the-current-monitor-resolution-or-monitor-name-lvds-vga1-etc"
+    ## Get screen info
+    screen1=($(xrandr | grep -w connected  | awk -F'[ +]' '{print $1,$3,$4}' | head -n 1))
+    screen2=($(xrandr | grep -w connected  | awk -F'[ +]' '{print $1,$3,$4}' | tail -n 1))
+
+    ## Figure out which screen is to the right of which
+    if [[ ${screen1[2]} -eq 0 ]]; then
+        right=(${screen2[@]});
+        left=(${screen1[@]});
+    else
+        right=(${screen1[@]});
+        left=(${screen2[@]});
+    fi
+
+    ## Get window position
+    pos=$(xwininfo -id $(xdotool getactivewindow) | grep "Absolute upper-left X" | awk '{print $NF}')
+
+    ## is greater than the offset of the rightmost screen,
+    ## then the window is on the right hand one
+    if [[ "$pos" -gt "${right[2]}" ]]
+    then
+        echo "x=${right[1]%x*}"
+        echo "y=${right[1]#*x}"
+        echo "off-x="${left[2]%x*}""
+        echo "off-y="${left[2]#*x}""
+    else
+        echo "x=${left[2]%x*}"
+        echo "y=${left[2]#*x}"
+        echo "x-off="0""
+        echo "y-off="0""
+
+   fi
+}
+
+x_clip () {
+    (xclip -o) | xclip -selection clipboard
+}
 
 if [[ $1 == "--upload" ]]; then
     if [[ $2 == "image" ]]; then imageUpload "$3"
     elif [[ $2 == "video" ]]; then videoUpload "$3"
     elif [[ $2 == "text" ]]; then clipUpload "$3"
     fi
+elif [[ $1 == "--resolution" ]]; then
+    getRes
 fi
