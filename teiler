@@ -207,7 +207,7 @@ askPrompt () {
     if [[ -z "$STATE_RECORDING" ]]; then
         menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "> ")
         if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
-        elif [[ $menu == "Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+        elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
         elif [[ $menu == "" ]]; then exit
         fi
     else
