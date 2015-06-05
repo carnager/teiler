@@ -202,6 +202,7 @@ maimCmd () {
 }
 
 askPrompt () {
+    filename="$(cat /tmp/__teiler_cast_name)"
     isRecording && STATE_RECORDING="Recording"
     if [[ -z "$STATE_RECORDING" ]]; then
         menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "> ")
