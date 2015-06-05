@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 source $HOME/.config/teiler/config
 
 mainMenu () {
@@ -144,6 +144,22 @@ videoMenu () {
     fi
 }
 
+askPrompt () {
+    isRecording && STATE_RECORDING="Recording"
+    if [[ -z "$STATE_RECORDING" ]]; then
+        menu=$(echo -e "Fullscreen\nArea" | rofi -dmenu -p "> ")
+        if [[ $menu == "Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
+        elif [[ $menu == "Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+        fi
+    else
+        isRecording && stopRecording && sleep 2
+        ask=$(echo -e "Yes\nNo" | rofi -dmenu -p "Upload? > ")
+        if [[ $ask == "Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
+        elif [[ $ask == "No" ]]; then rm -f /tmp/__teiler_cast_name;
+        fi
+    fi
+}
+
 isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
@@ -236,6 +252,7 @@ EOF
 if [[ $1 == "--screenshot" ]]; then screenshotMenu
 elif [[ $1 == "--screencast" ]]; then screencastMenu
 elif [[ $1 == "--paste" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+elif [[ $1 == "--togglecast" ]]; then askPrompt
 elif [[ $1 == "--history" ]]; then
     if [[ $2 == "images" ]]; then imageMenu
     elif [[ $2 == "videos" ]]; then videoMenu
