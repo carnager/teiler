@@ -16,9 +16,11 @@ fi
 if [[ $img_ul == "fb" ]]; then
     imageUpload () { cd "${img_path}"; fb "${1}"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "scp" ]]; then
-    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}:/${scp_path_img}/${1}"; x_clip; notify-send "Image Uploaded" "${http_img}/${1}"; echo -n "${http_img}/${1}" | xclip; x_clip; }
+    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}:/${scp_path_img}/${1}"; notify-send "Image Uploaded" "${http_img}/${1}"; echo -n "${http_img}/${1}" | xclip; x_clip; }
 elif [[ $img_ul == "imgur" ]]; then
     imageUpload () { cd "${img_path}"; imgur "${1}"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
+elif [[ $img_ul == "s3" ]]; then
+    imageUpload () { cd "${img_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
 fi
 
 # Videos
@@ -26,6 +28,8 @@ if [[ $vid_ul == "fb" ]]; then
     videoUpload () { cd "${vid_path}"; fb "${1}"; x_clip; notify-send "Video Uploaded" "$(xclip -o)"; }
 elif [[ $vid_ul == "scp" ]]; then
     videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}"; x_clip; notify-send "Video Uploaded" "${http_vid}/${1}"; }
+elif [[ $vid_ul == "s3" ]]; then
+    videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
 fi
 
 # text
