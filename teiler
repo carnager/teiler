@@ -35,8 +35,7 @@ Alt+Shift+1: Delay+Upload | Alt+Shift+2: Delay+No Upload</span>"
 
     menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | rofi -dmenu -kb-custom-3 "Alt+Shift+1" -kb-custom-4 "Alt+Shift+2" -mesg "${HELP}" -p "Screenshot > ")
     val=$?
-    export filename=${img_filemask}
-
+    export filename="${img_filemask}"
     if [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
     elif [[ $menu == "1 Fullscreen" ]]; then
         if [[ $val -eq 10 ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -191,13 +190,13 @@ ffmpegCmd () {
 
 maimCmd () {
     if [[ $1 == "delay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreenAll" ]]; then maim -d ${delay} "${img_path}/${3}.png"; fi
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
+        elif [[ $2 == "fullscreenAll" ]]; then maim -d ${delay} "${img_path}/${3}"; fi
     elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}.png";
-        elif [[ $2 == "fullscreenAll" ]]; then maim "${img_path}/${3}.png"; fi
+        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
+        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
+        elif [[ $2 == "fullscreenAll" ]]; then maim "${img_path}/${3}"; fi
     fi
 }
 

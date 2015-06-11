@@ -1,22 +1,31 @@
 #!/bin/bash
 
 source $HOME/.config/teiler/config
+if [[ "$img_ul" == "s3" || "$img_ul" == "scp" ]]; then
+    source $HOME/.config/teiler/uploader/$img_ul
+fi
+if [[ "$vid_ul" == "s3" || "$vid_ul" == "scp" ]]; then
+    source $HOME/.config/teiler/uploader/$img_ul
+fi
+if [[ "$paste_ul" == "s3" || "$paste_ul" == "scp" ]]; then
+    source $HOME/.config/teiler/uploader/$img_ul
+fi
 
 # define uploaders
 # images
 if [[ $img_ul == "fb" ]]; then
-    imageUpload () { cd "${img_path}"; fb "${1}.png"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { cd "${img_path}"; fb "${1}"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "scp" ]]; then
-    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}/${scp_path_img}/${1}.png"; x_clip; notify-send "Image Uploaded" "${http_img}/${1}"; }
+    imageUpload () { cd "${img_path}";  scp "$1" "${scp_host}:/${scp_path_img}/${1}"; x_clip; notify-send "Image Uploaded" "${http_img}/${1}"; echo -n "${http_img}/${1}" | xclip; x_clip; }
 elif [[ $img_ul == "imgur" ]]; then
-    imageUpload () { cd "${img_path}"; imgur "${1}.png"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { cd "${img_path}"; imgur "${1}"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
 fi
 
 # Videos
 if [[ $vid_ul == "fb" ]]; then
-    videoUpload () { cd "${vid_path}"; fb "${1}.mp4"; x_clip; notify-send "Video Uploaded" "$(xclip -o)"; }
+    videoUpload () { cd "${vid_path}"; fb "${1}"; x_clip; notify-send "Video Uploaded" "$(xclip -o)"; }
 elif [[ $vid_ul == "scp" ]]; then
-    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}.mp4"; x_clip; notify-send "Video Uploaded" "${http_vid}/${1}"; }
+    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}"; x_clip; notify-send "Video Uploaded" "${http_vid}/${1}"; }
 fi
 
 # text
