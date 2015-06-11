@@ -1,6 +1,11 @@
 #!/bin/bash
 source $HOME/.config/teiler/config
 
+if [[ ! -d $HOME/.config/teiler/uploader ]]; then
+    mkdir $HOME/.config/teiler/uploader
+    cp /usr/share/doc/teiler/uploader/* $HOME/.config/teiler/uploader
+fi
+
 mainMenu () {
     filename="$(cat /tmp/__teiler_cast_name)"
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
