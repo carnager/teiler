@@ -174,18 +174,18 @@ ffmpegCmd () {
         res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
         if [[ $res_now == $res ]]; then echo " "
         else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
-        [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}.mp4" &
-        else $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}.mp4" &
+        [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
     elif [[ $1 == "area" ]]; then
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
-        [[ -f "${vid_path}/${filename}.mp4" ]] && rm "${vid_path}/${filename}.mp4"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$(( $W - 1))"x"$(( $H - 1))" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}.mp4" &
-        else $encoder -f x11grab -s "$(( $W -1 ))"x"$(( $H - 1 ))" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}.mp4" &
+        [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$(( $W - 1))"x"$(( $H - 1))" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab -s "$(( $W -1 ))"x"$(( $H - 1 ))" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
