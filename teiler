@@ -152,8 +152,8 @@ videoMenu () {
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
-    if [[ $val -eq 11 ]]; then teiler_helper --upload video "${videomenu2}";
-    elif [[ $val -eq 10 || $val -eq 0 ]]; then $player "${videomenu}"; export entry="${videomenu2}"; videoMenu
+    if [[ $val -eq 11 ]]; then teiler_helper --upload video "${videomenu}";
+    elif [[ $val -eq 10 || $val -eq 0 ]]; then $player "${videomenu}"; export entry="${videomenu}"; videoMenu
     elif [[ $val -eq 1 ]]; then exit
     fi
 }
