@@ -271,6 +271,7 @@ elif [[ $1 == "--history" ]]; then
     elif [[ $2 == "videos" ]]; then videoMenu
     fi
 elif [[ $1 == "--quick" ]]; then
+    filename="${img_filemask}"
     if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     fi
