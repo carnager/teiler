@@ -1,4 +1,5 @@
 #!/bin/bash
+source /etc/teiler.conf
 source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
@@ -11,7 +12,7 @@ mainMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | rofi -dmenu -u 2 -mesg "${HELP}" -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -mesg "${HELP}" -p "teiler > ")
         val=$?
         if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
         elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
@@ -22,7 +23,7 @@ mainMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | rofi -dmenu -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -p "teiler > ")
         val=$?
         if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
         elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
@@ -38,7 +39,7 @@ Alt+Shift+1: Delay+Upload | Alt+Shift+2: Delay+No Upload</span>"
 
     if [[ -z $delay ]]; then delay="0"; fi
 
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | rofi -dmenu -kb-custom-3 "Alt+Shift+1" -kb-custom-4 "Alt+Shift+2" -mesg "${HELP}" -p "Screenshot > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | roficmd -kb-custom-3 "Alt+Shift+1" -kb-custom-4 "Alt+Shift+2" -mesg "${HELP}" -p "Screenshot > ")
     val=$?
     export filename="${img_filemask}"
     if [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
@@ -88,7 +89,7 @@ screencastMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | rofi -dmenu -u 2 -mesg "${HELP}" -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -mesg "${HELP}" -p "teiler > ")
         val=$?
         if [[ "$menu" == "< Exit" ]]; then
             exit
@@ -103,7 +104,7 @@ screencastMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "Screenshot > ")
+        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -p "Screenshot > ")
         val=$?
         filename="${vid_filemask}"
         echo "${filename}" > /tmp/__teiler_cast_name
@@ -116,7 +117,7 @@ screencastMenu () {
 }
 
 uploadMenu () {
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | rofi -dmenu -p "Uploads > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | roficmd -p "Uploads > ")
     if [[ $menu == "1 Images" ]]; then imageMenu;
     elif [[ $menu == "2 Videos" ]]; then videoMenu;
     elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
@@ -127,7 +128,7 @@ uploadMenu () {
 imageMenu () {
     cd "${img_path}"
     HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload | Alt+3: Edit | Alt+4: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
+    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | roficmd -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     imagemenu2="${imagemenu%.*}"
     if [[ "${imagemenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
@@ -148,7 +149,7 @@ imageMenu () {
 videoMenu () {
     cd "${vid_path}"
     HELP="<span color='$help_color'>Alt+1: View | Alt+2: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | rofi -dmenu -select "${entry}" -mesg "${HELP}" -p "Choose > ")
+    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | roficmd -select "${entry}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
@@ -211,14 +212,14 @@ askPrompt () {
     if [[ -z "$STATE_RECORDING" ]]; then
         filename="${vid_filemask}"
         echo "${filename}" > /tmp/__teiler_cast_name
-        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | rofi -dmenu -p "> ")
+        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | roficmd -p "> ")
         if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
         elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
         elif [[ $menu == "" ]]; then exit
         fi
     else
         isRecording && stopRecording && sleep 2
-        ask=$(echo -e "1 Yes\n2 No" | rofi -dmenu -p "Upload? > ")
+        ask=$(echo -e "1 Yes\n2 No" | roficmd -p "Upload? > ")
         if [[ $ask == "1 Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
         elif [[ $ask == "2 No" ]]; then rm -f /tmp/__teiler_cast_name;
         fi
@@ -231,7 +232,7 @@ clipCmd () {
 }
 
 delayPrompt () {
-    delay=$(echo -e "< Return $(seq 0 10)" | rofi -dmenu -p "Choose Delay > ")
+    delay=$(echo -e "< Return $(seq 0 10)" | roficmd -p "Choose Delay > ")
 }
 
 indicator () {
@@ -261,6 +262,16 @@ teiler - a rofi-driven screen{shot,cast} utility
 --quick {area,fullscreen} quickly create screenshot and upload
 EOF
 }
+
+if [[ -z "$rofiopts" ]]; then
+    roficmd () {
+        rofi -dmenu "$@"
+    }
+else
+    roficmd () {
+        rofi -dmenu $(echo "$rofiopts") "$@"
+    }
+fi
 
 if [[ $1 == "--screenshot" ]]; then screenshotMenu
 elif [[ $1 == "--screencast" ]]; then screencastMenu
