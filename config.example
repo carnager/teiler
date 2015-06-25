@@ -7,6 +7,11 @@ img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
 
+# slop options
+slop_border=1
+slop_color="255,0,0"
+hidecursor=yes
+
 # set viewer for images and videos plus editor for images
 viewer=eog
 editor=pinta
