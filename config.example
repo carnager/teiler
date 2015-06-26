@@ -33,6 +33,10 @@ paste_ul=ix
 res=800x600
 
 # Ffmpeg settings
+
+# set this to 1, if ffmpeg version is < 1.7.1
+ffmpeg_compat=0
+
 encoder=ffmpeg
 encopts="-r 30 -vcodec libx264 -pix_fmt yuv420p -s $res -acodec libmp3lame"
 rect_encopts="-r 30 -c:v libx264 -preset slow -crf 18 -c:a libvorbis"

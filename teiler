@@ -168,16 +168,28 @@ stopRecording () {
 }
 
 ffmpegCmd () {
+    xres=$(echo "$res" | awk -F 'x' '{ print $1 }')
+    yres=$(echo "$res" | awk -F 'x' '{ print $2 }')
+
+    if [[ $ffmpeg_compat == "1" ]]; then
+        if [[ $xres -gt "$(xininfo -mon-x)" ]]; then
+            xres="$(( $xres -1 ))"
+            yres="$(( $yres -1 ))"
+            res2="${xres}x${yres}"
+        else
+            res2=$res
+        fi
+    fi
     if [[ $1 == "fullscreen" ]]; then
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY)
-        ffmpeg_offset=$(echo $(( $(xininfo -mon-x) -1 )),$(xininfo -mon-y))
+        ffmpeg_offset="$(xininfo -mon-x),$(xininfo -mon-y)"
         res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
         if [[ $res_now == $res ]]; then echo " "
         else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab -s $res -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
@@ -185,8 +197,8 @@ ffmpegCmd () {
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$(( $W - 1))"x"$(( $H - 1))" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab -s "$(( $W -1 ))"x"$(( $H - 1 ))" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
