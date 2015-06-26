@@ -7,11 +7,6 @@ img_path=$HOME/Pictures/Screenshots
 vid_path=$HOME/Videos/Screencasts
 paste_path=$HOME/Pictures/Paste
 
-# slop options
-slop_border=1
-slop_color="255,0,0"
-hidecursor=yes
-
 # set viewer for images and videos plus editor for images
 viewer=eog
 editor=pinta
@@ -49,7 +44,6 @@ rec_font=PragmataPro-10
 rec_nf=\#FFFFFF
 rec_sf=\#000000
 
-
 # Normally you don't want to change anything here!
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
@@ -62,9 +56,12 @@ help_color="#0C73C2"
 slop_color="255,0,0"
 slop_border=2
 hidecursor=yes
+# slop options
+slop_border=1
+slop_color="255,0,0"
+hidecursor=yes
 
-###### rofi options ######
-
+# rofi options ######
 # here you can override options for rofi. normally rofi options
 # are read from ~/.Xresources, so setting options there is recommended.
 # you can dump options for ~/.Xresources with "rofi -dump-xresources"
