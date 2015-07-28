@@ -7,6 +7,14 @@ if [[ ! -d $HOME/.config/teiler/uploader ]]; then
     cp /usr/share/doc/teiler/uploader/* $HOME/.config/teiler/uploader
 fi
 
+
+if [[ ! -d $HOME/.config/teiler/profiles ]]; then
+    mkdir $HOME/.config/teiler/profiles
+    cp /usr/share/doc/teiler/profiles/* $HOME/.config/teiler/profiles
+fi
+
+source "$HOME/.config/teiler/profiles/${profile}"
+
 mainMenu () {
     filename="$(cat /tmp/__teiler_cast_name)"
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"

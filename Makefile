@@ -8,5 +8,6 @@ install:
 	install -Dm644 README.md $(DESTDIR)$(PREFIX)/share/doc/teiler/README.md
 	install -Dm644 config.example $(DESTDIR)/etc/teiler.conf
 	install -Dm755 teiler_helper $(DESTDIR)$(PREFIX)/bin/teiler_helper
-	install -Dm755 uploader/s3 $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/s3
-	install -Dm755 uploader/scp $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/scp
+	install -Dm644 uploader/s3 $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/s3
+	install -Dm644 uploader/scp $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/scp
+	install -Dm644 profiles/mp4-pulse $(DESTDIR)$(PREFIX)/share/doc/teiler/profiles/mp4-pulse
