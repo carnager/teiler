@@ -11,3 +11,4 @@ install:
 	install -Dm644 uploader/s3 $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/s3
 	install -Dm644 uploader/scp $(DESTDIR)$(PREFIX)/share/doc/teiler/uploader/scp
 	install -Dm644 profiles/mp4-pulse $(DESTDIR)$(PREFIX)/share/doc/teiler/profiles/mp4-pulse
+	install -Dm644 profiles/mp4-noaudio $(DESTDIR)$(PREFIX)/share/doc/teiler/profiles/mp4-noaudio
