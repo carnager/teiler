@@ -104,7 +104,7 @@ screencastMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -p "Screenshot > ")
+        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -p "Screencast > ")
         val=$?
         filename="${vid_filemask}"
         echo "${filename}" > /tmp/__teiler_cast_name
