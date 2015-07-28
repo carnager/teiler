@@ -1,6 +1,5 @@
 #!/bin/bash
-source /etc/teiler.conf
-source $HOME/.config/teiler/config
+export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
     mkdir $HOME/.config/teiler/uploader
@@ -14,6 +13,9 @@ if [[ ! -d $HOME/.config/teiler/profiles ]]; then
 fi
 
 source "$HOME/.config/teiler/profiles/${profile}"
+
+#source /etc/teiler.conf
+export ext=${ext}; source $HOME/.config/teiler/config
 
 mainMenu () {
     filename="$(cat /tmp/__teiler_cast_name)"
