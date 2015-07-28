@@ -1,4 +1,6 @@
 #!/bin/bash
+
+source /etc/teiler.conf
 export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
@@ -14,8 +16,7 @@ fi
 
 source "$HOME/.config/teiler/profiles/${profile}"
 
-#source /etc/teiler.conf
-export ext=${ext}; source $HOME/.config/teiler/config
+vid_filemask="${vid_filemask}.${ext}"
 
 mainMenu () {
     filename="$(cat /tmp/__teiler_cast_name)"

@@ -51,8 +51,11 @@ INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 namekey=teiler
 random_string=$(date +'%Y-%m-%d-%H%M%S')
 img_filemask=img-$random_string.png
-vid_filemask=vid-$random_string.${ext}
 paste_filemask=txt-$random_string.txt
+
+# video filemask is without extension, since it gets the extension
+# from set profile
+vid_filemask=vid-$random_string
 help_color="#0C73C2"
 slop_color="255,0,0"
 slop_border=2
