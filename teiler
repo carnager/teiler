@@ -26,7 +26,7 @@ source "$HOME/.config/teiler/profiles/${profile}"
 vid_filemask="${vid_filemask}.${ext}"
 
 mainMenu () {
-    filename="$(cat /tmp/__teiler_cast_name)"
+    filename="$(cat /tmp/__teiler_cast_name > /dev/null)"
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>Alt+1: Upload | Alt+2: No Upload</span>"
