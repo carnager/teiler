@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 source $HOME/.config/teiler/config
 if [[ "$img_ul" == "s3" || "$img_ul" == "scp" ]]; then
@@ -21,7 +21,10 @@ elif [[ $img_ul == "imgur" ]]; then
     imageUpload () { cd "${img_path}"; imgur "${1}"; x_clip; notify-send "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "s3" ]]; then
     imageUpload () { cd "${img_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
+else
+    echo "No image uploader set. check example config"
 fi
+
 
 # Videos
 if [[ $vid_ul == "fb" ]]; then
@@ -30,6 +33,8 @@ elif [[ $vid_ul == "scp" ]]; then
     videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}/${scp_path_vid}/${1}"; x_clip; notify-send "Video Uploaded" "${http_vid}/${1}"; }
 elif [[ $vid_ul == "s3" ]]; then
     videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
+else
+    echo "No video uploader set. Check example config"
 fi
 
 # text
@@ -39,6 +44,8 @@ elif [[ $paste_ul == "scp" ]]; then
     clipUpload () { cd "${paste_path}"; scp "$1" "${scp_host}/${scp_path_paste}/${1}"; x_clip; notify-send "Paste Uploaded" "${http_paste}/${1}"; }
 elif [[ $paste_ul == "ix" ]]; then
     clipUpload () { xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
+else
+    echo "No text uploader set. Check example config"
 fi
 
 x_clip () {
