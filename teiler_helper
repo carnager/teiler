@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 source $HOME/.config/teiler/config
 if [[ "$img_ul" == "s3" || "$img_ul" == "scp" ]]; then
@@ -34,7 +34,7 @@ elif [[ $vid_ul == "scp" ]]; then
 elif [[ $vid_ul == "s3" ]]; then
     videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
 else
-    videoUpload () {echo "No video uploader set. Check example config"}
+    videoUpload () { echo "No video uploader set. Check example config"; }
 fi
 
 # text
@@ -45,7 +45,7 @@ elif [[ $paste_ul == "scp" ]]; then
 elif [[ $paste_ul == "ix" ]]; then
     clipUpload () { xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip; x_clip; notify-send "Paste Uploaded" "$(xclip -o)"; }
 else
-    clipUpload () {echo "No text uploader set. Check example config"}
+    clipUpload () { echo "No text uploader set. Check example config"; }
 fi
 
 x_clip () {
