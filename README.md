@@ -1,10 +1,11 @@
 # teiler - a little screenshot tool written in bash
 
-teiler uses dmenu (or rofi) to draw a menu which lets you
+teiler uses or rofi to draw a menu which lets you
 choose between screenshots or screencasts.
 
 screenshots can be delayed and you can also draw areas to capture.
 teiler can also upload your files via scp, imgur or filebin (http://git.server-speed.net/users/flo/filebin/)
+In addition it supports ix (for pastes) and amazon s3.
 
 ## Dependencies:
 
@@ -21,4 +22,5 @@ teiler can also upload your files via scp, imgur or filebin (http://git.server-s
 * filebin (http://git.server-speed.net/users/flo/filebin)
 * openssh (http://www.openssh.com)
 * ix (http://ix.io)
+* s3 cli tools
 
