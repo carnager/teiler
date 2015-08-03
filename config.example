@@ -41,7 +41,7 @@ profile="mp4-pulse"
 # record indicator
 rec_text="capturing..."
 rec_w=100
-rec_font=PragmataPro-10
+rec_font=Sans Mono-10
 rec_nf=\#FFFFFF
 rec_sf=\#000000
 
