@@ -35,12 +35,14 @@ encoder=ffmpeg
 
 # Profile to use for screencasts
 # profiles are stored in $HOME/.config/teiler/profiles
-# teiler ships with 2 profiles atm. mp4-pulse and mp4-noaudio
+# teiler ships with 3 profiles atm. mp4-pulse, mp4-noaudio
+# and webm-noaudio
+# You can create your own profiles, but changes to existing profiles
+# will be overwritten on startup
 profile="mp4-pulse"
 
 # Normally you don't want to change anything here!
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
-INDICATOR_PIDFILE=/tmp/$USER-teiler-indicator.pid
 namekey=teiler
 random_string=$(date +'%Y-%m-%d-%H%M%S')
 img_filemask=img-$random_string.png
@@ -49,6 +51,7 @@ paste_filemask=txt-$random_string.txt
 # video filemask is without extension, since it gets the extension
 # from set profile
 vid_filemask=vid-$random_string
+
 help_color="#0C73C2"
 slop_color="255,0,0"
 slop_border=2
