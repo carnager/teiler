@@ -183,7 +183,7 @@ isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
     local pid
-    [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); pid2=$(cat "$INDICATOR_PIDFILE"); isRecording && kill "$pid" "$pid2"; rm "$SCREENCAST_PIDFILE"; rm "$INDICATOR_PIDFILE"; }
+    [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
     notify-send -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
 }
 
@@ -209,8 +209,8 @@ ffmpegCmd () {
         if [[ $res_now == $res ]]; then echo " "
         else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
@@ -218,13 +218,12 @@ ffmpegCmd () {
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
+        if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
+        else $encoder -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -t "1" "teiler" "Screencast started"
     fi
-    indicator
 }
 
 maimCmd () {
@@ -268,20 +267,9 @@ delayPrompt () {
     delay=$(echo -e "< Return $(seq 0 10)" | roficmd -p "Choose Delay > ")
 }
 
-indicator () {
-    echo "$rec_text" | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w "$rec_w" \
-    -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p &
-    echo "$!" > "$INDICATOR_PIDFILE"
-}
-
 killCountdown () { kill $DELAY_PID; }
 
 countdown () { for i in $(seq $[$1-1] -1 0); do for o in {9..0}; do echo $i.$o; sleep 0.1; done; done }
-
-progress () {
-    $(echo $gdbar_binary) -min $1 -max $2 -w 100 -h 8 | dzen2 -fn "$rec_font" -fg "$rec_nf" -bg "$rec_sf" -w 120 \
-    -x $(( ( $(xininfo -mon-width)-120)/2 )) -xs $(echo $(( $(xininfo -active-mon) + 1 ))) -p 1
-}
 
 helpCmd () {
     cat << EOF
