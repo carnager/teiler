@@ -24,7 +24,7 @@ vid_ul=fb
 paste_ul=ix
 
 # Screencast options
-# Resolution to change to when recording:
+# Resolution to change to when recording in fullscreen
 res=800x600
 
 # Ffmpeg settings
