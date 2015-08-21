@@ -12,7 +12,10 @@ choose between screenshots or screencasts.
 * delay of screenshots
 * screencasts of monitor/area
 * upload screenshots/screencasts - teiler can also upload your files via scp, imgur or filebin, ix (for pastes) and amazon s3.
-* History of Images and Videos with support for Viewing, Editing and Uploading
+* History of Images and Videos with support for
++ Viewing
++ Editing
++ Uploading
 * Commandline interface for direct access to all features. Useful for hotkeys
 
 ## Dependencies:
