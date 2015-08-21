@@ -3,6 +3,10 @@
 teiler uses or rofi to draw a menu which lets you
 choose between screenshots or screencasts.
 
+## Screenshot
+
+![teiker](screenshot.png "teiler in action")
+
 ## Features
 * screenshots fullscreen/monitor/area
 * delay of screenshots
@@ -13,10 +17,6 @@ choose between screenshots or screencasts.
 ** Editing
 ** Uploading
 * Commandline interface for direct access to all features. Useful for hotkeys
-
-## Screenshot
-
-![teiker](screenshot.png "teiler in action")
 
 ## Dependencies:
 
