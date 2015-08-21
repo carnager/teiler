@@ -3,9 +3,20 @@
 teiler uses or rofi to draw a menu which lets you
 choose between screenshots or screencasts.
 
-screenshots can be delayed and you can also draw areas to capture.
-teiler can also upload your files via scp, imgur or filebin (http://git.server-speed.net/users/flo/filebin/)
-In addition it supports ix (for pastes) and amazon s3.
+## Features
+* screenshots fullscreen/monitor/area
+* delay of screenshots
+* screencasts of monitor/area
+* upload screenshots/screencasts - teiler can also upload your files via scp, imgur or filebin, ix (for pastes) and amazon s3.
+* History of Images and Videos with support for
+** Viewing
+** Editing
+** Uploading
+* Commandline interface for direct access to all features. Useful for hotkeys
+
+## Screenshot
+
+![teiker](screenshot.png "teiler in action")
 
 ## Dependencies:
 
