@@ -89,13 +89,13 @@ Alt+Shift+1: Delay+Upload | Alt+Shift+2: Delay+No Upload</span>"
 
     elif [[ $menu == "3 Area" ]]; then
         if [[ $val -eq 10 ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 11 ]]; then maimCmd nodelay area "${filename}" && exit
+        elif [[ $val -eq 11 ]]; then maimCmd nodelay area "${filename}" && notify-send "teiler" "Screenshot saved" && exit
         elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && notify-send -t 1 "teiler" "Screenshot saved" && exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul == "1" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            elif [[ $always_ul == "0" ]]; then maimCmd nodelay area "${filename}"
+            elif [[ $always_ul == "0" ]]; then maimCmd nodelay area "${filename}" && notify-send "teiler" "Screenshot saved"
             fi
         fi
     elif [[ $menu == "< Return to Main Menu" ]]; then
@@ -115,11 +115,11 @@ screencastMenu () {
             exit
         fi
         if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
-        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
+        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send "teiler" "Screencast saved"; exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
-            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
+            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send "teiler" "Screencast saved"; exit
             fi
         fi
 
