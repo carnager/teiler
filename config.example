@@ -41,6 +41,18 @@ encoder=ffmpeg
 # will be overwritten on startup
 profile="mp4-pulse"
 
+# hotkeys
+upload="Alt+1"
+noupload="Alt+2"
+delayup="Alt+3"
+delaysave="Alt+4"
+
+view="Alt+1"
+historyupload="Alt+2"
+edit="Alt+3"
+clip="Alt+4"
+
+
 # Normally you don't want to change anything here!
 SCREENCAST_PIDFILE=/tmp/$USER-teiler-screencast.pid
 namekey=teiler
