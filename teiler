@@ -232,10 +232,10 @@ ffmpegCmd () {
 }
 
 maimCmd () {
-    if [[ $showcursor == "yes" ]]; then
-        cursor="--showcursor"
-    elif [[ $hidecursor == "no" ]]; then
+    if [[ $hidecursor == "yes" ]]; then
         cursor=""
+    elif [[ $hidecursor == "no" ]]; then
+        cursor="--showcursor"
     fi
     if [[ $1 == "delay" ]]; then
         if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
