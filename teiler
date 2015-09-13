@@ -232,14 +232,19 @@ ffmpegCmd () {
 }
 
 maimCmd () {
+    if [[ $showcursor == "yes" ]]; then
+        cursor="--showcursor"
+    elif [[ $hidecursor == "no" ]]; then
+        cursor=""
+    fi
     if [[ $1 == "delay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim -d ${delay} "${img_path}/${3}"; fi
+        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
+        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
+        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor -d ${delay} "${img_path}/${3}"; fi
     elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim "${img_path}/${3}"; fi
+        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
+        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
+        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor "${img_path}/${3}"; fi
     fi
 }
 
