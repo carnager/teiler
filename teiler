@@ -40,8 +40,8 @@ mainMenu () {
     fi
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
-        HELP="<span color='$help_color'>${upload}: Upload | ${noupload}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${noupload}" -mesg "${HELP}" -p "teiler > ")
+        HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
         val=$?
         if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
         elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
@@ -63,23 +63,21 @@ mainMenu () {
 }
 
 screenshotMenu () {
-        help_text=$(echo -e "${upload}: Upload - ${noupload}: No Upload\n${delayup}: Delay+Upload - ${delaysave}: Delay+No Upload" | column -s '-' -t)
+        help_text=$(echo -e "Upload: ${upload} - Save: ${save} - Delay+Upload: ${delayup} - Delay+Save: ${delaysave}" | column -s '-' -t)
     line1=$(echo "${help_text}" | head -1)
-    line2=$(echo "${help_text}" | tail -1)
-HELP="<span color='$help_color'>${line1}
-${line2}</span>"
+HELP="<span color='$help_color'>${line1}</span>"
 
     if [[ -z $delay ]]; then delay="0"; fi
 
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | roficmd -kb-custom-1 "${upload}" -kb-custom-2 "${noupload}" -kb-custom-3 "${delayup}" -kb-custom-4 "${delaysave}" -mesg "${HELP}" -p "Screenshot > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Fullscreen (All Monitors)\n3 Area" | roficmd -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -kb-custom-3 "${delayup}" -kb-custom-4 "${delaysave}" -mesg "${HELP}" -p "Screenshot > ")
     val=$?
     export filename="${img_filemask}"
     if [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
     elif [[ $menu == "1 Fullscreen" ]]; then
         if [[ $val -eq 10 ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
         elif [[ $val -eq 11 ]]; then maimCmd nodelay fullscreen "${filename}" && exit
-        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreen "${filename}" && exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul == "1" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -90,8 +88,8 @@ ${line2}</span>"
     elif [[ $menu == "2 Fullscreen (All Monitors)" ]]; then
         if [[ $val -eq 10 ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
         elif [[ $val -eq 11 ]]; then maimCmd nodelay fullscreenAll "${filename}" && exit
-        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay fullscreenAll "${filename}" && exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul == "1" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -101,13 +99,13 @@ ${line2}</span>"
 
     elif [[ $menu == "3 Area" ]]; then
         if [[ $val -eq 10 ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 11 ]]; then maimCmd nodelay area "${filename}" && notify-send "teiler" "Screenshot saved" && exit
-        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && notify-send -t 1 "teiler" "Screenshot saved" && exit
+        elif [[ $val -eq 11 ]]; then maimCmd nodelay area "${filename}" && notify-send -a "teiler" "teiler" "Screenshot saved" && exit
+        elif [[ $val -eq 12 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+        elif [[ $val -eq 13 ]]; then delayPrompt && notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds" && maimCmd delay area "${filename}" && notify-send -a "teiler" -t 1 "teiler" "Screenshot saved" && exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul == "1" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            elif [[ $always_ul == "0" ]]; then maimCmd nodelay area "${filename}" && notify-send "teiler" "Screenshot saved"
+            elif [[ $always_ul == "0" ]]; then maimCmd nodelay area "${filename}" && notify-send -a "teiler" "teiler" "Screenshot saved"
             fi
         fi
     elif [[ $menu == "< Return to Main Menu" ]]; then
@@ -120,19 +118,19 @@ screencastMenu () {
     filename="$(cat /tmp/__teiler_cast_name)"
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
-        HELP="<span color='$help_color'>${upload}: Upload | ${noupload}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${noupload}" -mesg "${HELP}" -p "teiler > ")
+        HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
         val=$?
 
         if [[ "$menu" == "< Exit" ]]; then
             exit
         fi
         if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
-        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send "teiler" "Screencast saved"; exit
+        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send -a "teiler" "teiler" "Screencast saved"; exit
         elif [[ $val -eq 1 ]]; then exit
         elif [[ $val -eq 0 ]]; then
             if [[ $always_ul ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
-            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send "teiler" "Screencast saved"; exit
+            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send -a "teiler" "teiler" "Screencast saved"; exit
             fi
         fi
 
@@ -198,7 +196,7 @@ isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 stopRecording () {
     local pid
     [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
-    notify-send -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
+    notify-send -a "teiler" -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
 }
 
 ffmpegCmd () {
@@ -227,7 +225,7 @@ ffmpegCmd () {
         else $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
-        notify-send -t "1" "teiler" "Screencast started"
+        notify-send -a "teiler" -t "1" "teiler" "Screencast started"
     elif [[ $1 == "area" ]]; then
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
         ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); eval `slop -b "$slop_border" -c "$slop_color"`
@@ -236,7 +234,7 @@ ffmpegCmd () {
         else $encoder -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
         fi
         echo "$!" > "$SCREENCAST_PIDFILE"
-        notify-send -t "1" "teiler" "Screencast started"
+        notify-send -a "teiler" -t "1" "teiler" "Screencast started"
     fi
 }
 
