@@ -1,6 +1,15 @@
 #!/bin/bash
 
 source /etc/teiler.conf
+
+if [[ ! -d $HOME/.config/teiler ]]; then
+    mkdir $HOME/.config/teiler
+fi
+
+if [[ ! -f $HOME/.config/teiler/config ]]; then
+    cp /etc/teiler.conf $HOME/.config/teiler/config
+fi
+
 export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
