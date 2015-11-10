@@ -80,6 +80,9 @@ screenshotMenu () {
         mode="area"
         desc="Area"
     fi
+    if [[ $menu == "< Return to Main Menu" ]]; then
+        mainMenu
+    fi
     if [[ $rofi_exit -eq 10 ]]; then
         delayPrompt
         if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -103,9 +106,6 @@ screenshotMenu () {
             else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
             fi
         fi
-    fi
-    if [[ $menu == "< Return to Main Menu" ]]; then
-        mainMenu
     fi
 }
 
