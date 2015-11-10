@@ -90,6 +90,8 @@ screenshotMenu () {
         if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
         else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
         fi
+    elif [[ $rofi_exit -eq 1 ]]; then
+        exit
     elif [[ $rofi_exit -eq 0 ]]; then
         delayPrompt
         if [[ $always_ul == "1" ]]; then
