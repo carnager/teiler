@@ -55,7 +55,7 @@ mainMenu () {
     elif [[ -z "$STATE_RECORDING" ]]; then
         menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -p "teiler > ")
         val=$?
-        if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotDo;
+        if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
         elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
         elif [[ $menu == "3 [ History ]>" ]]; then uploadMenu;
         elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
@@ -64,18 +64,6 @@ mainMenu () {
 }
 
 screenshotMenu () {
-    if [[ -n $1 ]]; then
-        if [[ $1 == "area" ]]; then
-            mode="area" desc="Area" screenshotDo
-        elif [[ $1 == "monitor" ]]; then
-            desc="Monitor" mode="fullscreen" screenshotDo
-        elif [[ $1 == "fullscreen" ]]; then
-            desc="Fullscreen" mode="fullscreenAll" screenshotDo
-        fi
-    fi
-}
-
-screenshotDo () {
     help_text=$(echo -e "Upload: ${upload} - Save: ${save} - Default: Enter" | column -s '-' -t)
     line1=$(echo "${help_text}" | head -1)
     HELP="<span color='$help_color'>${line1}</span>"
@@ -297,8 +285,8 @@ helpCmd () {
     cat << EOF
 teiler - a rofi-driven screen{shot,cast} utility
 (C) Rasmus Steinke <rasi@xssn.at>
---screenshots [fullscreen,monitor,area]   open screenshots menu
---screencasts                             open screencasts menu
+--screenshot                             open screenshots menu
+--screencast                             open screencasts menu
 --history {images,video}                  open history menus
 --paste                                   upload text from clipboard
 --togglecast                              start/stop screencast
@@ -316,7 +304,7 @@ else
     }
 fi
 
-if [[ $1 == "--screenshot" ]]; then screenshotMenu $2
+if [[ $1 == "--screenshot" ]]; then screenshotMenu
 elif [[ $1 == "--screencast" ]]; then screencastMenu
 elif [[ $1 == "--paste" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
 elif [[ $1 == "--togglecast" ]]; then askPrompt
