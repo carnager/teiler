@@ -285,8 +285,8 @@ helpCmd () {
     cat << EOF
 teiler - a rofi-driven screen{shot,cast} utility
 (C) Rasmus Steinke <rasi@xssn.at>
---screenshot                             open screenshots menu
---screencast                             open screencasts menu
+--screenshot                              open screenshots menu
+--screencast                              open screencasts menu
 --history {images,video}                  open history menus
 --paste                                   upload text from clipboard
 --togglecast                              start/stop screencast
