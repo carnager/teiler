@@ -277,6 +277,9 @@ clipCmd () {
 
 delayPrompt () {
     delay=$(echo -e "$(seq 0 10)" | roficmd -p "Choose Delay > ")
+    if [[ $delay == "" ]]; then
+        exit
+    fi
 }
 
 killCountdown () { kill $DELAY_PID; }
