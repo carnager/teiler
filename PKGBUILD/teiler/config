@@ -1,8 +1,0 @@
-[core]
-	repositoryformatversion = 0
-	filemode = true
-	bare = true
-[remote "origin"]
-	url = http://git.53280.de/teiler
-	fetch = +refs/*:refs/*
-	mirror = true
