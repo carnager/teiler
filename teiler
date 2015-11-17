@@ -296,6 +296,7 @@ teiler - a rofi-driven screen{shot,cast} utility
 --paste                                   upload text from clipboard
 --togglecast                              start/stop screencast
 --quick {area,fullscreen,all}             quickly create screenshot and upload
+--quickcopy {area,fullscreen,all}         quickly create screenshot and copy
 EOF
 }
 
@@ -322,6 +323,12 @@ elif [[ $1 == "--quick" ]]; then
     if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+    fi
+elif [[ $1 == "--quickcopy" ]]; then
+    filename="${img_filemask}"
+    if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
     fi
 elif [[ $1 == "--help" ]]; then
     helpCmd
