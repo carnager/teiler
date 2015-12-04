@@ -167,7 +167,7 @@ imageMenu () {
         export entry="${imagemenu}"
         imageMenu
     elif [[ $val -eq 13 ]]; then
-        copyq
+        copyq &
         copyq write image/png - < "${imagemenu}"; copyq \select 0
     elif [[ $val -eq 1 ]]; then exit;
     fi
@@ -326,9 +326,9 @@ elif [[ $1 == "--quick" ]]; then
     fi
 elif [[ $1 == "--quickcopy" ]]; then
     filename="${img_filemask}"
-    if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq && copyq write image/png - < "${filename}"; copyq select 0
+    if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq& && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq& && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq& && copyq write image/png - < "${filename}"; copyq select 0
     fi
 elif [[ $1 == "--help" ]]; then
     helpCmd
