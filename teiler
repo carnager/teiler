@@ -271,7 +271,6 @@ askPrompt () {
 }
 
 clipCmd () {
-    x_clip
     (xclip -o) > "${paste_path}/${paste_filemask}"
 }
 
