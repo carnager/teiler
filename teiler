@@ -281,10 +281,6 @@ delayPrompt () {
     fi
 }
 
-killCountdown () { kill $DELAY_PID; }
-
-countdown () { for i in $(seq $[$1-1] -1 0); do for o in {9..0}; do echo $i.$o; sleep 0.1; done; done }
-
 helpCmd () {
     cat << EOF
 teiler - a rofi-driven screen{shot,cast} utility
