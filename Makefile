@@ -1,5 +1,5 @@
 ifndef PREFIX
-  PREFIX=/usr/local
+  PREFIX=/usr
 endif
 
 install:
