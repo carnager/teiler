@@ -20,7 +20,7 @@ elif [[ $img_ul == "scp" ]]; then
 elif [[ $img_ul == "imgur" ]]; then
     imageUpload () { cd "${img_path}"; imgur "${1}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "s3" ]]; then
-    imageUpload () { cd "${img_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send -a "teiler" "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
+    imageUpload () { cd "${img_path}"; s3cmd --no-progress put "${1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send -a "teiler" "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
 else
     imageUpload () { echo "No image uploader set. check example config"; }
 fi
