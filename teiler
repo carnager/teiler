@@ -14,19 +14,19 @@ export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
     mkdir $HOME/.config/teiler/uploader
-    cp /usr/share/doc/teiler/uploader/* $HOME/.config/teiler/uploader
+    cp /etc/teiler/uploader/* $HOME/.config/teiler/uploader
 fi
 
 
 if [[ ! -d $HOME/.config/teiler/profiles ]]; then
     mkdir $HOME/.config/teiler/profiles
 fi
-cd /usr/share/doc/teiler/profiles
+cd /etc/teiler/profiles
 for i in *; do
     if [[ ! -f $HOME/.config/teiler/profiles/"$i" ]]; then
-        cp /usr/share/doc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
+        cp /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
     else
-        cmp "$i" $HOME/.config/teiler/profiles/"$i" || cp -f /usr/share/doc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
+        cmp "$i" $HOME/.config/teiler/profiles/"$i" || cp -f /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
     fi
 done
 
