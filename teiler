@@ -42,21 +42,17 @@ mainMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -p "teiler > ")
         val=$?
-        if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
-        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; exit
-        elif [[ $val -eq 1 ]]; then exit;
-        elif [[ $val -eq 0 ]]; then
-            if [[ $always_ul == "1" ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
-            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; fi
+        if [[ $val -eq 1 ]]; then exit;
+        elif [[ $val -eq 0 ]]; then askPrompt;
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
         menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -p "teiler > ")
         val=$?
         if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
-        elif [[ $menu == "2 [ Screencasts ]>" ]]; then screencastMenu;
+        elif [[ $menu == "2 [ Screencasts ]>" ]]; then askPrompt;
         elif [[ $menu == "3 [ History ]>" ]]; then uploadMenu;
         elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
         elif [[ $val -eq 1 ]]; then exit; fi
