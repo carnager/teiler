@@ -30,7 +30,7 @@ fi
 if [[ $vid_ul == "fb" ]]; then
     videoUpload () { cd "${vid_path}"; fb "${1}"; x_clip; notify-send -a "teiler" "Video Uploaded" "$(xclip -o)"; }
 elif [[ $vid_ul == "scp" ]]; then
-    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}:${scp_path_vid}/${1}"; x_clip; notify-send -a "teiler" "Video Uploaded" "${http_vid}/${1}"; }
+    videoUpload () { cd "${vid_path}"; scp "$1" "${scp_host}:${scp_path_vid}/${1}"; echo -n "${http_vid}/${1}" | xclip; x_clip; notify-send -a "teiler" "Video Uploaded" "${http_vid}/${1}"; }
 elif [[ $vid_ul == "s3" ]]; then
     videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send -a "teiler" "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
 else
