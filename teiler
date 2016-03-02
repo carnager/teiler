@@ -186,8 +186,9 @@ isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
     local pid
+    res=$(cat /tmp/teiler_res)
     [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
-    notify-send -a "teiler" -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --auto; return 0
+    notify-send -a "teiler" -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --mode "$res"; rm -f /tmp/teiler_res; return 0
 }
 
 ffmpegCmd () {
@@ -209,6 +210,7 @@ ffmpegCmd () {
         ffmpeg_display=$(echo $DISPLAY)
         ffmpeg_offset="$(xininfo -mon-x),$(xininfo -mon-y)"
         res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
+        echo "$res_now" > /tmp/teiler_res
         if [[ $res_now == $res ]]; then echo " "
         else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
