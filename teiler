@@ -188,7 +188,12 @@ stopRecording () {
     local pid
     res=$(cat /tmp/teiler_res)
     [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
-    notify-send -a "teiler" -t "1" "teiler" "Stopped recording"; output=$(xininfo -name); xrandr --output "$output" --mode "$res"; rm -f /tmp/teiler_res; return 0
+    notify-send -a "teiler" -t "1" "teiler" "Stopped recording"
+    if [[ -z $rate ]]; then
+        output=$(xininfo -name); xrandr --output "$output" --mode "$res"; rm -f /tmp/teiler_res; return 0
+    else
+        output=$(xininfo -name); xrandr --output "$output" --mode "$res" --rate "${rate}"; rm -f /tmp/teiler_res; return 0
+    fi
 }
 
 slopCmd () {
