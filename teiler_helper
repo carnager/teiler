@@ -18,7 +18,7 @@ if [[ $img_ul == "fb" ]]; then
 elif [[ $img_ul == "scp" ]]; then
     imageUpload () { scpUpload "Image" "${img_path}" "$1" "${scp_host}" "${scp_path_img}" "${http_img}"; }
 elif [[ $img_ul == "imgur" ]]; then
-    imageUpload () { cd "${img_path}"; imgur "${1}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { cd "${img_path}"; imgurbash2 "${1}"; xclip -o -selection clipboard | xclip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "s3" ]]; then
     imageUpload () { cd "${img_path}"; s3cmd --no-progress put "${1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send -a "teiler" "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
 else
