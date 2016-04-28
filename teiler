@@ -256,6 +256,7 @@ maimCmd () {
         elif [[ $2 == "fullscreenAll" ]]; then maim $cursor -d ${delay} "${img_path}/${3}"; fi
     elif [[ $1 == "nodelay" ]]; then
         if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
+        elif [[ $2 == "active" ]]; then maim -i $(xdotool getactivewindow) "${img_path}/${3}";
         elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
         elif [[ $2 == "fullscreenAll" ]]; then maim $cursor "${img_path}/${3}"; fi
     fi
@@ -301,7 +302,7 @@ teiler - a rofi-driven screen{shot,cast} utility
 --history {images,video}                  open history menus
 --paste                                   upload text from clipboard
 --togglecast                              start/stop screencast
---quick {area,fullscreen,all}             quickly create screenshot and upload
+--quick {area,fullscreen,all,active       quickly create screenshot and upload
 --quickcopy {area,fullscreen,all}         quickly create screenshot and copy
 EOF
 }
@@ -327,6 +328,7 @@ elif [[ $1 == "--history" ]]; then
 elif [[ $1 == "--quick" ]]; then
     filename="${img_filemask}"
     if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+    elif [[ $2 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     fi
