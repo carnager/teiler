@@ -14,7 +14,14 @@ fi
 # define uploaders
 # images
 if [[ $img_ul == "fb" ]]; then
-    imageUpload () { cd "${img_path}"; fb -m ${@}; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { 
+        if [[ $(echo "$files" | wc -w) -gt 1 ]]; then
+            cd "${img_path}"; fb -m ${@}; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"
+        else
+            cd "${img_path}"; fb ${@}; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)";
+        fi
+    }
+
 elif [[ $img_ul == "scp" ]]; then
     imageUpload () { for x in $files; do scpUpload "Image" "${img_path}" "$x" "${scp_host}" "${scp_path_img}" "${http_img}"; done; }
 elif [[ $img_ul == "imgur" ]]; then
