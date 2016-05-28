@@ -14,11 +14,11 @@ fi
 # define uploaders
 # images
 if [[ $img_ul == "fb" ]]; then
-    imageUpload () { cd "${img_path}"; fb "${1}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { cd "${img_path}"; fb -m ${@}; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
 elif [[ $img_ul == "scp" ]]; then
-    imageUpload () { scpUpload "Image" "${img_path}" "$1" "${scp_host}" "${scp_path_img}" "${http_img}"; }
+    imageUpload () { for x in $files; do scpUpload "Image" "${img_path}" "$x" "${scp_host}" "${scp_path_img}" "${http_img}"; done; }
 elif [[ $img_ul == "imgur" ]]; then
-    imageUpload () { cd "${img_path}"; imgurbash2 "${1}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; }
+    imageUpload () { cd "${img_path}"; for x in $files; do imgurbash2 "${x}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; done; }
 elif [[ $img_ul == "s3" ]]; then
     imageUpload () { cd "${img_path}"; s3cmd --no-progress put "${1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send -a "teiler" "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
 else
@@ -75,8 +75,9 @@ x_clip () {
 }
 
 if [[ $1 == "--upload" ]]; then
-    if [[ $2 == "image" ]]; then imageUpload "$3"
-    elif [[ $2 == "video" ]]; then videoUpload "$3"
-    elif [[ $2 == "text" ]]; then clipUpload "$3"
+    files=$(echo "$@" | cut -d ' ' -f3-)
+    if [[ $2 == "image" ]]; then imageUpload "${files}"
+    elif [[ $2 == "video" ]]; then videoUpload "${files}"
+    elif [[ $2 == "text" ]]; then clipUpload "${files}"
     fi
 fi

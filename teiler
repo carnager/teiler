@@ -155,7 +155,7 @@ imageMenu () {
 
     imagemenu2="${imagemenu%.*}"
     if [[ "${imagemenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
-    if [[ $val -eq 11 ]]; then teiler_helper --upload image "${imagemenu2}.png"; export entry="${imagemenu}"; imageMenu
+    if [[ $val -eq 11 ]]; then teiler_helper --upload image $(echo -n "${imagemenu}"); export entry="${imagemenu}"; imageMenu
     elif [[ $val -eq 10 || $val -eq 0 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
     elif [[ $val -eq 12 ]]; then
         cp "${imagemenu}" "${imagemenu2}-mod.png"
