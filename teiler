@@ -3,31 +3,32 @@
 source /etc/teiler/teiler.conf
 
 if [[ ! -d $HOME/.config/teiler ]]; then
-    mkdir $HOME/.config/teiler
+  mkdir $HOME/.config/teiler
 fi
 
 if [[ ! -f $HOME/.config/teiler/config ]]; then
-    cp /etc/teiler/teiler.conf $HOME/.config/teiler/config
+  cp /etc/teiler/teiler.conf $HOME/.config/teiler/config
 fi
 
 export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
-    mkdir $HOME/.config/teiler/uploader
-    cp /etc/teiler/uploader/* $HOME/.config/teiler/uploader
+  mkdir $HOME/.config/teiler/uploader
+  cp /etc/teiler/uploader/* $HOME/.config/teiler/uploader
 fi
 
 
 if [[ ! -d $HOME/.config/teiler/profiles ]]; then
-    mkdir $HOME/.config/teiler/profiles
+  mkdir $HOME/.config/teiler/profiles
 fi
 cd /etc/teiler/profiles
 for i in *; do
-    if [[ ! -f $HOME/.config/teiler/profiles/"$i" ]]; then
-        cp /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
-    else
-        cmp "$i" $HOME/.config/teiler/profiles/"$i" || cp -f /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
-    fi
+  if [[ ! -f $HOME/.config/teiler/profiles/"$i" ]]; then
+    cp /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
+  else
+    cmp "$i" $HOME/.config/teiler/profiles/"$i" || \
+      cp -f /etc/teiler/profiles/"$i" $HOME/.config/teiler/profiles
+  fi
 done
 
 source "$HOME/.config/teiler/profiles/${profile}"
@@ -36,265 +37,482 @@ vid_filemask="${vid_filemask}.${ext}"
 noupload=$save
 
 mainMenu () {
-    if [[ -f /tmp/__teiler_cast_name ]]; then
-        filename="$(cat /tmp/__teiler_cast_name)"
-    fi
-    isRecording && STATE_RECORDING="2 Stop Recording Screencast"
-    if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
-        HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -p "teiler > ")
-        val=$?
-        if [[ $val -eq 1 ]]; then exit;
-        elif [[ $val -eq 0 ]]; then askPrompt;
-        fi
+  if [[ -f /tmp/__teiler_cast_name ]]; then
+    filename="$(cat /tmp/__teiler_cast_name)"
+  fi
+  isRecording && STATE_RECORDING="2 Stop Recording Screencast"
+  if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
+    HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
+    menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -p "teiler > ")
+    val=$?
 
-    elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -p "teiler > ")
-        val=$?
-        if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
-        elif [[ $menu == "2 [ Screencasts ]>" ]]; then askPrompt;
-        elif [[ $menu == "3 [ History ]>" ]]; then uploadMenu;
-        elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
-        elif [[ $val -eq 1 ]]; then exit; fi
+    if [[ $val -eq 1 ]]; then
+      exit;
+    elif [[ $val -eq 0 ]]; then
+      askPrompt;
     fi
+
+  elif [[ -z "$STATE_RECORDING" ]]; then
+    menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" \
+      | roficmd \
+      -p "teiler > ")
+    val=$?
+    if [[ $menu == "1 [ Screenshots ]>" ]]; then
+      screenshotMenu;
+    elif [[ $menu == "2 [ Screencasts ]>" ]]; then
+      askPrompt;
+    elif [[ $menu == "3 [ History ]>" ]]; then
+      uploadMenu;
+    elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then
+      export filename="${paste_filemask}";
+      clipCmd;
+      teiler_helper --upload text "${filename}";
+    elif [[ $val -eq 1 ]]; then
+      exit;
+    fi
+  fi
 }
 
 screenshotMenu () {
-    help_text=$(echo -e "Upload: ${upload} - Save: ${save} - Default: Enter" | column -s '-' -t)
-    line1=$(echo "${help_text}" | head -1)
-    HELP="<span color='$help_color'>${line1}</span>"
-    export filename="${img_filemask}"
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | roficmd -mesg "${HELP}" -p "Screenshot > ")
-    rofi_exit=$?
-    if [[ $menu == "1 Monitor" ]]; then
-        mode="fullscreen"
-        desc="Monitor"
-    elif [[ $menu == "2 Fullscreen" ]]; then
-        mode="fullscreenAll"
-        desc="Fullscreen"
-    elif [[ $menu == "3 Area" ]]; then
-        mode="area"
-        desc="Area"
+  help_text=$(echo -e "Upload: ${upload} - Save: ${save} - Default: Enter" | column -s '-' -t)
+  line1=$(echo "${help_text}" | head -1)
+  HELP="<span color='$help_color'>${line1}</span>"
+  export filename="${img_filemask}"
+  menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" \
+    | roficmd \
+    -mesg "${HELP}" \
+    -p "Screenshot > ")
+  rofi_exit=$?
+  if [[ $menu == "1 Monitor" ]]; then
+    mode="fullscreen"
+    desc="Monitor"
+  elif [[ $menu == "2 Fullscreen" ]]; then
+    mode="fullscreenAll"
+    desc="Fullscreen"
+  elif [[ $menu == "3 Area" ]]; then
+    mode="area"
+    desc="Area"
+  fi
+
+  if [[ $menu == "< Return to Main Menu" ]]; then
+    mainMenu
+  fi
+
+  if [[ $rofi_exit -eq 10 ]]; then
+    delayPrompt
+    if [[ $delay == "0" ]]; then
+      maimCmd nodelay $mode "${filename}";
+      cd "${img_path}";
+      teiler_helper --upload image "${filename}";
+      exit
+    else
+      notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds";
+      maimCmd delay $mode "${filename}";
+      cd "${img_path}";
+      teiler_helper --upload image "${filename}";
+      exit
     fi
-    if [[ $menu == "< Return to Main Menu" ]]; then
-        mainMenu
+  elif [[ $rofi_exit -eq 11 ]]; then
+    delayPrompt
+    if [[ $delay == "0" ]]; then
+      maimCmd nodelay $mode "${filename}";
+      exit
+    else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds";
+      maimCmd delay $mode "${filename}" 
     fi
-    if [[ $rofi_exit -eq 10 ]]; then
-        delayPrompt
-        if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-        fi
-    elif [[ $rofi_exit -eq 11 ]]; then
-        delayPrompt
-        if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
-        else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
-        fi
-    elif [[ $rofi_exit -eq 1 ]]; then
+  elif [[ $rofi_exit -eq 1 ]]; then
+    exit
+  elif [[ $rofi_exit -eq 0 ]]; then
+    delayPrompt
+    if [[ $always_ul == "1" ]]; then
+      if [[ $delay == "0" ]]; then
+        maimCmd nodelay $mode "${filename}";
+        cd "${img_path}";
+        teiler_helper --upload image "${filename}";
         exit
-    elif [[ $rofi_exit -eq 0 ]]; then
-        delayPrompt
-        if [[ $always_ul == "1" ]]; then
-            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            fi
-        elif [[ $always_ul == "0" ]]; then
-            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
-            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
-            fi
-        fi
+      else
+        notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds";
+        maimCmd delay $mode "${filename}";
+        cd "${img_path}";
+        teiler_helper --upload image "${filename}";
+        exit
+      fi
+    elif [[ $always_ul == "0" ]]; then
+      if [[ $delay == "0" ]]; then
+        maimCmd nodelay $mode "${filename}";
+        exit
+      else
+        notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds";
+        maimCmd delay $mode "${filename}" 
+      fi
     fi
+  fi
 }
 
 screencastMenu () {
-    filename="$(cat /tmp/__teiler_cast_name)"
-    isRecording && STATE_RECORDING="2 Stop Recording Screencast"
-    if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
-        HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
-        val=$?
+  filename="$(cat /tmp/__teiler_cast_name)"
+  isRecording && STATE_RECORDING="2 Stop Recording Screencast"
+  if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
+    HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
+    menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" \
+      | roficmd \
+      -u 2 \
+      -kb-custom-1 "${upload}" \
+      -kb-custom-2 "${save}" \
+      -mesg "${HELP}" \
+      -p "teiler > ")
+    val=$?
 
-        if [[ "$menu" == "< Exit" ]]; then
-            exit
-        fi
-        if [[ $val -eq 10 ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
-        elif [[ $val -eq 11 ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send -a "teiler" "teiler" "Screencast saved"; exit
-        elif [[ $val -eq 1 ]]; then exit
-        elif [[ $val -eq 0 ]]; then
-            if [[ $always_ul ]]; then isRecording && stopRecording && sleep 2 && cd "${vid_path}" && teiler_helper --upload video "${filename}";
-            elif [[ $always_ul == "0" ]]; then isRecording && stopRecording; rm -f /tmp/__teiler_cast_name; notify-send -a "teiler" "teiler" "Screencast saved"; exit
-            fi
-        fi
-
-    elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -p "Screencast > ")
-        val=$?
-        filename="${vid_filemask}"
-        echo "${filename}" > /tmp/__teiler_cast_name
-
-        if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
-        elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
-        elif [[ $menu == "" ]]; then exit;
-        elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu; fi
+    if [[ "$menu" == "< Exit" ]]; then
+      exit
     fi
+
+    if [[ $val -eq 10 ]]; then
+      isRecording;
+      stopRecording;
+      sleep 2;
+      cd "${vid_path}";
+      teiler_helper --upload video "${filename}";
+      rm -f /tmp/__teiler_cast_name;
+    elif [[ $val -eq 11 ]]; then
+      isRecording;
+      stopRecording;
+      rm -f /tmp/__teiler_cast_name;
+      notify-send -a "teiler" "teiler" "Screencast saved";
+      exit
+    elif [[ $val -eq 1 ]]; then
+      exit
+    elif [[ $val -eq 0 ]]; then
+      if [[ $always_ul ]]; then
+        isRecording;
+        stopRecording;
+        sleep 2;
+        cd "${vid_path}";
+        teiler_helper --upload video "${filename}";
+      elif [[ $always_ul == "0" ]]; then
+        isRecording;
+        stopRecording;
+        rm -f /tmp/__teiler_cast_name;
+        notify-send -a "teiler" "teiler" "Screencast saved";
+        exit
+      fi
+    fi
+
+  elif [[ -z "$STATE_RECORDING" ]]; then
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" \
+      | roficmd \
+      -p "Screencast > ")
+    val=$?
+    filename="${vid_filemask}"
+    echo "${filename}" > /tmp/__teiler_cast_name
+
+    if [[ $menu == "1 Fullscreen" ]]; then
+      isRecording;
+      stopRecording;
+      sleep 2 || ffmpegCmd fullscreen;
+    elif [[ $menu == "2 Area" ]]; then
+      isRecording;
+      stopRecording;
+      sleep 2 || ffmpegCmd area;
+    elif [[ $menu == "" ]]; then
+      exit;
+    elif [[ $menu == "< Return to Main Menu" ]]; then
+      mainMenu;
+    fi
+  fi
 }
 
 uploadMenu () {
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | roficmd -p "Uploads > ")
-    if [[ $menu == "1 Images" ]]; then imageMenu;
-    elif [[ $menu == "2 Videos" ]]; then videoMenu;
-    elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
-    elif [[ $menu == "" ]]; then exit
-    fi
+  menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | roficmd -p "Uploads > ")
+  if [[ $menu == "1 Images" ]]; then
+    imageMenu;
+  elif [[ $menu == "2 Videos" ]]; then
+    videoMenu;
+  elif [[ $menu == "< Return to Main Menu" ]]; then
+    mainMenu;
+  elif [[ $menu == "" ]]; then
+    exit
+  fi
 }
 
 imageMenu () {
-    cd "${img_path}"
-    HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | roficmd -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
-    val=$?
+  cd "${img_path}"
+  HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
+  imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" \
+    | roficmd \
+    -select "${entry}" \
+    -kb-custom-1 "${view}" \
+    -kb-custom-2 "${historyupload}" \
+    -kb-custom-3 "${edit}" \
+    -kb-custom-4 "${clip}" \
+    -mesg "${HELP}" \
+    -p "Choose > ")
+  val=$?
+  imagemenu2="${imagemenu%.*}"
+  if [[ "${imagemenu}" == "< Return to Upload Menu" ]]; then
+    uploadMenu;
+  fi
 
-    imagemenu2="${imagemenu%.*}"
-    if [[ "${imagemenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
-    if [[ $val -eq 11 ]]; then teiler_helper --upload image $(echo -n "${imagemenu}"); export entry="${imagemenu}"; imageMenu
-    elif [[ $val -eq 10 || $val -eq 0 ]]; then $viewer "${imagemenu}"; export entry="${imagemenu}"; imageMenu
-    elif [[ $val -eq 12 ]]; then
-        cp "${imagemenu}" "${imagemenu2}-mod.png"
-        $editor "${imagemenu2}-mod.png"
-        export entry="${imagemenu}"
-        imageMenu
-    elif [[ $val -eq 13 ]]; then
-        copyq &
-        copyq write image/png - < "${imagemenu}"; copyq \select 0
-    elif [[ $val -eq 1 ]]; then exit;
-    fi
+  if [[ $val -eq 11 ]]; then
+    teiler_helper --upload image $(echo -n "${imagemenu}");
+    export entry="${imagemenu}";
+    imageMenu
+  elif [[ $val -eq 10 || $val -eq 0 ]]; then
+    $viewer "${imagemenu}";
+    export entry="${imagemenu}";
+    imageMenu
+  elif [[ $val -eq 12 ]]; then
+    cp "${imagemenu}" "${imagemenu2}-mod.png"
+    $editor "${imagemenu2}-mod.png"
+    export entry="${imagemenu}"
+    imageMenu
+  elif [[ $val -eq 13 ]]; then
+    copyq &
+    copyq write image/png - < "${imagemenu}";
+    copyq \select 0
+  elif [[ $val -eq 1 ]]; then
+    exit;
+  fi
 }
 
 videoMenu () {
-        cd "${vid_path}"
-    HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | roficmd -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
-    val=$?
-    videomenu2="${videomenu%.*}"
-    if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
-    if [[ $val -eq 11 ]]; then teiler_helper --upload video "${videomenu}";
-    elif [[ $val -eq 10 || $val -eq 0 ]]; then $player "${videomenu}"; export entry="${videomenu}"; videoMenu
-    elif [[ $val -eq 1 ]]; then exit
-    fi
+  cd "${vid_path}"
+  HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
+  videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" \
+    | roficmd \
+    -select "${entry}" \
+    -kb-custom-1 "${view}" \
+    -kb-custom-2 "${historyupload}" \
+    -mesg "${HELP}" \
+    -p "Choose > ")
+  val=$?
+  videomenu2="${videomenu%.*}"
+  if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then
+    uploadMenu;
+  fi
+
+  if [[ $val -eq 11 ]]; then
+    teiler_helper --upload video "${videomenu}";
+  elif [[ $val -eq 10 || $val -eq 0 ]]; then
+    $player "${videomenu}";
+    export entry="${videomenu}";
+    videoMenu
+  elif [[ $val -eq 1 ]]; then
+    exit
+  fi
 }
 
 isRecording () { [[ -f "$SCREENCAST_PIDFILE" ]] || return 1; }
 
 stopRecording () {
-    local pid
-    res=$(cat /tmp/teiler_res)
-    [[ -f $SCREENCAST_PIDFILE ]] && { pid=$(cat "$SCREENCAST_PIDFILE"); isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
+  local pid
+  res=$(cat /tmp/teiler_res)
+  if [[ -f $SCREENCAST_PIDFILE ]]; then
+    { pid=$(cat "$SCREENCAST_PIDFILE"); \
+      isRecording && kill "$pid"; rm "$SCREENCAST_PIDFILE"; }
     notify-send -a "teiler" -t "1" "teiler" "Stopped recording"
-    if [[ -z $rate ]]; then
-        output=$(xininfo -name); xrandr --output "$output" --mode "$res"; rm -f /tmp/teiler_res; return 0
-    else
-        output=$(xininfo -name); xrandr --output "$output" --mode "$res" --rate "${rate}"; rm -f /tmp/teiler_res; return 0
-    fi
+  fi
+
+  if [[ -z $rate ]]; then
+    output=$(xininfo -name);
+    xrandr --output "$output" --mode "$res";
+    rm -f /tmp/teiler_res; return 0
+  else
+    output=$(xininfo -name);
+    xrandr --output "$output" --mode "$res" --rate "${rate}";
+    rm -f /tmp/teiler_res; return 0
+  fi
 }
 
 slopCmd () {
-    slopString=$(slop -b "$slop_border" -c "$slop_color")
-    if [[ "$slopString" == *"Cancel=true"* ]]; then
-        exit
-    else eval "${slopString}"
+  slopString=$(slop -b "$slop_border" -c "$slop_color")
+  if [[ "$slopString" == *"Cancel=true"* ]]; then
+    exit
+  else
+    eval "${slopString}"
+  fi
+}
+
+
+getXinfo () {
+  # get resolution from config
+  xres=$(echo "$res" | awk -F 'x' '{ print $1 }')
+  yres=$(echo "$res" | awk -F 'x' '{ print $2 }')
+  # use active display
+  ffmpeg_display=$(echo $DISPLAY)
+  ffmpeg_offset="$(xininfo -mon-x),$(xininfo -mon-y)"
+  # generate ffmpeg compatible display size variable
+  res_now=$(xininfo -mon-size)
+  res_now=${res_now// /x}
+  echo "$res_now" > /tmp/teiler_res
+}
+
+ffQuirk () {
+  # older ffmpeg versions count differently
+  if [[ $ffmpeg_compat == "1" ]]; then
+    if [[ $xres -gt "$(xininfo -mon-x)" ]]; then
+      xres="$(( $xres -1 ))"
+      yres="$(( $yres -1 ))"
+      res2="${xres}x${yres}"
+    else
+      res2=$res
     fi
-    }
+  else
+    res2=$res
+  fi
+}
 
 ffmpegCmd () {
-    xres=$(echo "$res" | awk -F 'x' '{ print $1 }')
-    yres=$(echo "$res" | awk -F 'x' '{ print $2 }')
+  # get display and resolution of active monitor
+  getXinfo
+  ffQuirk
+  if [[ $1 == "fullscreen" ]]; then
+    isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
 
-    if [[ $ffmpeg_compat == "1" ]]; then
-        if [[ $xres -gt "$(xininfo -mon-x)" ]]; then
-            xres="$(( $xres -1 ))"
-            yres="$(( $yres -1 ))"
-            res2="${xres}x${yres}"
-        else
-            res2=$res
-        fi
-    else res2=$res
+    if [[ $res_now == $res ]]; then
+      :
+    else
+      output=$(xininfo -name);
+      xrandr --output "$output" --mode "$res";
+      sleep 5;
     fi
-    if [[ $1 == "fullscreen" ]]; then
-        isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
-        ffmpeg_display=$(echo $DISPLAY)
-        ffmpeg_offset="$(xininfo -mon-x),$(xininfo -mon-y)"
-        res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
-        echo "$res_now" > /tmp/teiler_res
-        if [[ $res_now == $res ]]; then echo " "
-        else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
-        [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
-        fi
-        echo "$!" > "$SCREENCAST_PIDFILE"
-        notify-send -a "teiler" -t "1" "teiler" "Screencast started"
-    elif [[ $1 == "area" ]]; then
-        isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
-        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); slopCmd
-        [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
-        if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
-        else $encoder -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
-        fi
-        echo "$!" > "$SCREENCAST_PIDFILE"
-        notify-send -a "teiler" -t "1" "teiler" "Screencast started"
+
+    if [[ -f "${vid_path}/${filename}" ]]; then
+      rm "${vid_path}/${filename}"
     fi
+
+    if [[ -z $ffaudio ]]; then
+      $encoder \
+        -f x11grab ${border} \
+        -s $res2 \
+        -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
+    else $encoder \
+      -f x11grab ${border} \
+      -s $res2 \
+      -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
+    fi
+    echo "$!" > "$SCREENCAST_PIDFILE"
+    notify-send -a "teiler" -t "1" "teiler" "Screencast started"
+
+  elif [[ $1 == "area" ]]; then
+    isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
+
+    ffmpeg_display=$(echo $DISPLAY);
+    ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y));
+    slopCmd
+
+    if [[ -f "${vid_path}/${filename}" ]]; then
+      rm "${vid_path}/${filename}"
+    fi
+
+    if [[ -z $ffaudio ]]; then
+      $encoder \
+        -f x11grab ${border} \
+        -s "$W"x"$H" \
+        -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
+    else $encoder \
+      -f x11grab ${border} \
+      -s "$W"x"$H" \
+      -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
+    fi
+    echo "$!" > "$SCREENCAST_PIDFILE"
+    notify-send -a "teiler" -t "1" "teiler" "Screencast started"
+  fi
 }
 
 maimCmd () {
-    if [[ $hidecursor == "yes" ]]; then
-        cursor=""
-    elif [[ $hidecursor == "no" ]]; then
-        cursor="--showcursor"
+  if [[ $hidecursor == "yes" ]]; then
+    cursor=""
+  elif [[ $hidecursor == "no" ]]; then
+    cursor="--showcursor"
+  fi
+
+  if [[ $1 == "delay" ]]; then
+    if [[ $2 == "area" ]]; then
+      maim $cursor \
+        -s \
+        -w $(xininfo -mon-width) \
+        -h $(xininfo -mon-height) \
+        -x $(xininfo -mon-x) \
+        -y $(xininfo -mon-y) \
+        -d ${delay} "${img_path}/${3}";
+    elif [[ $2 == "fullscreen" ]]; then
+      maim $cursor \
+        -w $(xininfo -mon-width) \
+        -h $(xininfo -mon-height) \
+        -x $(xininfo -mon-x) \
+        -y $(xininfo -mon-y) \
+        -d ${delay} "${img_path}/${3}";
+    elif [[ $2 == "fullscreenAll" ]]; then
+      maim $cursor \
+        -d ${delay} "${img_path}/${3}";
     fi
-    if [[ $1 == "delay" ]]; then
-        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor -d ${delay} "${img_path}/${3}"; fi
-    elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "active" ]]; then maim -i $(xdotool getactivewindow) "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor "${img_path}/${3}"; fi
+  elif [[ $1 == "nodelay" ]]; then
+    if [[ $2 == "area" ]]; then
+      maim $cursor \
+        -s \
+        -w $(xininfo -mon-width) \
+        -h $(xininfo -mon-height) \
+        -x $(xininfo -mon-x) \
+        -y $(xininfo -mon-y) "${img_path}/${3}";
+    elif [[ $2 == "active" ]]; then
+      maim \
+        -i $(xdotool getactivewindow) "${img_path}/${3}";
+    elif [[ $2 == "fullscreen" ]]; then
+      maim $cursor \
+        -w $(xininfo -mon-width) \
+        -h $(xininfo -mon-height) \
+        -x $(xininfo -mon-x) \
+        -y $(xininfo -mon-y) "${img_path}/${3}";
+    elif [[ $2 == "fullscreenAll" ]]; then
+      maim $cursor "${img_path}/${3}";
     fi
+  fi
 }
 
 askPrompt () {
-    filename="$(cat /tmp/__teiler_cast_name)"
-    isRecording && STATE_RECORDING="Recording"
-    if [[ -z "$STATE_RECORDING" ]]; then
-        filename="${vid_filemask}"
-        echo "${filename}" > /tmp/__teiler_cast_name
-        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | roficmd -p "> ")
-        if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
-        elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
-        elif [[ $menu == "" ]]; then exit
-        fi
-    else
-        isRecording && stopRecording && sleep 2
-        ask=$(echo -e "1 Yes\n2 No" | roficmd -p "Upload? > ")
-        if [[ $ask == "1 Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f /tmp/__teiler_cast_name;
-        elif [[ $ask == "2 No" ]]; then rm -f /tmp/__teiler_cast_name;
-        fi
+  filename="$(cat /tmp/__teiler_cast_name)"
+  isRecording && STATE_RECORDING="Recording"
+  if [[ -z "$STATE_RECORDING" ]]; then
+    filename="${vid_filemask}"
+    echo "${filename}" > /tmp/__teiler_cast_name
+    menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | roficmd -p "> ")
+
+    if [[ $menu == "1 Fullscreen" ]]; then
+      isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
+    elif [[ $menu == "2 Area" ]]; then
+      isRecording && stopRecording && sleep 2 || ffmpegCmd area;
+    elif [[ $menu == "" ]]; then
+      exit
     fi
+  else
+    isRecording && stopRecording && sleep 2
+    ask=$(echo -e "1 Yes\n2 No" | roficmd -p "Upload? > ")
+
+    if [[ $ask == "1 Yes" ]]; then
+      cd "${vid_path}";
+      teiler_helper \
+        --upload video "${filename}";
+      rm -f /tmp/__teiler_cast_name;
+    elif [[ $ask == "2 No" ]]; then
+      rm -f /tmp/__teiler_cast_name;
+    fi
+  fi
 }
 
 clipCmd () {
-    (xclip -o) > "${paste_path}/${paste_filemask}"
+  (xclip -o) > "${paste_path}/${paste_filemask}"
 }
 
 delayPrompt () {
-    delay=$(echo -e "$(seq 0 10)" | roficmd -p "Choose Delay > ")
-    if [[ $delay == "" ]]; then
-        exit
-    fi
+  delay=$(echo -e "$(seq 0 10)" | roficmd -p "Choose Delay > ")
+  if [[ $delay == "" ]]; then
+    exit
+  fi
 }
 
 helpCmd () {
-    cat << EOF
+  cat << EOF
 teiler - a rofi-driven screen{shot,cast} utility
 (C) Rasmus Steinke <rasi@xssn.at>
 --screenshot                              open screenshots menu
@@ -308,39 +526,71 @@ EOF
 }
 
 if [[ -z "$rofiopts" ]]; then
-    roficmd () {
-        rofi -dmenu "$@"
-    }
+  roficmd () {
+    rofi -dmenu "$@"
+  }
 else
-    roficmd () {
-        rofi -dmenu $(echo "$rofiopts") "$@"
-    }
+  roficmd () {
+    rofi -dmenu $(echo "$rofiopts") "$@"
+  }
 fi
 
-if [[ $1 == "--screenshot" ]]; then screenshotMenu
-elif [[ $1 == "--screencast" ]]; then screencastMenu
-elif [[ $1 == "--paste" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
-elif [[ $1 == "--togglecast" ]]; then askPrompt
+if [[ $1 == "--screenshot" ]]; then
+  screenshotMenu
+elif [[ $1 == "--screencast" ]]; then
+  screencastMenu
+elif [[ $1 == "--paste" ]]; then
+  export filename="${paste_filemask}";
+  clipCmd;
+  teiler_helper --upload text "${filename}"
+elif [[ $1 == "--togglecast" ]]; then
+  askPrompt
 elif [[ $1 == "--history" ]]; then
-    if [[ $2 == "images" ]]; then imageMenu
-    elif [[ $2 == "videos" ]]; then videoMenu
-    fi
+  if [[ $2 == "images" ]]; then
+    imageMenu
+  elif [[ $2 == "videos" ]]; then
+    videoMenu
+  fi
 elif [[ $1 == "--quick" ]]; then
-    filename="${img_filemask}"
-    if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-    elif [[ $2 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-    elif [[ $2 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-    elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-    fi
+  filename="${img_filemask}"
+  if [[ $2 == "area" ]]; then
+    maimCmd nodelay area "${filename}";
+    cd "${img_path}";
+    teiler_helper --upload image "${filename}"
+  elif [[ $2 == "active" ]]; then
+    maimCmd nodelay active "${filename}";
+    cd "${img_path}";
+    teiler_helper --upload image "${filename}"
+  elif [[ $2 == "fullscreen" ]]; then
+    maimCmd nodelay fullscreen "${filename}";
+    cd "${img_path}";
+    teiler_helper --upload image "${filename}"
+  elif [[ $2 == "all" ]]; then
+    maimCmd nodelay fullscreenAll "${filename}";
+    cd "${img_path}";
+    teiler_helper --upload image "${filename}"
+  fi
 elif [[ $1 == "--quickcopy" ]]; then
-    filename="${img_filemask}"
-    if [[ $2 == "area" ]]; then copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "all" ]]; then copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    fi
+  filename="${img_filemask}"
+  if [[ $2 == "area" ]]; then
+    copyq & maimCmd nodelay area "${filename}";
+    cd "${img_path}";
+    copyq write image/png - < "${filename}";
+    copyq select 0
+  elif [[ $2 == "fullscreen" ]]; then
+    copyq & maimCmd nodelay fullscreen "${filename}";
+    cd "${img_path}";
+    copyq write image/png - < "${filename}";
+    copyq select 0
+  elif [[ $2 == "all" ]]; then
+    copyq & maimCmd nodelay fullscreenAll "${filename}";
+    cd "${img_path}";
+    copyq write image/png - < "${filename}";
+    copyq select 0
+  fi
 elif [[ $1 == "--help" ]]; then
-    helpCmd
+  helpCmd
 else
-    mainMenu
+  mainMenu
 fi
 
