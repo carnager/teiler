@@ -29,7 +29,7 @@ choose between screenshots or screencasts.
 
 ## Optional Dependencies
 
-* imgur (http://imgur.com/tools/imgurbash.sh) (teiler expects this without a suffix)
+* imgurbash2 (https://github.com/ram-on/imgurbash2)
 * filebin (http://git.server-speed.net/users/flo/filebin)
 * openssh (http://www.openssh.com)
 * ix (http://ix.io)
