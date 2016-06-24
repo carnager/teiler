@@ -30,6 +30,29 @@ for i in *; do
     fi
 done
 
+if [[ ! -d $img_path ]]; then
+  read -p "Image path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    mkdir "${img_path}"
+  fi
+fi
+
+if [[ ! -d $vid_path ]]; then
+  read -p "Video path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    mkdir "${vid_path}"
+  fi
+fi
+
+if [[ ! -d $paste_path ]]; then
+  read -p "Paste path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    mkdir "${paste_path}"
+  fi
+fi
 source "$HOME/.config/teiler/profiles/${profile}"
 
 vid_filemask="${vid_filemask}.${ext}"
