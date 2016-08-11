@@ -31,26 +31,32 @@ for i in *; do
 done
 
 if [[ ! -d $img_path ]]; then
-  read -p "Image path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     mkdir -p "${img_path}"
+  else
+    exit
   fi
 fi
 
 if [[ ! -d $vid_path ]]; then
-  read -p "Video path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  read -p "Video path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     mkdir -p "${vid_path}"
+  else
+    exit
   fi
 fi
 
 if [[ ! -d $paste_path ]]; then
-  read -p "Paste path \"${img_path}\" does not exist. Create it? " -n 1 -r
+  read -p "Paste path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     mkdir -p "${paste_path}"
+  else
+    exit
   fi
 fi
 source "$HOME/.config/teiler/profiles/${profile}"
@@ -361,7 +367,7 @@ elif [[ $1 == "--quickcopy" ]]; then
     elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
     elif [[ $2 == "all" ]]; then copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
     fi
-elif [[ $1 == "--help" ]]; then
+elif [[ $1 == "--help" || $1 == "-h" ]]; then
     helpCmd
 else
     mainMenu
