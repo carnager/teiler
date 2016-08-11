@@ -30,35 +30,38 @@ for i in *; do
     fi
 done
 
-if [[ ! -d $img_path ]]; then
-  read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    mkdir -p "${img_path}"
-  else
-    exit
+check_path () {
+  if [[ ! -d $img_path ]]; then
+    read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      mkdir -p "${img_path}"
+    else
+      exit
+    fi
   fi
-fi
+  
+  if [[ ! -d $vid_path ]]; then
+    read -p "Video path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      mkdir -p "${vid_path}"
+    else
+      exit
+    fi
+  fi
+  
+  if [[ ! -d $paste_path ]]; then
+    read -p "Paste path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      mkdir -p "${paste_path}"
+    else
+      exit
+    fi
+  fi
+}
 
-if [[ ! -d $vid_path ]]; then
-  read -p "Video path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    mkdir -p "${vid_path}"
-  else
-    exit
-  fi
-fi
-
-if [[ ! -d $paste_path ]]; then
-  read -p "Paste path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    mkdir -p "${paste_path}"
-  else
-    exit
-  fi
-fi
 source "$HOME/.config/teiler/profiles/${profile}"
 
 vid_filemask="${vid_filemask}.${ext}"
@@ -346,15 +349,17 @@ else
     }
 fi
 
-if [[ $1 == "--screenshot" ]]; then screenshotMenu
-elif [[ $1 == "--screencast" ]]; then screencastMenu
-elif [[ $1 == "--paste" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
-elif [[ $1 == "--togglecast" ]]; then askPrompt
+if [[ $1 == "--screenshot" ]]; then check_path; screenshotMenu
+elif [[ $1 == "--screencast" ]]; then check_path; screencastMenu
+elif [[ $1 == "--paste" ]]; then check_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+elif [[ $1 == "--togglecast" ]]; then check_path; askPrompt
 elif [[ $1 == "--history" ]]; then
+    check_path; 
     if [[ $2 == "images" ]]; then imageMenu
     elif [[ $2 == "videos" ]]; then videoMenu
     fi
 elif [[ $1 == "--quick" ]]; then
+    check_path;
     filename="${img_filemask}"
     if [[ $2 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     elif [[ $2 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
@@ -362,6 +367,7 @@ elif [[ $1 == "--quick" ]]; then
     elif [[ $2 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
     fi
 elif [[ $1 == "--quickcopy" ]]; then
+    check_path;
     filename="${img_filemask}"
     if [[ $2 == "area" ]]; then copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
     elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
@@ -370,6 +376,6 @@ elif [[ $1 == "--quickcopy" ]]; then
 elif [[ $1 == "--help" || $1 == "-h" ]]; then
     helpCmd
 else
-    mainMenu
+    check_path; mainMenu
 fi
 
