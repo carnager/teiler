@@ -257,7 +257,7 @@ ffmpegCmd () {
         res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
         echo "$res_now" > /tmp/teiler_res
         if [[ $res_now == $res ]]; then echo " "
-        else output=$(xininfo -name); xrandr --output "$output" --mode "$res" && sleep 5 || { notify-send "Recording Failed"; exit 1; }
+        else output=$(xininfo -name); xrandr --output "$output" --mode "$res" && sleep 5 || { notify-send -a "teiler" -t "1" "teiler"  "Recording Failed"; exit 1; }
         fi
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
         if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
