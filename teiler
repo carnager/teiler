@@ -32,7 +32,7 @@ done
 
 check_path () {
   if [[ ! -d $img_path ]]; then
-    read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    read -p "Image path \"${img_path}\" does not exist. Create it? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       mkdir -p "${img_path}"
@@ -42,7 +42,7 @@ check_path () {
   fi
   
   if [[ ! -d $vid_path ]]; then
-    read -p "Video path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    read -p "Video path \"${img_path}\" does not exist. Create it? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       mkdir -p "${vid_path}"
@@ -52,7 +52,7 @@ check_path () {
   fi
   
   if [[ ! -d $paste_path ]]; then
-    read -p "Paste path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    read -p "Paste path \"${img_path}\" does not exist. Create it? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       mkdir -p "${paste_path}"
@@ -257,7 +257,8 @@ ffmpegCmd () {
         res_now="$(echo $(xininfo -mon-size | awk '{ print $1 }')x$(xininfo -mon-size | awk '{ print $2 }'))"
         echo "$res_now" > /tmp/teiler_res
         if [[ $res_now == $res ]]; then echo " "
-        else output=$(xininfo -name); xrandr --output "$output" --mode "$res"; sleep 5; fi
+        else output=$(xininfo -name); xrandr --output "$output" --mode "$res" && sleep 5 || { notify-send "Recording Failed"; exit 1; }
+        fi
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
         if [[ -z $ffaudio ]]; then $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $encopts "${vid_path}/${filename}" &
         else $encoder -f x11grab ${border} -s $res2 -i $ffmpeg_display+$ffmpeg_offset $ffaudio $encopts "${vid_path}/${filename}" &
