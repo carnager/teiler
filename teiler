@@ -34,30 +34,39 @@ check_path () {
   if [[ ! -d $img_path ]]; then
     read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ || $REPLY == "" ]]; then
       mkdir -p "${img_path}"
-    else
+    elif [[ $REPLY =~ ^[Nn]$ ]]; then
       exit
+    else
+      echo "Please enter y or n"
+      check_path
     fi
   fi
   
   if [[ ! -d $vid_path ]]; then
     read -p "Video path \"${vid_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ || $REPLY == "" ]]; then
       mkdir -p "${vid_path}"
-    else
+    elif [[ $REPLY =~ ^[Nn]$ ]]; then
       exit
+    else
+      echo "Please enter y or n"
+      check_path
     fi
   fi
   
   if [[ ! -d $paste_path ]]; then
     read -p "Paste path \"${paste_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [[ $REPLY =~ ^[Yy]$ || $REPLY == "" ]]; then
       mkdir -p "${paste_path}"
-    else
+    elif [[ $REPLY =~ ^[Nn]$ ]]; then
       exit
+    else
+      echo "Please enter y or n"
+      check_path
     fi
   fi
 }
