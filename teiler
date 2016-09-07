@@ -42,7 +42,7 @@ check_path () {
   fi
   
   if [[ ! -d $vid_path ]]; then
-    read -p "Video path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    read -p "Video path \"${vid_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       mkdir -p "${vid_path}"
@@ -52,7 +52,7 @@ check_path () {
   fi
   
   if [[ ! -d $paste_path ]]; then
-    read -p "Paste path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
+    read -p "Paste path \"${paste_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       mkdir -p "${paste_path}"
@@ -135,6 +135,10 @@ screenshotMenu () {
             fi
         fi
     fi
+}
+
+test_xrandr () {
+    output=$(xininfo -name); xrandr --output "$output" --mode "$res" --dryrun || { rofi -mesg  "Resolution "${res}" not available"; exit 1; }
 }
 
 screencastMenu () {
