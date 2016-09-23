@@ -17,7 +17,7 @@ always_ul=1
 
 # Uploading options
 # Possible Choices for img_ul: fb, scp, s3, imgur
-# Possible Choices for vid_ul: fb, scp, s3
+# Possible Choices for vid_ul: fb, scp, s3, youtube-upload
 # Possible Choices for paste_ul: fb, scp, ix
 img_ul=imgur
 vid_ul=fb

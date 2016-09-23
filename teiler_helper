@@ -40,6 +40,8 @@ elif [[ $vid_ul == "scp" ]]; then
     videoUpload () { scpUpload "Video" "${vid_path}" "$1" "${scp_host}" "${scp_path_vid}" "${http_vid}"; }
 elif [[ $vid_ul == "s3" ]]; then
     videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "{$1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send -a "teiler" "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
+elif [[ $vid_ul == "yt" ]]; then 
+	videoUpload () { echo -n "https://youtu.be/" | (cat; youtube-upload -t ${1} --privacy=unlisted ${vid_path}/${1}) | xclip; x_clip; notify-send -a "teiler" "Video Uploaded" "$(xclip -o)";} 
 else
     videoUpload () { echo "No video uploader set. Check example config"; }
 fi
