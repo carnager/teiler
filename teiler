@@ -30,7 +30,7 @@ for i in *; do
     fi
 done
 
-check_path () {
+check_img_path () {
   if [[ ! -d $img_path ]]; then
     read -p "Image path \"${img_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
@@ -43,7 +43,9 @@ check_path () {
       check_path
     fi
   fi
-  
+}
+
+check_vid_path () {
   if [[ ! -d $vid_path ]]; then
     read -p "Video path \"${vid_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
@@ -56,7 +58,9 @@ check_path () {
       check_path
     fi
   fi
-  
+}
+
+check_paste_path () {
   if [[ ! -d $paste_path ]]; then
     read -p "Paste path \"${paste_path}\" does not exist. Create it? (Y/n) " -n 1 -r
     echo
@@ -350,14 +354,14 @@ helpCmd () {
     cat << EOF
 teiler - a rofi-driven screen{shot,cast} utility
 (C) Rasmus Steinke <rasi@xssn.at>
---screenshot                              open screenshots menu
---screencast                              open screencasts menu
---history {images,video}                  open history menus
---paste                                   upload text from clipboard
---togglecast                              start/stop screencast
---quick image {area,fullscreen,all,active quickly create screenshot and upload
---quick video {area,fullscreen            quickly create screenshot and upload
---quickcopy {area,fullscreen,all}         quickly create screenshot and copy
+--screenshot                               open screenshots menu
+--screencast                               open screencasts menu
+--history {images,video}                   open history menus
+--paste                                    upload text from clipboard
+--togglecast                               start/stop screencast
+--quick image {area,fullscreen,all,active} quickly create screenshot and upload
+--quick video {area,fullscreen}            quickly create screenshot and optionally upload
+--quickcopy {area,fullscreen,all}          quickly create screenshot and copy
 EOF
 }
 
@@ -371,26 +375,26 @@ else
     }
 fi
 
-if [[ $1 == "--screenshot" ]]; then check_path; screenshotMenu
-elif [[ $1 == "--screencast" ]]; then check_path; screencastMenu
-elif [[ $1 == "--paste" ]]; then check_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
-elif [[ $1 == "--togglecast" ]]; then check_path; askPrompt
+if [[ $1 == "--screenshot" ]]; then check_img_path; screenshotMenu
+elif [[ $1 == "--screencast" ]]; then check_vid_path; screencastMenu
+elif [[ $1 == "--paste" ]]; then check_paste_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+elif [[ $1 == "--togglecast" ]]; then check_vid_path; askPrompt
 elif [[ $1 == "--history" ]]; then
-    check_path; 
-    if [[ $2 == "images" ]]; then imageMenu
-    elif [[ $2 == "videos" ]]; then videoMenu
+    if [[ $2 == "images" ]]; then check_img_path; imageMenu
+    elif [[ $2 == "videos" ]]; then check_vid_path; videoMenu
     fi
 elif [[ $1 == "--quick" ]]; then
-    check_path;
     if [[ $2 == "image" ]]; then
-    filename="${img_filemask}"
+      check_img_path
+      filename="${img_filemask}"
       if [[ $3 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
       elif [[ $3 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
       elif [[ $3 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
       elif [[ $3 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
       fi
     elif [[ $2 == "video" ]]; then
-    filename="${vid_filemask}"
+      check_vid_path
+      filename="${vid_filemask}"
       if [[ $3 == "area" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd area;
       elif [[ $3 == "fullscreen" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd fullscreen;
       fi
@@ -398,7 +402,7 @@ elif [[ $1 == "--quick" ]]; then
     fi
 
 elif [[ $1 == "--quickcopy" ]]; then
-    check_path;
+    check_img_path;
     filename="${img_filemask}"
     if [[ $2 == "area" ]]; then copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
     elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
