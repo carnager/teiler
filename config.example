@@ -25,17 +25,10 @@ paste_ul=ix
 
 # Screencast options
 # Resolution to change to when recording in fullscreen
-res=800x600
+#res=800x600
 
 # If you use a custom rate for X, set it here. 
 # rate=120
-
-
-# Ffmpeg settings
-
-# set this to 1, if ffmpeg version is < 1.7.1
-ffmpeg_compat=0
-encoder=ffmpeg
 
 # Profile to use for screencasts
 # profiles are stored in $HOME/.config/teiler/profiles
