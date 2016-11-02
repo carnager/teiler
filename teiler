@@ -40,7 +40,7 @@ check_img_path () {
       exit
     else
       echo "Please enter y or n"
-      check_path
+      check_img_path
     fi
   fi
 }
@@ -55,7 +55,7 @@ check_vid_path () {
       exit
     else
       echo "Please enter y or n"
-      check_path
+      check_vid_path
     fi
   fi
 }
@@ -70,7 +70,7 @@ check_paste_path () {
       exit
     else
       echo "Please enter y or n"
-      check_path
+      check_paste_path
     fi
   fi
 }
@@ -411,6 +411,6 @@ elif [[ $1 == "--quickcopy" ]]; then
 elif [[ $1 == "--help" || $1 == "-h" ]]; then
     helpCmd
 else
-    check_path; mainMenu
+    check_img_path; mainMenu
 fi
 
