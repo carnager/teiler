@@ -1,6 +1,6 @@
 # teiler - a little screenshot tool written in bash
 
-teiler uses or rofi to draw a menu which lets you
+teiler uses rofi to draw a menu which lets you
 choose between screenshots or screencasts.
 
 ## Screenshot
