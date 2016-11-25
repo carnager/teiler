@@ -11,7 +11,7 @@ choose between screenshots or screencasts.
 * screenshots fullscreen/monitor/area
 * delay of screenshots
 * screencasts of monitor/area
-* upload screenshots/screencasts - teiler can also upload your files via scp, imgur or filebin, ix (for pastes) and amazon s3.
+* upload screenshots/screencasts - teiler can also upload your files via scp, imgur or filebin, youtube-upload, ix (for pastes) and amazon s3.
 * History of Images and Videos with support for
   + Viewing
   + Editing
@@ -33,5 +33,6 @@ choose between screenshots or screencasts.
 * filebin (http://git.server-speed.net/users/flo/filebin)
 * openssh (http://www.openssh.com)
 * ix (http://ix.io)
+* youtube-upload (https://github.com/tokland/youtube-upload)
 * s3 cli tools
 
