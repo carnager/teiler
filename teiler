@@ -307,20 +307,21 @@ ffmpegCmd () {
 }
 
 maimCmd () {
+    maimString="maim -b "$slop_border" -c "$slop_color""
     if [[ $hidecursor == "yes" ]]; then
         cursor=""
     elif [[ $hidecursor == "no" ]]; then
         cursor="--showcursor"
     fi
     if [[ $1 == "delay" ]]; then
-        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor -d ${delay} "${img_path}/${3}"; fi
+        if [[ $2 == "area" ]]; then eval "${maimString} $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}"";
+        elif [[ $2 == "fullscreen" ]]; then eval "${maimString} $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) -d ${delay} "${img_path}/${3}"";
+        elif [[ $2 == "fullscreenAll" ]]; then eval "${maimString} $cursor -d ${delay} "${img_path}/${3}""; fi
     elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "active" ]]; then maim -i $(xdotool getactivewindow) "${img_path}/${3}";
-        elif [[ $2 == "fullscreen" ]]; then maim $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}";
-        elif [[ $2 == "fullscreenAll" ]]; then maim $cursor "${img_path}/${3}"; fi
+        if [[ $2 == "area" ]]; then eval "${maimString} $cursor -s -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}"";
+        elif [[ $2 == "active" ]]; then eval "${maimString} -i $(xdotool getactivewindow) "${img_path}/${3}"";
+        elif [[ $2 == "fullscreen" ]]; then eval "${maimString} $cursor -w $(xininfo -mon-width) -h $(xininfo -mon-height) -x $(xininfo -mon-x) -y $(xininfo -mon-y) "${img_path}/${3}"";
+        elif [[ $2 == "fullscreenAll" ]]; then eval "${maimString} $cursor "${img_path}/${3}""; fi
     fi
 }
 
