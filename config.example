@@ -62,11 +62,9 @@ paste_filemask=txt-$random_string.txt
 vid_filemask=vid-$random_string
 
 help_color="#0C73C2"
-slop_color="255,0,0"
-slop_border=2
 hidecursor=yes
 # slop options
-slop_border=1
+slop_border=2
 slop_color="255,0,0"
 hidecursor=yes
 
