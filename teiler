@@ -312,12 +312,23 @@ maimCmd () {
     elif [[ $hidecursor == "no" ]]; then
         cursor=""
     fi
+    if [[ $slop_color == "" ]]; then
+      rect_color=""
+    else
+      rect_color="-c ${slop_color}"
+    fi
+    if [[ $slop_border == "" ]]; then
+      rect_border=""
+    else
+      rect_border="-b ${slop_border}"
+    fi
+
     if [[ $1 == "delay" ]]; then
-      if [[ $2 == "area" ]]; then maim $cursor -s -d ${delay} "${img_path}/${3}";
+      if [[ $2 == "area" ]]; then maim $cursor "${rect_border}" "${rect_color}" -s -d ${delay} "${img_path}/${3}";
         elif [[ $2 == "fullscreen" ]]; then maim $cursor -g$(xininfo -mon-width)$(xininfo -mon-x)$(xininfo -mon-height)$(xininfo -mon-y) -d ${delay} "${img_path}/${3}";
         elif [[ $2 == "fullscreenAll" ]]; then maim $cursor -d ${delay} "${img_path}/${3}"; fi
     elif [[ $1 == "nodelay" ]]; then
-        if [[ $2 == "area" ]]; then maim $cursor -s "${img_path}/${3}";
+        if [[ $2 == "area" ]]; then maim $cursor "${rect_border}" "${rect_color}" -s "${img_path}/${3}";
         elif [[ $2 == "active" ]]; then maim -i $(xdotool getactivewindow) "${img_path}/${3}";
         elif [[ $2 == "fullscreen" ]]; then maim $cursor -g$(xininfo -mon-width)$(xininfo -mon-x)$(xininfo -mon-height)$(xininfo -mon-y) "${img_path}/${3}";
         elif [[ $2 == "fullscreenAll" ]]; then maim $cursor "${img_path}/${3}"; fi
