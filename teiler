@@ -262,11 +262,14 @@ slopCmd () {
     slopString=$(slop -b "$slop_border" -c "$slop_color")
     if [[ "$slopString" == *"Cancel=true"* ]]; then
         exit
-    else eval "${slopString}"
     fi
     }
 
 ffmpegCmd () {
+    round() {
+        echo $(( ${1:?need one argument} / 2 * 2))
+    } 
+
     xres=$(echo "$res" | awk -F 'x' '{ print $1 }')
     yres=$(echo "$res" | awk -F 'x' '{ print $2 }')
   
@@ -295,8 +298,13 @@ ffmpegCmd () {
         echo "$!" > "$SCREENCAST_PIDFILE"
         notify-send -a "teiler" -t "1" "teiler" "Screencast started"
     elif [[ $1 == "area" ]]; then
+        read -r X Y W H G ID < <(slop -f "%x %y %w %h %g %i")
+        X=$(round $X)
+        Y=$(round $Y)
+        W=$(round $W)
+        H=$(round $H)
         isRecording && { notify "$time" 'Screencast already in progress'; echo "Already recording Screen"; exit 1; }
-        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y)); slopCmd
+        ffmpeg_display=$(echo $DISPLAY); ffmpeg_offset=$(echo $(xininfo -mon-x),$(xininfo -mon-y))
         [[ -f "${vid_path}/${filename}" ]] && rm "${vid_path}/${filename}"
         if [[ -z $ffaudio ]]; then ffmpeg -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $rect_encopts "${vid_path}/${filename}" &
         else ffmpeg -f x11grab ${border} -s "$W"x"$H" -i $ffmpeg_display+$X,$Y $ffaudio $rect_encopts "${vid_path}/${filename}" &
