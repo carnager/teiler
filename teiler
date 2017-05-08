@@ -84,7 +84,7 @@ check_paste_path () {
 source "$HOME/.config/teiler/profiles/${profile}"
 
 vid_filemask="${vid_filemask}.${ext}"
-noupload=$save
+save=$noupload
 
 mainMenu () {
     if [[ -f $XDG_RUNTIME_DIR/__teiler_cast_name ]]; then
