@@ -24,7 +24,7 @@ if [[ ! -d $HOME/.config/teiler/uploader ]]; then
 fi
 
 
-if [[ ! -d $HOME/.config/teiler/profiles ]]; then
+if [[ ! -d $HOME/.config/teiler/pfofiles ]]; then
     mkdir $HOME/.config/teiler/profiles
 fi
 cd /etc/teiler/profiles
@@ -93,14 +93,14 @@ mainMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -u 2 -p "teiler > ")
         val=$?
         if [[ $val -eq 1 ]]; then exit;
         elif [[ $val -eq 0 ]]; then askPrompt;
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "teiler > ")
         val=$?
         if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
         elif [[ $menu == "2 [ Screencasts ]>" ]]; then askPrompt;
@@ -116,7 +116,7 @@ screenshotMenu () {
     line1=$(echo "${help_text}" | head -1)
     HELP="<span color='$help_color'>${line1}</span>"
     export filename="${img_filemask}"
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | roficmd -mesg "${HELP}" -p "Screenshot > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -mesg "${HELP}" -p "Screenshot > ")
     rofi_exit=$?
     if [[ $menu == "1 Monitor" ]]; then
         mode="fullscreen"
@@ -159,7 +159,7 @@ screenshotMenu () {
 
 test_xrandr () {
     if [[ -n $res ]]; then
-      output=$(xininfo -name); xrandr --output "$output" --mode "$res" --dryrun || { rofi -mesg  "Resolution "${res}" not available"; exit 1; }
+      output=$(xininfo -name); xrandr --output "$output" --mode "$res" --dryrun || { rofi -kb-move-word-forward '' -mesg  "Resolution "${res}" not available"; exit 1; }
     fi
 }
 
@@ -168,7 +168,7 @@ screencastMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
         val=$?
 
         if [[ "$menu" == "< Exit" ]]; then
@@ -184,7 +184,7 @@ screencastMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -p "Screencast > ")
+        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "Screencast > ")
         val=$?
         filename="${vid_filemask}"
         echo "${filename}" > $XDG_RUNTIME_DIR/__teiler_cast_name
@@ -197,7 +197,7 @@ screencastMenu () {
 }
 
 uploadMenu () {
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | roficmd -p "Uploads > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "Uploads > ")
     if [[ $menu == "1 Images" ]]; then imageMenu;
     elif [[ $menu == "2 Videos" ]]; then videoMenu;
     elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
@@ -208,7 +208,7 @@ uploadMenu () {
 imageMenu () {
     cd "${img_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | roficmd -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
+    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
     val=$?
 
     imagemenu2="${imagemenu%.*}"
@@ -230,7 +230,7 @@ imageMenu () {
 videoMenu () {
         cd "${vid_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | roficmd -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
+    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
@@ -349,7 +349,7 @@ askPrompt () {
     if [[ -z "$STATE_RECORDING" ]]; then
         filename="${vid_filemask}"
         echo "${filename}" > $XDG_RUNTIME_DIR/__teiler_cast_name
-        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | roficmd -p "> ")
+        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "> ")
         if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
         elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
         elif [[ $menu == "" ]]; then exit
@@ -357,7 +357,7 @@ askPrompt () {
     else
         filename="$(cat $XDG_RUNTIME_DIR/__teiler_cast_name)"
         isRecording && stopRecording && sleep 2
-        ask=$(echo -e "1 Yes\n2 No" | roficmd -p "Upload? > ")
+        ask=$(echo -e "1 Yes\n2 No" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "Upload? > ")
         if [[ $ask == "1 Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f $XDG_RUNTIME_DIR/__teiler_cast_name;
         elif [[ $ask == "2 No" ]]; then rm -f $XDG_RUNTIME_DIR/__teiler_cast_name;
         fi
@@ -369,7 +369,7 @@ clipCmd () {
 }
 
 delayPrompt () {
-    delay=$(echo -e "$(seq 0 10)" | roficmd -p "Choose Delay > ")
+    delay=$(echo -e "$(seq 0 10)" | roficmd -kb-accept-alt '' -kb-move-word-forward '' -p "Choose Delay > ")
     if [[ $delay == "" ]]; then
         exit
     fi
@@ -392,11 +392,11 @@ EOF
 
 if [[ -z "$rofiopts" ]]; then
     roficmd () {
-        rofi -dmenu "$@"
+        rofi -kb-move-word-forward '' -dmenu "$@"
     }
 else
     roficmd () {
-        rofi -dmenu $(echo "$rofiopts") "$@"
+        rofi -kb-move-word-forward '' -dmenu $(echo "$rofiopts") "$@"
     }
 fi
 
