@@ -23,7 +23,10 @@ export ext=${ext}; source $HOME/.config/teiler/config
 
 if [[ ! -d $HOME/.config/teiler/uploader ]]; then
     mkdir $HOME/.config/teiler/uploader
-    cp /etc/teiler/uploader/* $HOME/.config/teiler/uploader
+    if [[ -d /etc/teiler ]]
+    then
+      cp /etc/teiler/uploader/* $HOME/.config/teiler/uploader
+    fi
 fi
 
 
