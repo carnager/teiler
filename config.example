@@ -1,5 +1,10 @@
 ##### teiler configuration file ######
 
+# rofi command. Make sure to have "$@" as last argument
+_rofi () {
+  rofi -kb-accept-entry "!Return" "$@"
+}
+
 # general variables
 
 # the path where images, videos and pastes should be saved
@@ -67,9 +72,3 @@ hidecursor=yes
 slop_border=1
 slop_color="255,0,0"
 hidecursor=yes
-
-# rofi options ######
-# here you can override options for rofi. normally rofi options
-# are read from ~/.Xresources, so setting options there is recommended.
-# you can dump options for ~/.Xresources with "rofi -dump-xresources"
-# rofiopts="-border 2 -width 35 -lines 40 -padding 12"
