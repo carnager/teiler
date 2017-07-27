@@ -102,28 +102,43 @@ vid_filemask="${vid_filemask}.${ext}"
 save=$noupload
 
 mainMenu () {
-    if [[ -f $XDG_RUNTIME_DIR/__teiler_cast_name ]]; then
-        filename="$(cat $XDG_RUNTIME_DIR/__teiler_cast_name)"
-    fi
-    isRecording && STATE_RECORDING="2 Stop Recording Screencast"
-    if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
-        HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | _rofi -u 2 -p "teiler > ")
-        val=$?
-        if [[ $val -eq 1 ]]; then exit;
-        elif [[ $val -eq 0 ]]; then askPrompt;
-        fi
+  if [[ -f $XDG_RUNTIME_DIR/__teiler_cast_name ]]
+  then
+    filename="$(cat $XDG_RUNTIME_DIR/__teiler_cast_name)"
+  fi
 
-    elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | _rofi -p "teiler > ")
-        val=$?
-        if [[ $menu == "1 [ Screenshots ]>" ]]; then screenshotMenu;
-        elif [[ $menu == "2 [ Screencasts ]>" ]]; then askPrompt;
-        elif [[ $menu == "3 [ History ]>" ]]; then uploadMenu;
-        elif [[ $menu == "< Exit" ]]; then exit;
-        elif [[ $menu == "4 Pastebin Text from Clipboard" ]]; then export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";
-        elif [[ $val -eq 1 ]]; then exit; fi
+  isRecording && STATE_RECORDING="2 Stop Recording Screencast"
+
+  if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]
+  then
+    HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
+    menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | _rofi -dmenu -u 2 -p "teiler > ")
+    val=$?
+    if [[ $val -eq 1 ]]
+    then
+      exit
+    elif [[ $val -eq 0 ]]
+    then
+      askPrompt
     fi
+  elif [[ -z "$STATE_RECORDING" ]]
+  then
+    menu=$(echo -e "< Exit\n---\n1 [ Screenshots ]>\n2 [ Screencasts ]>\n3 [ History ]>\n---\n4 Pastebin Text from Clipboard" | _rofi -dmenu -p "teiler > ")
+    val=$?
+    if [[ $val -eq 0 ]]
+    then
+      case "${menu}" in
+        "1 [ Screenshots ]>") screenshotMenu;;
+        "2 [ Screencasts ]>") askPrompt;;
+        "3 [ History ]>") uploadMenu;;
+        "4 Pastebin Text from Clipboard") export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";;
+        "< Exit") exit;;
+      esac
+    elif [[ $val -eq 1 ]]
+    then
+      exit
+    fi
+  fi
 }
 
 screenshotMenu () {
@@ -131,22 +146,17 @@ screenshotMenu () {
     line1=$(echo "${help_text}" | head -1)
     HELP="<span color='$help_color'>${line1}</span>"
     export filename="${img_filemask}"
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | _rofi -mesg "${HELP}" -p "Screenshot > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | _rofi -dmenu -mesg "${HELP}" -p "Screenshot > ")
     rofi_exit=$?
-    if [[ $menu == "1 Monitor" ]]; then
-        mode="fullscreen"
-        desc="Monitor"
-    elif [[ $menu == "2 Fullscreen" ]]; then
-        mode="fullscreenAll"
-        desc="Fullscreen"
-    elif [[ $menu == "3 Area" ]]; then
-        mode="area"
-        desc="Area"
-    fi
-    if [[ $menu == "< Return to Main Menu" ]]; then
-        mainMenu
-    fi
-    if [[ $rofi_exit -eq 10 ]]; then
+    if [[ $rofi_exit -eq 0 ]]
+    then
+      case "${menu}" in
+        "1 Monitor") mode="fullscreen"; desc="Monitor";;
+        "2 Fullscreen") mode="fullscreenAll"; desc="Monitor";;
+        "3 Area") mode="area"; desc="Area";;
+        "< Return to Main Menu") mainMenu;;
+      esac
+    elif [[ $rofi_exit -eq 10 ]]; then
         delayPrompt
         if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
         else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -183,7 +193,7 @@ screencastMenu () {
     isRecording && STATE_RECORDING="2 Stop Recording Screencast"
     if [[ "$STATE_RECORDING" == "2 Stop Recording Screencast" ]]; then
         HELP="<span color='$help_color'>${upload}: Upload | ${save}: No Upload</span>"
-        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | _rofi -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
+        menu=$(echo -e "< Exit\n---\n"$STATE_RECORDING"" | _rofi -dmenu -u 2 -kb-custom-1 "${upload}" -kb-custom-2 "${save}" -mesg "${HELP}" -p "teiler > ")
         val=$?
 
         if [[ "$menu" == "< Exit" ]]; then
@@ -199,7 +209,7 @@ screencastMenu () {
         fi
 
     elif [[ -z "$STATE_RECORDING" ]]; then
-        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | _rofi -p "Screencast > ")
+        menu=$(echo -e "< Return to Main Menu\n---\n1 Fullscreen\n2 Area" | _rofi -dmenu -p "Screencast > ")
         val=$?
         filename="${vid_filemask}"
         echo "${filename}" > $XDG_RUNTIME_DIR/__teiler_cast_name
@@ -212,7 +222,7 @@ screencastMenu () {
 }
 
 uploadMenu () {
-    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | _rofi -p "Uploads > ")
+    menu=$(echo -e "< Return to Main Menu\n---\n1 Images\n2 Videos" | _rofi -dmenu -p "Uploads > ")
     if [[ $menu == "1 Images" ]]; then imageMenu;
     elif [[ $menu == "2 Videos" ]]; then videoMenu;
     elif [[ $menu == "< Return to Main Menu" ]]; then mainMenu;
@@ -223,7 +233,7 @@ uploadMenu () {
 imageMenu () {
     cd "${img_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | _rofi -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
+    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
     val=$?
 
     imagemenu2="${imagemenu%.*}"
@@ -245,7 +255,7 @@ imageMenu () {
 videoMenu () {
         cd "${vid_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | _rofi -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
+    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
@@ -364,7 +374,7 @@ askPrompt () {
     if [[ -z "$STATE_RECORDING" ]]; then
         filename="${vid_filemask}"
         echo "${filename}" > $XDG_RUNTIME_DIR/__teiler_cast_name
-        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | _rofi -p "> ")
+        menu=$(echo -e "< Exit\n---\n1 Fullscreen\n2 Area" | _rofi -dmenu -p "> ")
         if [[ $menu == "1 Fullscreen" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd fullscreen;
         elif [[ $menu == "2 Area" ]]; then isRecording && stopRecording && sleep 2 || ffmpegCmd area;
         elif [[ $menu == "" ]]; then exit
@@ -372,7 +382,7 @@ askPrompt () {
     else
         filename="$(cat $XDG_RUNTIME_DIR/__teiler_cast_name)"
         isRecording && stopRecording && sleep 2
-        ask=$(echo -e "1 Yes\n2 No" | _rofi -p "Upload? > ")
+        ask=$(echo -e "1 Yes\n2 No" | _rofi -dmenu -p "Upload? > ")
         if [[ $ask == "1 Yes" ]]; then cd "${vid_path}" && teiler_helper --upload video "${filename}" && rm -f $XDG_RUNTIME_DIR/__teiler_cast_name;
         elif [[ $ask == "2 No" ]]; then rm -f $XDG_RUNTIME_DIR/__teiler_cast_name;
         fi
@@ -384,7 +394,7 @@ clipCmd () {
 }
 
 delayPrompt () {
-    delay=$(echo -e "$(seq 0 10)" | _rofi -p "Choose Delay > ")
+    delay=$(echo -e "$(seq 0 10)" | _rofi -dmenu -p "Choose Delay > ")
     if [[ $delay == "" ]]; then
         exit
     fi
