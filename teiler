@@ -233,7 +233,7 @@ uploadMenu () {
 imageMenu () {
     cd "${img_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
+    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(find -L . -type f -maxdepth 1 -iname '*.png' -printf '%P\n')" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
     val=$?
 
     imagemenu2="${imagemenu%.*}"
@@ -255,7 +255,7 @@ imageMenu () {
 videoMenu () {
         cd "${vid_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
+    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(find -L . -type f -maxdepth 1 -printf '%P\n')" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
