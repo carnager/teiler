@@ -156,6 +156,17 @@ screenshotMenu () {
         "3 Area") mode="area"; desc="Area";;
         "< Return to Main Menu") mainMenu;;
       esac
+
+      delayPrompt
+      if [[ $always_ul == "1" ]]; then
+          if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+          else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+          fi
+      elif [[ $always_ul == "0" ]]; then
+          if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
+          else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
+          fi
+      fi
     elif [[ $rofi_exit -eq 10 ]]; then
         delayPrompt
         if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -168,17 +179,6 @@ screenshotMenu () {
         fi
     elif [[ $rofi_exit -eq 1 ]]; then
         exit
-    elif [[ $rofi_exit -eq 0 ]]; then
-        delayPrompt
-        if [[ $always_ul == "1" ]]; then
-            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-            fi
-        elif [[ $always_ul == "0" ]]; then
-            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
-            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
-            fi
-        fi
     fi
 }
 
