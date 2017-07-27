@@ -416,43 +416,38 @@ EOF
 }
 
 
-
-if [[ $1 == "--screenshot" ]]; then check_img_path; screenshotMenu
-elif [[ $1 == "--screencast" ]]; then check_vid_path; screencastMenu
-elif [[ $1 == "--paste" ]]; then check_paste_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
-elif [[ $1 == "--togglecast" ]]; then check_vid_path; askPrompt
-elif [[ $1 == "--history" ]]; then
-    if [[ $2 == "images" ]]; then check_img_path; imageMenu
-    elif [[ $2 == "videos" ]]; then check_vid_path; videoMenu
-    fi
-elif [[ $1 == "--quick" ]]; then
-    if [[ $2 == "image" ]]; then
-      check_img_path
-      filename="${img_filemask}"
-      if [[ $3 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-      elif [[ $3 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-      elif [[ $3 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-      elif [[ $3 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
-      fi
-    elif [[ $2 == "video" ]]; then
-      check_vid_path
-      filename="${vid_filemask}"
-      if [[ $3 == "area" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd area;
-      elif [[ $3 == "fullscreen" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd fullscreen;
-      fi
-    else echo "possible options for \"--quick\": image, video"
-    fi
-
-elif [[ $1 == "--quickcopy" ]]; then
-    check_img_path;
-    filename="${img_filemask}"
-    if [[ $2 == "area" ]]; then copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    elif [[ $2 == "all" ]]; then copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
-    fi
-elif [[ $1 == "--help" || $1 == "-h" ]]; then
-    helpCmd
-else
-    check_img_path; mainMenu
-fi
-
+case $1 in
+  "--screenshot") check_img_path; screenshotMenu;;
+  "--screencast") check_vid_path; screencastMenu;;
+  "--paste") check_paste_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";;
+  "--togglecast") check_vid_path; askPrompt;;
+  "--history")
+    case $2 in
+      "images") check_img_path; imageMenu;;
+      "videos") check_vid_path; videoMenu;;
+    esac;;
+  "--quick")
+    case $2 in
+      "image") check_img_path; filename="${img_filemask}"
+      case $3 in
+        "area") maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
+        "active") maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
+        "fullscreen") maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
+        "all") maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
+      esac;;
+      "video") check_vid_path; filename="${vid_filemask}"
+      case $3 in
+        "area") isRecording && askPrompt && sleep 2 || ffmpegCmd area;;
+        "fullscreen") isRecording && askPrompt && sleep 2 || ffmpegCmd fullscreen;;
+      esac;;
+    esac;;
+  "--quickcopy") check_img_path; filename="${img_filemask}"
+    case $2 in
+      "area") copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
+      "fullscreen") copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
+      "all") copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
+    esac;;
+  "--help") helpCmd;;
+  *) check_img_path; mainMenu;;
+esac
+        
