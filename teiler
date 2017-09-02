@@ -148,26 +148,13 @@ screenshotMenu () {
     export filename="${img_filemask}"
     menu=$(echo -e "< Return to Main Menu\n---\n1 Monitor\n2 Fullscreen\n3 Area" | _rofi -dmenu -mesg "${HELP}" -p "Screenshot > ")
     rofi_exit=$?
-    if [[ $rofi_exit -eq 0 ]]
-    then
-      case "${menu}" in
+    case "${menu}" in
         "1 Monitor") mode="fullscreen"; desc="Monitor";;
         "2 Fullscreen") mode="fullscreenAll"; desc="Monitor";;
         "3 Area") mode="area"; desc="Area";;
         "< Return to Main Menu") mainMenu;;
       esac
-
-      delayPrompt
-      if [[ $always_ul == "1" ]]; then
-          if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-          else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
-          fi
-      elif [[ $always_ul == "0" ]]; then
-          if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
-          else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
-          fi
-      fi
-    elif [[ $rofi_exit -eq 10 ]]; then
+    if [[ $rofi_exit -eq 10 ]]; then
         delayPrompt
         if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
         else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
@@ -179,6 +166,17 @@ screenshotMenu () {
         fi
     elif [[ $rofi_exit -eq 1 ]]; then
         exit
+    elif [[ $rofi_exit -eq 0 ]]; then
+        delayPrompt
+        if [[ $always_ul == "1" ]]; then
+            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}" && exit
+            fi
+        elif [[ $always_ul == "0" ]]; then
+            if [[ $delay == "0" ]]; then maimCmd nodelay $mode "${filename}" && exit
+            else notify-send -a "teiler" -t 1 "teiler" "Taking Screenshot in "$delay" seconds"; maimCmd delay $mode "${filename}" 
+            fi
+        fi
     fi
 }
 
@@ -233,7 +231,7 @@ uploadMenu () {
 imageMenu () {
     cd "${img_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload | ${edit}: Edit | ${clip}: Copy to Clipboard</span>"
-    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(find -L . -type f -maxdepth 1 -iname '*.png' -printf '%P\n')" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
+    imagemenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1 -r)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -kb-custom-3 "${edit}" -kb-custom-4 "${clip}" -mesg "${HELP}" -p "Choose > ")
     val=$?
 
     imagemenu2="${imagemenu%.*}"
@@ -255,7 +253,7 @@ imageMenu () {
 videoMenu () {
         cd "${vid_path}"
     HELP="<span color='$help_color'>${view}: View | ${historyupload}: Upload</span>"
-    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(find -L . -type f -maxdepth 1 -printf '%P\n')" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
+    videomenu=$(echo -e "< Return to Upload Menu\n---\n$(ls -1)" | _rofi -dmenu -select "${entry}" -kb-custom-1 "${view}" -kb-custom-2 "${historyupload}" -mesg "${HELP}" -p "Choose > ")
     val=$?
     videomenu2="${videomenu%.*}"
     if [[ "${videomenu}" == "< Return to Upload Menu" ]]; then uploadMenu; fi
@@ -416,38 +414,43 @@ EOF
 }
 
 
-case $1 in
-  "--screenshot") check_img_path; screenshotMenu;;
-  "--screencast") check_vid_path; screencastMenu;;
-  "--paste") check_paste_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}";;
-  "--togglecast") check_vid_path; askPrompt;;
-  "--history")
-    case $2 in
-      "images") check_img_path; imageMenu;;
-      "videos") check_vid_path; videoMenu;;
-    esac;;
-  "--quick")
-    case $2 in
-      "image") check_img_path; filename="${img_filemask}"
-      case $3 in
-        "area") maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
-        "active") maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
-        "fullscreen") maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
-        "all") maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}";;
-      esac;;
-      "video") check_vid_path; filename="${vid_filemask}"
-      case $3 in
-        "area") isRecording && askPrompt && sleep 2 || ffmpegCmd area;;
-        "fullscreen") isRecording && askPrompt && sleep 2 || ffmpegCmd fullscreen;;
-      esac;;
-    esac;;
-  "--quickcopy") check_img_path; filename="${img_filemask}"
-    case $2 in
-      "area") copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
-      "fullscreen") copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
-      "all") copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq "select" 0;;
-    esac;;
-  "--help") helpCmd;;
-  *) check_img_path; mainMenu;;
-esac
-        
+
+if [[ $1 == "--screenshot" ]]; then check_img_path; screenshotMenu
+elif [[ $1 == "--screencast" ]]; then check_vid_path; screencastMenu
+elif [[ $1 == "--paste" ]]; then check_paste_path; export filename="${paste_filemask}" && clipCmd && teiler_helper --upload text "${filename}"
+elif [[ $1 == "--togglecast" ]]; then check_vid_path; askPrompt
+elif [[ $1 == "--history" ]]; then
+    if [[ $2 == "images" ]]; then check_img_path; imageMenu
+    elif [[ $2 == "videos" ]]; then check_vid_path; videoMenu
+    fi
+elif [[ $1 == "--quick" ]]; then
+    if [[ $2 == "image" ]]; then
+      check_img_path
+      filename="${img_filemask}"
+      if [[ $3 == "area" ]]; then maimCmd nodelay area "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+      elif [[ $3 == "active" ]]; then maimCmd nodelay active "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+      elif [[ $3 == "fullscreen" ]]; then maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+      elif [[ $3 == "all" ]]; then maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && teiler_helper --upload image "${filename}"
+      fi
+    elif [[ $2 == "video" ]]; then
+      check_vid_path
+      filename="${vid_filemask}"
+      if [[ $3 == "area" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd area;
+      elif [[ $3 == "fullscreen" ]]; then isRecording && askPrompt && sleep 2 || ffmpegCmd fullscreen;
+      fi
+    else echo "possible options for \"--quick\": image, video"
+    fi
+
+elif [[ $1 == "--quickcopy" ]]; then
+    check_img_path;
+    filename="${img_filemask}"
+    if [[ $2 == "area" ]]; then copyq & maimCmd nodelay area "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "fullscreen" ]]; then copyq & maimCmd nodelay fullscreen "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
+    elif [[ $2 == "all" ]]; then copyq & maimCmd nodelay fullscreenAll "${filename}" && cd "${img_path}" && copyq write image/png - < "${filename}"; copyq select 0
+    fi
+elif [[ $1 == "--help" || $1 == "-h" ]]; then
+    helpCmd
+else
+    check_img_path; mainMenu
+fi
+
