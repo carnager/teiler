@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source $HOME/.config/teiler/config
 if [[ "$img_ul" == "s3" || "$img_ul" == "scp" ]]; then
