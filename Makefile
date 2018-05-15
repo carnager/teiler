@@ -12,3 +12,4 @@ install:
 	install -Dm644 uploader/scp $(DESTDIR)/etc/teiler/uploader/scp
 	install -Dm644 profiles/mp4-pulse $(DESTDIR)/etc/teiler/profiles/mp4-pulse
 	install -Dm644 profiles/mp4-noaudio $(DESTDIR)/etc/teiler/profiles/mp4-noaudio
+	install -Dm644 profiles/webm-noaudio $(DESTDIR)/etc/teiler/profiles/webm-noaudio
