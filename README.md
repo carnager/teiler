@@ -26,6 +26,7 @@ choose between screenshots or screencasts.
 * xclip
 * maim (https://github.com/naelstrof/maim)
 * slop (https://github.com/naelstrof/slop)
+* copyq (https://github.com/hluk/CopyQ)
 
 ## Optional Dependencies
 
