@@ -8,9 +8,15 @@ _rofi () {
 # general variables
 
 # the path where images, videos and pastes should be saved
-img_path=$HOME/Pictures/Screenshots
-vid_path=$HOME/Videos/Screencasts
-paste_path=$HOME/Pictures/Paste
+if command -v xdg-user-dir >/dev/null 2>&1; then
+    img_path="$(xdg-user-dir PICTURES)/Screenshots"
+    vid_path="$(xdg-user-dir VIDEOS)/Screencasts"
+    paste_path="$(xdg-user-dir PICTURES)/Paste"
+else
+    img_path="$HOME/Pictures/Screenshots"
+    vid_path="$HOME/Videos/Screencasts"
+    paste_path="$HOME/Pictures/Paste"
+fi
 
 # set viewer for images and videos plus editor for images
 viewer=eog
