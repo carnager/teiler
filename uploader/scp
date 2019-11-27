@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 scp_host=HOSTNAME
 scp_path_img=/path/to/images
