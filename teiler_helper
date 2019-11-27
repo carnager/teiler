@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 source $HOME/.config/teiler/config
-if [[ "$img_ul" == "s3" || "$img_ul" == "scp" ]]; then
+if [[ "$img_ul" == "s3" || "$img_ul" == "scp" || "$img_ul" == "linx" ]]; then
     source $HOME/.config/teiler/uploader/$img_ul
 fi
-if [[ "$vid_ul" == "s3" || "$vid_ul" == "scp" ]]; then
+if [[ "$vid_ul" == "s3" || "$vid_ul" == "scp" || "$vid_ul" == "linx" ]]; then
     source $HOME/.config/teiler/uploader/$vid_ul
 fi
-if [[ "$paste_ul" == "s3" || "$paste_ul" == "scp" ]]; then
+if [[ "$paste_ul" == "s3" || "$paste_ul" == "scp" || "$paste_ul" == "linx" ]]; then
     source $HOME/.config/teiler/uploader/$paste_ul
 fi
 
@@ -28,6 +28,8 @@ elif [[ $img_ul == "imgur" ]]; then
     imageUpload () { cd "${img_path}"; for x in $files; do imgurbash2 "${x}"; x_clip; notify-send -a "teiler" "Image Uploaded" "$(xclip -o)"; done; }
 elif [[ $img_ul == "s3" ]]; then
     imageUpload () { cd "${img_path}"; s3cmd --no-progress put "${1}" "s3://${s3_bucket}/${s3_path_img}/"; notify-send -a "teiler" "Image Uploaded" "${s3_http_img}/${1}"; echo -n "${s3_http_img}/${1}" | xclip; x_clip; }
+elif [[ $img_ul == "linx" ]]; then
+    imageUpload () { for x in $files; do linxUpload "Image" "${img_path}" "$x" "${linx_url}" "${linx_randomize_file_name}" "${linx_expiry_time}"; done; }
 else
     imageUpload () { echo "No image uploader set. check example config"; }
 fi
@@ -40,6 +42,8 @@ elif [[ $vid_ul == "scp" ]]; then
     videoUpload () { scpUpload "Video" "${vid_path}" "$1" "${scp_host}" "${scp_path_vid}" "${http_vid}"; }
 elif [[ $vid_ul == "s3" ]]; then
     videoUpload () { cd "${vid_path}"; s3cmd --no-progress put "${1}" "s3://${s3_bucket}/${s3_path_vid}/"; notify-send -a "teiler" "Video Uploaded" "${s3_http_vid}/${1}"; echo -n "${s3_http_vid}/${1}" | xclip; x_clip; }
+elif [[ $vid_ul == "linx" ]]; then
+    videoUpload () { linxUpload "Video" "${vid_path}" "$1" "${linx_url}" "${linx_randomize_file_name}" "${linx_expiry_time}"; }
 else
     videoUpload () { echo "No video uploader set. Check example config"; }
 fi
@@ -51,6 +55,8 @@ elif [[ $paste_ul == "scp" ]]; then
     clipUpload () { scpUpload "Paste" "${paste_path}" "$1" "${scp_host}" "${scp_path_paste}" "${http_paste}"; }
 elif [[ $paste_ul == "ix" ]]; then
     clipUpload () { xclip -o 2>&1 | curl -F 'f:1=<-' ix.io | tr -d "\n" | xclip; x_clip; notify-send -a "teiler" "Paste Uploaded" "$(xclip -o)"; }
+elif [[ $paste_ul == "linx" ]]; then
+    clipUpload () { linxUpload "Paste" "${paste_path}" "$1" "${linx_url}" "${linx_randomize_file_name}" "${linx_expiry_time}"; }
 else
     clipUpload () { echo "No text uploader set. Check example config"; }
 fi
@@ -71,6 +77,27 @@ scpUpload() {
     else
         notify-send -a "teiler" "${fileType} upload failed" "$scpResult";
     fi;
+}
+
+linxUpload() {
+    fileType="$1";
+    path="$2";
+    filename="$3";
+    url="$4";
+    randomize="$5";
+    expiry="$6";
+    cd "${path}";
+    if [[ "$randomize" == "yes" ]] && [[ "$expiry" -gt 0 ]]; then
+    linx_link=$(curl -k -H "Linx-randomize: yes" -H "Linx-expiry: $expiry" -T "$filename" "${url}");
+    elif [[ "$randomize" == "yes" ]]; then
+    linx_link=$(curl -k -H "Linx-randomize: yes" -T "$filename" "${url}");
+    elif [[ "$expiry" -gt 0 ]]; then
+    linx_link=$(curl -k -H "Linx-expiry: $expiry" -T "$filename" "${url}");
+    else
+    linx_link=$(curl -k -T "$filename" "${url}");
+    fi
+    notify-send -a "teiler" "${fileType} Uploaded" "${linx_link}";
+    echo -n "${linx_link}" | xsel -i -b;
 }
 
 x_clip () {

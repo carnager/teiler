@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+linx_url="https://YOUR_DOMAIN/upload/"
+linx_randomize_file_name="no"
+# set 0 to disable
+linx_expiry_time=0
