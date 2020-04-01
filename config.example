@@ -21,9 +21,9 @@ player=mpv
 always_ul=1
 
 # Uploading options
-# Possible Choices for img_ul: fb, scp, s3, imgur
-# Possible Choices for vid_ul: fb, scp, s3
-# Possible Choices for paste_ul: fb, scp, ix
+# Possible Choices for img_ul: fb, scp, s3, imgur, clipboard, none
+# Possible Choices for vid_ul: fb, scp, s3, none
+# Possible Choices for paste_ul: fb, scp, ix, none
 img_ul=imgur
 vid_ul=fb
 paste_ul=ix
